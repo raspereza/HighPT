@@ -105,6 +105,11 @@ In our analysis `W->mu+v+jets` sample is employed for determination of fake fact
 The whole analysis is performed using PicoTuples located on lxplus machine in the folder 
 `/eos/user/r/rasp/output/HighPT_thinjet`
 
+Apart from executable macros (which are described below), code includes also auxiliarly scripts:
+* [HighPT/ThinJet/python/stylesHighPT.py](https://github.com/raspereza/HighPT/blob/main/ThinJet/python/stylesHighPT.py) defines of drawing ROOT styles,
+* [HighPT/ThinJet/python/utilsThinJet.py](https://github.com/raspereza/HighPT/blob/main/ThinJet/python/utilsThinJet.py) defines configuration and helper classes : selectors, fake factor reader, processors of histograms, etc 
+
+
 ## Determination of fake factors
 
 Fake factors are measured in dependence of number of prongs (1-prong, 2-prong or 3-prong) and in dependence of 
@@ -115,11 +120,27 @@ HPS jet pT. Measurement is performed using script [HighPT/ThinJet/scripts/FakeFa
 where 
 * `$WP` is WP against jet (VVLoose or VLoose)
 * `$ERA` is era (UL2016, UL2017, UL2018)
-
-
+Example:
+```
+./scripts/FakeFactorThinJet.py --era UL2017 --WP VLoose
+```
+The script will measure fake factors as a function of HPS jet pT for all three types of thin-jets 
+(1-prong, 2-prong, 3-prong) in one go.
+Three sets of fake factors are provided
+1. measurements with the data `W->mu+v+(1jet)` sample,
+2. measurements with simulted `W->mu+v+(1jet)` sample,
+3. measurements with QCD di-jet events.
+Set 3. is not used in subsequent steps of the measurement (it is kept for historical reasons).
+Set 1. is used to construct jet->tau fake background in the measurement region.
+Set 2. is used to perform MC closure test and derive non-closure uncertainty for the jet->tau fake background model.
 
 ## Selection of W*->mu+v sample
 
 
-
 ## Selection of W*->tau+v sample
+
+
+## Fits with combine tool
+
+
+## Plotter
