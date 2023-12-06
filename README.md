@@ -107,8 +107,11 @@ Given that the largest contributions to the jet->tau fake background come from s
 processes, it is reasonable to measure fake factors using as a standard candle Z+jets or W+jets samples. 
 In our analysis `W->mu+v+jets` sample is employed for determination of fake factors.
 
-The whole analysis is performed using PicoTuples located on lxplus machine in the folder 
-`/eos/user/r/rasp/output/HighPT_thinjet`
+The whole analysis is performed using PicoTuples located on lxplus machine in the folders 
+* /eos/user/r/rasp/output/HighPT_thinjet/$ERA/taunu : used for selection of W*->tau+v events 
+* /eos/user/r/rasp/output/HighPT_thinjet/$ERA/wjets : used for measuring fake factors with W*+jets sample
+* /eos/user/r/rasp/output/HighPT_thinjet/$ERA/dijets : used for measuring fake factors with QCD events (not used in this analysis) 
+* /eos/user/r/rasp/output/HighPT_deepTauV2p5/$ERA/munu : used for selection of W*->mu+v events
 
 Apart from executable macros (which are described below), code includes also auxiliarly scripts:
 * [HighPT/ThinJet/python/stylesHighPT.py](https://github.com/raspereza/HighPT/blob/main/ThinJet/python/stylesHighPT.py) defines of drawing ROOT styles,
@@ -235,13 +238,15 @@ output/datacards/tauID_$WP_$prong_$ERA_fit.root
 
 ## Plotter
 
-Plotting of prefit and posfit distributions of `mt_1` is implemented in the script [`HighPT/ThinJet/scripts/PlotThinJet.bash`](https://github.com/raspereza/HighPT/blob/main/ThinJet/scripts/PlotThinJet.bash)
-
-The script take as an input RooT file with fit results `tauID_$WP_$prong_$ERA_fit.root` and outputs plot of `mt_1` distribution in file 
+Plotting of prefit and posfit distributions of `mt_1` is implemented in the script [`HighPT/ThinJet/scripts/PlotThinJet.py`](https://github.com/raspereza/HighPT/blob/main/ThinJet/scripts/PlotThinJet.py)
+```
+./scripts/PlotThinJet.py --era $ERA --prong $prong --WP $WP --Type $type
+```
+where $type should be either `postfit` or `prefit`. The script take as an input RooT file with fit results `tauID_$WP_$prong_$ERA_fit.root` and outputs plot of `mt_1` distribution in file 
 ```
 output/figures/wtaunu_VVLoose_1prong_UL2018_postFit[preFit].png
 ```
-Also the measured tau ID scale factor with uncertainty is reported, for example
+The measured tau ID scale factor with uncertainty is reported as an output of the script, for example
 
 ```
 Measurement of id SF ---->
