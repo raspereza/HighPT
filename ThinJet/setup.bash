@@ -1,5 +1,6 @@
 #!/bin/bash
-basefolder=/afs/cern.ch/work/r/rasp/public/HighPT_ThinJet
+basefolder=${CMSSW_BASE}/src/HighPT/ThinJet/output
+mkdir ${basefolder}
 mkdir ${basefolder}/figures
 mkdir ${basefolder}/figures/FF
 mkdir ${basefolder}/datacards
