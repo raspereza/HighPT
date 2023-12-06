@@ -137,7 +137,7 @@ def DrawFF(hist,era,channel,label,WP,**kwargs):
     leg.Draw()
     canv.RedrawAxis()
     canv.Update()
-    canv.Print(utils.figuresFolderFF+'/FF_'+labelSample+"_"+channel+'_'+label+"_"+WP+'.png')
+    canv.Print(utils.figuresFolderFF+'/FF_'+labelSample+"_"+channel+'_'+label+"_"+WP+"_"+era+'.png')
     
     return hfit
 
@@ -266,10 +266,15 @@ VTight, VVTight """)
     args = parser.parse_args() 
 
 
-    if args.wp not in ['VVLoose','VLoose','Loose','Medium','Tight','VTight','VVTight']:
+    if args.wp not in ['VVLoose','VLoose','Loose']:
         print('unknown WP',args.wp)
         exit()
-    if args.era not in ['UL2016_preVFP','UL2016_postVFP','UL2017','UL2018']:
+# add when available
+#    if args.era not in ['UL2016_preVFP','UL2016_postVFP','UL2017','UL2018']:
+#        print('unknown era',args.era)
+#        exit()
+
+    if args.era not in ['UL2017','UL2018']:
         print('unknown era',args.era)
         exit()
 

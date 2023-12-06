@@ -2,6 +2,7 @@ import ROOT
 import math
 from array import array
 import numpy as np
+import os
 
 #############################
 ##### General settings ######
@@ -10,7 +11,7 @@ import numpy as np
 #############################
 ##### working dir ###########
 #############################
-BaseFolder='/afs/cern.ch/work/r/rasp/public/HighPT_ThinJet'
+BaseFolder=os.getenv('CMSSW_BASE')+'/src/HighPT/ThinJet/output'
 
 #########################
 # folder for picotuples #
@@ -334,12 +335,15 @@ ptratioLabels = ['_ptratioLow','_ptratioHigh']
 statUncLabels = ['_unc1','_unc2']
 
 XTitle = {
-    'mt_jet_1' : "m_{T} (GeV)",
-    'mt_1'     : "m_{T} (GeV)",
-    'pt_1'     : "p_{T} (GeV)",
-    'eta_1'    : "#eta",
-    'met'      : "E_{T}^{mis} (GeV)",
-    'm_1'      : "tau mass (GeV)",
+    'mt_jet_1'    : "m_{T} (GeV)",
+    'mt_1'        : "m_{T} (GeV)",
+    'pt_1'        : "p_{T} (GeV)",
+    'eta_1'       : "#eta",
+    'jpt_match_1' : "p_{T} (GeV)",
+    'jeta_match_1': "#eta",
+    'met'         : "E_{T}^{mis} (GeV)",
+    'm_1'         : "tau mass (GeV)",
+    'jpt_ratio_1' : "p_{T}(#tau)/p_{T}(jet)",
 }
 
 #######################################
@@ -732,11 +736,16 @@ class sampleHighPt:
             if idDeepTau2017v2p1VSmu_1[0]<cuts.antiMu: continue
             if idDeepTau2017v2p1VSjet_1[0]<1: continue
 
-            variable = mt_jet_1[0]
+            variable = mt_1[0]
+
             if var=='mt_1': variable = mt_1[0]
+            if var=='mt_jet_1': variable = mt_jet_1[0]
+            if var=='jpt_match_1': variable = jpt_match_1[0]
             if var=='pt_1': variable = pt_1[0]
+            if var=='jeta_match_1': variable = jeta_match_1[0]
             if var=='eta_1': variable = eta_1[0]
             if var=='met': variable = met[0]
+            if var=='jpt_ratio_1': variable = jpt_ratio_1[0]
             if var=='m_1': variable = m_1[0]
 
             # signal region

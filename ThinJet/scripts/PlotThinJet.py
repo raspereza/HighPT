@@ -1,9 +1,9 @@
 #! /usr/bin/env python
-# Author: Alexei Raspereza (December 2022)
-# High pT this ID efficiency measurements 
+# Author: Alexei Raspereza (December 2023)
+# Thin-jet ID efficiency measurements 
 # Plotting macro: signal region (W*->tau+v) 
 import ROOT
-import TauFW.Plotter.HighPT.utilsThinJet as utils
+import HighPT.ThinJet.utilsThinJet as utils
 from array import array
 import math
 import HighPT.ThinJet.stylesHighPT as styles
@@ -127,7 +127,6 @@ def Plot(hists,wp,era,dm,var,text,postFit):
     canvas.SetSelected(canvas)
     canvas.Update()
     print
-    print('Creating control plot')
     if postFit:
         canvas.Print(utils.figuresFolderWTauNu+"/wtaunu_"+wp+"_"+dm+"_"+era+"_postFit.png")
     else:
@@ -145,12 +144,39 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('-e','--era', dest='era', default='UL2017', help="""Era : UL2017, UL2018""")
     parser.add_argument('-wp','--WP', dest='wp', default='VLoose', help=""" tau ID WP : Loose, Medium, Tight, VTight, VVTight""")
-    parser.add_argument('-var','--variable', dest='variable', default='mt_1', help=""" Variable to plot""")
-    parser.add_argument('-dm','--DM', dest='dm', default='1prong', help=""" Decay mode : 1prong, 2prong, 3prong """)
-    
-    parser.add_argument('-post','--PostFit',dest='postfit',default=False, help=""" Postfit (true), Prefit (false) """)
+    parser.add_argument('-prong','--prong', dest='dm', default='1prong', help=""" Decay mode : 1prong, 2prong, 3prong """)
+    parser.add_argument('-type','--Type',dest='distr',default='postfit', help=""" Postfit (postfit), Prefit (prefit) """)
 
     args = parser.parse_args()
+
+    Eras   = ['UL2017','UL2018'] # add UL2016 when available
+    Prongs = ['1prong', '2prong', '3prong']
+    WorkingPoints = ['VVLoose','VLoose','Loose']
+    Types = ['Postfit','postfit','Prefit','prefit']
+
+    variable='mt_1'
+
+    if args.distr not in Types:
+        print('unspecified type of distribution',args.distr)
+        print('available options',Types)
+
+    if args.wp not in WorkingPoints:
+        print('unspecified WP',args.wp)
+        print('available options',WorkingPoints)
+        exit(1)
+
+    if args.era not in Eras:
+        print('unspecified era',args.era)
+        print('available options',Eras)
+        exit(1)
+
+    if args.dm not in Prongs:
+        print('unspecified prong',args.dm)
+        print('available options',Prongs)
+        exit(1)
+
+    postfit = args.distr=='postfit' or args.distr=='Postfit'
+
     basedir = utils.datacardsFolder
     fullpathFit = basedir+"/tauID_"+args.wp+"_"+args.dm+"_"+args.era+"_fit.root"
     fileFit = ROOT.TFile(fullpathFit,"read")
@@ -158,7 +184,7 @@ if __name__ == "__main__":
     fileCards = ROOT.TFile(fullpathCards,"read")
 
     folder='shapes_prefit'
-    if args.postfit:
+    if postfit:
         folder='shapes_fit_s'
 
     hists = {}
@@ -196,9 +222,12 @@ if __name__ == "__main__":
 
     hists['data'] = h_data
     hists['total'] = h_tot
+    print
+    print('Measurement of id SF ---->')
+    print('Era = %s  %s  WP = %sVsJet'%(args.era,args.dm,args.wp))
     text = 'id SF = %4.2f #pm %4.2f '%(tauId_central,tauId_error)
     
     print('id SF = %4.2f +/- %4.2f '%(tauId_central,tauId_error))
 
-    Plot(hists,args.wp,args.era,args.dm,args.variable,text,args.postfit)
+    Plot(hists,args.wp,args.era,args.dm,variable,text,postfit)
     

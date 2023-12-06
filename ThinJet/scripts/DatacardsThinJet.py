@@ -405,21 +405,55 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument('-e','--era', dest='era', default='UL2017', help="""Era : UL2016_preVFP, UL2016_postVFP, UL2017, UL2018""")
-    parser.add_argument('-wp','--WP', dest='wp', default='VVLoose', help=""" tau ID WP : VVLoose, VLoose, Loose, Medium, Tight, VTight, VVTight""")
-    parser.add_argument('-dm','--DM', dest='dm', default='1prong', help=""" Decay mode : 1prong, 2prong, 3prong """)
-    
+    parser.add_argument('-wp','--WP', dest='wp', default='VVLoose', help=""" tau ID WP : VVLoose, VLoose, Loose """)
+    parser.add_argument('-prong','--prong', dest='dm', default='1prong', help=""" Decay mode : 1prong, 2prong, 3prong """)
     parser.add_argument('-var','--variable',dest='variable',default='mt_1',help=""" Variable to plot""")
+
+    args = parser.parse_args() 
+
+    Eras   = ['UL2017','UL2018'] # add UL2016 when available
+    Prongs = ['1prong', '2prong', '3prong']
+    Variables = ['mt_1','mt_jet_1','pt_1','jpt_match_1','eta_1','jeta_match_1','met','jpt_ratio_1']
+    WorkingPoints = ['VVLoose','VLoose','Loose']
+
+    if args.variable not in Variables: 
+        print('unspecified variable',args.variable)
+        print('available options',Variables)
+        exit(1)
+
+    if args.wp not in WorkingPoints:
+        print('unspecified WP',args.wp)
+        print('available options',WorkingPoints)
+        exit(1)
+
+    if args.era not in Eras:
+        print('unspecified era',args.era)
+        print('available options',Eras)
+        exit(1)
+
+    if args.dm not in Prongs:
+        print('unspecified prong',args.dm)
+        print('available options',Prongs)
+        exit(1)
+
+
 
     wpVsMu = utils.wpVsMu
     wpVsE  = utils.wpVsE
-    args = parser.parse_args() 
     xbins_mt = [300,400,500,600,800,1200]
-    xbins_pt = [100,150,200,250,300,400,500]
+    xbins_pt = [100,150,200,250,300,400,600]
+    xbins_met = [150,200,300,400,500,600]
+    xbins_pt_ratio = [0.0, 0.2, 0.4, 0.5 ,0.6, 0.7, 0.8, 0.9, 1.0, 1.2]
     xbins_eta = [-2.4, -1.8, -1.2, -0.6, 0.0, 0.6, 1.2, 1.8, 2.4]
-    xbins = xbins_mt
 
+    xbins = xbins_mt
+    if args.variable=='jpt_ratio_1': xbins_pt_ratio
+    if args.variable=='mt_jet_1': xbins = xbins_mt
     if args.variable=='pt_1': xbins = xbins_pt
     if args.variable=='eta_1': xbins =  xbins_eta
+    if args.variable=='jpt_match_1': xbins = xbins_pt
+    if args.variable=='jeta_match_1': xbins = xbins_eta
+    if args.variable=='met': xbins = xbins_met
 
     basefolder = utils.picoFolderTauNu
     var = args.variable    
@@ -539,11 +573,13 @@ if __name__ == "__main__":
     print('Running on background samples >>>')
     hists_bkg_fake    = utils.RunSamplesTauNu(bkgSamples,var,xbins,"_fake","bkg")
     hists_bkg_notFake = utils.RunSamplesTauNu(bkgSamples,var,xbins,"_notFake","bkg")
+    sig_wtaunu        = hists_sig_shape["wtaunu_tau"]
 
     print
-    print("Check composition of the background")
-    print('l->tau fakes     = %7.1f'%(hist_bkg_lfakes.GetSumOfWeights()))
-    print('tau bkg          = %7.1f'%(hist_bkg_tau.GetSumOfWeights()))
+    print("Check composition of simulated events:")
+    print('l->tau fakes          = %7.1f'%(hist_bkg_lfakes.GetSumOfWeights()))
+    print('genuine taus (not W*) = %7.1f'%(hist_bkg_tau.GetSumOfWeights()))
+    print('W*->tau+v             = %7.1f'%(sig_wtaunu.GetSumOfWeights()))
     #    print('j->tau fakes     = %7.1f : %7.1f'%(hist_bkg_jfakes.GetSumOfWeights(),hists_bkg_fake['bkg_fake'].GetSumOfWeights()))
     #    print('not j->tau fakes = %7.1f : %7.1f'%(hist_bkg_notfakes.GetSumOfWeights(),hists_bkg_notFake['bkg_notFake'].GetSumOfWeights()))
     print
@@ -575,6 +611,9 @@ if __name__ == "__main__":
 
     # making control plot
     PlotWToTauNu(hist_data,hist_fake,hist_bkg_tau,hist_bkg_lfakes,hist_sig,args.wp,args.era,var,args.dm)
+
+    if args.variable!='mt_1':
+        exit(1)
 
     # creating shape templates for FF systematics
     hists_fake_sys = {}
@@ -622,11 +661,6 @@ if __name__ == "__main__":
         hists_fake_sys[histName].Write(histName)    
     fileOutput.Close()
 
-    uncs_fake = []
-    for sampleLabel in ["ewk","qcd"]:
-        for statUnc in ["_unc1","_unc2"]:
-            unc = sampleLabel+statUnc
-            uncs_fake.append(unc)
-
+    uncs_fake = ["ewk_unc1","ewk_unc2"]
     CreateCardsWToTauNu(outputFileName,hist_data,hist_fake,hist_bkg_tau,hist_bkg_lfakes,hist_sig,uncs_fake,uncert_names_full)
                 
