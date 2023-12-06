@@ -219,7 +219,7 @@ Datacards and RooT files with template shapes are only created for variable `mt_
 They are saved in files:
 ```
 output/datacards/taunu_$WP_$prong_$ERA.txt
-output/datacards/taunu_$WP_$prong_$ERA.txt
+output/datacards/taunu_$WP_$prong_$ERA.root
 ```  
 
 ## Fits with combine tool
@@ -231,7 +231,7 @@ Make sure that necessary datacards and RooT files for specified $era, $WP and $p
 ```
 output/datacards
 ```
-The script calls bash macro  [`HighPT/ThinJet/scripts/RunCombineThinJet.bash`](https://github.com/raspereza/HighPT/blob/main/ThinJet/scripts/RunCombineThinJet.bash), which combines datacards `` and runs the fit with the combine utility. The fit results are saved in the RooT file:
+The script calls bash macro  [`HighPT/ThinJet/scripts/RunCombineThinJet.bash`](https://github.com/raspereza/HighPT/blob/main/ThinJet/scripts/RunCombineThinJet.bash), which combines datacards `munu_$ERA.txt` and `taunu_$WP_$prong_$ERA.txt` and runs the fit with the combine utility. The fit results are saved in the RooT file:
 ```
 output/datacards/tauID_$WP_$prong_$ERA_fit.root
 ```
@@ -242,11 +242,11 @@ Plotting of prefit and posfit distributions of `mt_1` is implemented in the scri
 ```
 ./scripts/PlotThinJet.py --era $ERA --prong $prong --WP $WP --Type $type
 ```
-where $type should be either `postfit` or `prefit`. The script take as an input RooT file with fit results `tauID_$WP_$prong_$ERA_fit.root` and outputs plot of `mt_1` distribution in file 
+where $type should be either `postfit` or `prefit`. The script take as an input RooT file with fit results `tauID_$WP_$prong_$ERA_fit.root` and outputs plot of `mt_1` distribution in file: 
 ```
 output/figures/wtaunu_VVLoose_1prong_UL2018_postFit[preFit].png
 ```
-The measured tau ID scale factor with uncertainty is reported as an output of the script, for example
+The measured tau ID scale factor with uncertainty is reported as an output of the script, for example:
 
 ```
 Measurement of id SF ---->
