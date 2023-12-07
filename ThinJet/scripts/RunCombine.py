@@ -19,7 +19,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    Eras   = ['UL2017','UL2018'] # add UL2016 when available
     Prongs = ['1prong', '2prong', '3prong']
     WorkingPoints = ['VVLoose','VLoose','Loose']
 
@@ -28,7 +27,7 @@ if __name__ == "__main__":
         print('available options',WorkingPoints)
         exit(1)
 
-    if args.era not in Eras:
+    if args.era not in ['UL2016_preVFP','UL2016_postVFP','UL2016','UL2017','UL2018']:
         print('unspecified era',args.era)
         print('available options',Eras)
         exit(1)

@@ -149,7 +149,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    Eras   = ['UL2017','UL2018'] # add UL2016 when available
+    Eras   = ['UL2016_preVFP','UL2016_postVFP','UL2016','UL2017','UL2018'] # add UL2016 when available
     Prongs = ['1prong', '2prong', '3prong']
     WorkingPoints = ['VVLoose','VLoose','Loose']
     Types = ['Postfit','postfit','Prefit','prefit']
