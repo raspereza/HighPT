@@ -564,7 +564,7 @@ class sampleHighPt:
     def __init__(self,basefolder,era,channel,samplename,isdata,**kwargs):
         filename = basefolder + "/" + era + "/" + channel + "/" + samplename + ".root"
         self.additionalCut = kwargs.get('additionalCut', '')
-        self.sampleName = samplename
+        self.sampleName = samplename + "_" + era
         self.sampleFile = ROOT.TFile(filename,"READ")
         #self.sampleTree = self.sampleFile.Get("tree")
         self.norm = 1.0
