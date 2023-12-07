@@ -28,9 +28,9 @@ genNotFakeCut = 'genmatch_2!=0'
 # Definition of samples #
 #########################
 
-mcSampleNames = ['DYJetsToLL_M-50','TTTo2L2Nu','TTToSemiLeptonic','TTToHadronic','WJetsToLNu','WJetsToLNu_HT-100To200','WJetsToLNu_HT-200To400','WJetsToLNu_HT-400To600','WJetsToLNu_HT-600To800','WJetsToLNu_HT-800To1200','WJetsToLNu_HT-1200To2500','ST_t-channel_antitop_4f_InclusiveDecays','ST_t-channel_top_4f_InclusiveDecays','ST_tW_antitop_5f_NoFullyHadronicDecays','ST_tW_top_5f_NoFullyHadronicDecays','WW','WZ','ZZ']
+mcSampleNames = ['DYJetsToLL_M-50','TTTo2L2Nu','TTToSemiLeptonic','TTToHadronic','WJetsToLNu_HT-100To200','WJetsToLNu_HT-200To400','WJetsToLNu_HT-400To600','WJetsToLNu_HT-600To800','WJetsToLNu_HT-800To1200','WJetsToLNu_HT-1200To2500','ST_t-channel_antitop_4f_InclusiveDecays','ST_t-channel_top_4f_InclusiveDecays','ST_tW_antitop_5f_NoFullyHadronicDecays','ST_tW_top_5f_NoFullyHadronicDecays','WW','WZ','ZZ']
 
-sigSampleNames = ['WJetsToLNu','WJetsToLNu_HT-100To200','WJetsToLNu_HT-200To400','WJetsToLNu_HT-400To600','WJetsToLNu_HT-600To800','WJetsToLNu_HT-800To1200','WJetsToLNu_HT-1200To2500']
+sigSampleNames = ['WJetsToLNu_HT-100To200','WJetsToLNu_HT-200To400','WJetsToLNu_HT-400To600','WJetsToLNu_HT-600To800','WJetsToLNu_HT-800To1200','WJetsToLNu_HT-1200To2500']
 
 # Fitting function (tau pt, ptratio bins)
 def FitPt(x,par):
@@ -259,9 +259,8 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='UL2018', help="""Era : UL2016_preVFP, UL2016_postVFP, UL2017, UL2018""")
-    parser.add_argument('-wp','--WP', dest='wp',  default='VVLoose', help="""WP : VVLoose, VLoose, Loose, Medium, Tight, 
-VTight, VVTight """)
+    parser.add_argument('-e','--era', dest='era', default='UL2018', help="""Era : UL2016_preVFP, UL2016_postVFP, UL2016, UL2017, UL2018""")
+    parser.add_argument('-wp','--WP', dest='wp',  default='VVLoose', help="""WP : VVLoose, VLoose, Loose """)
  
     args = parser.parse_args() 
 
@@ -269,14 +268,12 @@ VTight, VVTight """)
     if args.wp not in ['VVLoose','VLoose','Loose']:
         print('unknown WP',args.wp)
         exit()
-# add when available
-#    if args.era not in ['UL2016_preVFP','UL2016_postVFP','UL2017','UL2018']:
-#        print('unknown era',args.era)
-#        exit()
-
-    if args.era not in ['UL2017','UL2018']:
+    # add when available
+    if args.era not in ['UL2016_preVFP','UL2016_postVFP','UL2016','UL2017','UL2018']:
         print('unknown era',args.era)
         exit()
+
+    Eras = ['UL2016_preVFP','UL2016_postVFP']
 
     basefolder = utils.picoFolderFF
 
@@ -286,39 +283,58 @@ VTight, VVTight """)
 
     print('initializing SingleMuon samples >>>')
     singlemuSamples = {} # data samples disctionary
-    singlemuNames = utils.singlemu[args.era]
-    for singlemuName in singlemuNames:
-        singlemuSamples[singlemuName] = utils.sampleHighPt(basefolder,args.era,
-                                                           "wjets",singlemuName,True)
+    if args.era=='UL2016':
+        for Era in Eras:
+            singlemuNames = utils.singlemu[Era]
+            for singlemuName in singlemuNames:
+                singlemuSamples[singlemuName+'_'+Era] = utils.sampleHighPt(
+                    basefolder,Era,"wjets",singlemuName,True)
+    else:
+        singlemuNames = utils.singlemu[args.era]
+        for singlemuName in singlemuNames:
+            singlemuSamples[singlemuName] = utils.sampleHighPt(basefolder,args.era,
+                                                               "wjets",singlemuName,True)
 
     print
     print('initializing JetHT samples >>>')
     jethtSamples = {} # data samples disctionary
-    jethtNames = utils.jetht[args.era]
-    for jethtName in jethtNames:
-        jethtSamples[jethtName] = utils.sampleHighPt(basefolder,args.era,
+    if args.era=='UL2016':
+        for Era in Eras:
+            jethtNames = utils.jetht[Era]
+            for jethtName in jethtNames:
+                jethtSamples[jethtName+'_'+Era] = utils.sampleHighPt(
+                    basefolder,Era,"dijets",jethtName,True)
+    else:
+        jethtNames = utils.jetht[args.era]
+        for jethtName in jethtNames:
+            jethtSamples[jethtName] = utils.sampleHighPt(basefolder,args.era,
                                                      "dijets",jethtName,True)
 
     print
     print('initializing MC samples >>>')
     mcSamples = {} # mc samples dictionary
-    for mcSampleName in mcSampleNames:
-        if mcSampleName=="WJetsToLNu":
-            mcSamples[mcSampleName] = utils.sampleHighPt(basefolder,args.era,"wjets",mcSampleName,
-                                                         False,additionalCut='HT<100')
-        else:
-            mcSamples[mcSampleName] = utils.sampleHighPt(basefolder,args.era,"wjets",mcSampleName,
-                                                         False)
+    if args.era=="UL2016":
+        for Era in Eras:
+            for mcSampleName in mcSampleNames:
+                mcSamples[mcSampleName+'_'+Era] = utils.sampleHighPt(
+                    basefolder,Era,"wjets",mcSampleName,False)
+    else:
+        for mcSampleName in mcSampleNames:
+            mcSamples[mcSampleName] = utils.sampleHighPt(
+                basefolder,args.era,"wjets",mcSampleName,False)
+
     print
     print('initializing W+Jets samples >>>') 
     sigSamples = {} # wjets samples dictionary
-    for sigSampleName in sigSampleNames:
-        if sigSampleName=="WJetsToLNu":
-            sigSamples[sigSampleName] = utils.sampleHighPt(basefolder,args.era,"wjets",sigSampleName,
-                                                           False,additionalCut='HT<100')
-        else:
-            sigSamples[sigSampleName] = utils.sampleHighPt(basefolder,args.era,"wjets",sigSampleName,
-                                                           False)
+    if args.era=="UL2016":
+        for Era in Eras:
+            for sigSampleName in sigSampleNames:
+                sigSamples[sigSampleName+'_'+Era] = utils.sampleHighPt(
+                    basefolder,Era,"wjets",sigSampleName,False)
+    else:
+        for sigSampleName in sigSampleNames:
+            sigSamples[sigSampleName] = utils.sampleHighPt(
+                basefolder,args.era,"wjets",sigSampleName,False)
 
     fullpathout = utils.fakeFactorFolder+'/ff_'+args.wp+"VSjet_"+args.era+".root"
     outputfile = TFile(fullpathout,'recreate')

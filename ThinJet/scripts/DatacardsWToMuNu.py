@@ -177,16 +177,17 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='UL2017', help="""Era : UL2016_preVFP, UL2016_postVFP, UL2017, UL2018""")
+    parser.add_argument('-e','--era', dest='era', default='UL2017', help="""Era : UL2016_preVFP, UL2016_postVFP, UL2016, UL2017, UL2018""")
     parser.add_argument('-nb','--nbins', dest='nbins',default=8,help=""" Number of bins""")
     parser.add_argument('-xmin','--xmin',dest='xmin' ,default=200,help=""" xmin """)
     parser.add_argument('-xmax','--xmax',dest='xmax' ,default=1000, help=""" xmax """)
     parser.add_argument('-var','--variable',dest='variable',default='mt_1',help=""" Variable to plot""")
 
-
     args = parser.parse_args() 
 
-    if args.era not in ['UL2016_preVFP','UL2016_postVFP','UL2017','UL2018']:
+    Eras = ['UL2016_preVFP','UL2016_postVFP']
+
+    if args.era not in ['UL2016_preVFP','UL2016_postVFP','UL2016','UL2017','UL2018']:
         print('unknown WP',args.era)
         exit()
 
@@ -199,24 +200,43 @@ if __name__ == "__main__":
     print
     print('initializing SingleMuon samples >>>')
     singlemuSamples = {} # data samples dictionary
-    singlemuNames = utils.singlemu[args.era]
-    for singlemuName in singlemuNames:
-        singlemuSamples[singlemuName] = utils.sampleHighPt(basefolder,args.era,
-                                                           "munu",singlemuName,True)
+    if args.era=='UL2016':
+        for Era in Eras:
+            singlemuNames = utils.singlemu[Era]
+            for singlemuName in singlemuNames:
+                singlemuSamples[singlemuName+'_'+Era] = utils.sampleHighPt(
+                    basefolder,Era,"munu",singlemuName,True)
+    else:
+        singlemuNames = utils.singlemu[args.era]
+        for singlemuName in singlemuNames:
+            singlemuSamples[singlemuName] = utils.sampleHighPt(basefolder,args.era,
+                                                               "munu",singlemuName,True)
 
     print
     print('initializing background samples >>>')
     bkgSamples = {} # MC bkg samples dictionary 
-    for bkgSampleName in bkgSampleNames:
-        bkgSamples[bkgSampleName] = utils.sampleHighPt(basefolder,args.era,
-                                                       "munu",bkgSampleName,False)
+    if args.era=='UL2016':
+        for Era in Eras:
+            for bkgSampleName in bkgSampleNames:
+                bkgSamples[bkgSampleName+'_'+Era] = utils.sampleHighPt(
+                    basefolder,Era,"munu",bkgSampleName,False)
+    else:
+        for bkgSampleName in bkgSampleNames:
+            bkgSamples[bkgSampleName] = utils.sampleHighPt(basefolder,args.era,
+                                                           "munu",bkgSampleName,False)
 
     print
     print('initializing signal samples >>>')
     sigSamples = {} # MC signal samples dictionary 
-    for sigSampleName in sigSampleNames:
-        sigSamples[sigSampleName] = utils.sampleHighPt(basefolder,args.era,
-                                                       "munu",sigSampleName,False)
+    if args.era=='UL2016':
+        for Era in Eras:
+            for sigSampleName in sigSampleNames:
+                sigSamples[sigSampleName+'_'+Era] = utils.sampleHighPt(
+                    basefolder,Era,"munu",sigSampleName,False)
+    else:
+        for sigSampleName in sigSampleNames:
+            sigSamples[sigSampleName] = utils.sampleHighPt(basefolder,args.era,
+                                                           "munu",sigSampleName,False)
 
 
     jmetcut = 'met>'+metCut+'&&metdphi_1>'+dphiCut+'&&mt_1>'+mtCut # additional cuts (MET related variables)

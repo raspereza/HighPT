@@ -411,7 +411,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args() 
 
-    Eras   = ['UL2017','UL2018'] # add UL2016 when available
+    Eras = ['UL2016_preVFP','UL2016_postVFP'] # UL2016 = UL2016_preVFP + UL2016_postVFP 
+
     Prongs = ['1prong', '2prong', '3prong']
     Variables = ['mt_1','mt_jet_1','pt_1','jpt_match_1','eta_1','jeta_match_1','met','jpt_ratio_1']
     WorkingPoints = ['VVLoose','VLoose','Loose']
@@ -426,7 +427,7 @@ if __name__ == "__main__":
         print('available options',WorkingPoints)
         exit(1)
 
-    if args.era not in Eras:
+    if args.era not in ['UL2016_preVFP','UL2016_postVFP','UL2016','UL2017','UL2018']:
         print('unspecified era',args.era)
         print('available options',Eras)
         exit(1)
@@ -485,35 +486,65 @@ if __name__ == "__main__":
     print
     print('initializing data samples >>>')
     metSamples = {} # data samples dictionary
-    metNames = utils.met[args.era]
-    for metName in metNames:
-        metSamples[metName] = utils.sampleHighPt(basefolder,args.era,
-                                                      "taunu",metName,True)
-        metSamples[metName].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+    if args.era=='UL2016':
+        for Era in Eras:
+            metNames = utils.met[Era]
+            for metName in metNames:
+                metSamples[metName+'_'+Era] = utils.sampleHighPt(
+                    basefolder,Era,"taunu",metName,True)
+                metSamples[metName+'_'+Era].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+    else:
+        metNames = utils.met[args.era]
+        for metName in metNames:
+            metSamples[metName] = utils.sampleHighPt(basefolder,args.era,
+                                                     "taunu",metName,True)
+            metSamples[metName].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
 
     print
     print('initializing background samples >>>')
     bkgSamples = {} # MC bkg samples dictionary 
-    for bkgSampleName in bkgSampleNames:
-        bkgSamples[bkgSampleName] = utils.sampleHighPt(basefolder,args.era,
-                                                       "taunu",bkgSampleName,False)
-        bkgSamples[bkgSampleName].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+    if args.era=='UL2016':
+        for Era in Eras:
+            for bkgSampleName in bkgSampleNames:
+                bkgSamples[bkgSampleName+'_'+Era] = utils.sampleHighPt(
+                    basefolder,Era,"taunu",bkgSampleName,False)
+                bkgSamples[bkgSampleName+'_'+Era].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+    else:
+        for bkgSampleName in bkgSampleNames:
+            bkgSamples[bkgSampleName] = utils.sampleHighPt(basefolder,args.era,
+                                                           "taunu",bkgSampleName,False)
+            bkgSamples[bkgSampleName].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
 
     print
     print('initializing background samples (for taus) >>>')
     taubkgSamples = {} # MC bkg samples dictionary 
-    for bkgSampleName in taubkgSampleNames:
-        taubkgSamples[bkgSampleName] = utils.sampleHighPt(basefolder,args.era,
-                                                          "taunu",bkgSampleName,False)
-        taubkgSamples[bkgSampleName].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+    if args.era=='UL2016':
+        for Era in Eras:
+            for bkgSampleName in taubkgSampleNames:
+                taubkgSamples[bkgSampleName+'_'+Era] = utils.sampleHighPt(
+                    basefolder,Era,"taunu",bkgSampleName,False)
+                taubkgSamples[bkgSampleName+'_'+Era].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+    else:
+        for bkgSampleName in taubkgSampleNames:
+            taubkgSamples[bkgSampleName] = utils.sampleHighPt(basefolder,args.era,
+                                                              "taunu",bkgSampleName,False)
+            taubkgSamples[bkgSampleName].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
 
     print
     print('initializing signal samples >>>')
     sigSamples = {} # MC signal samples dictionary 
-    for sigSampleName in sigSampleNames:
-        sigSamples[sigSampleName] = utils.sampleHighPt(basefolder,args.era,
-                                                       "taunu",sigSampleName,False)
-        sigSamples[sigSampleName].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+    if args.era=='UL2016':
+        for Era in Eras:
+            for sigSampleName in sigSampleNames:
+                sigSamples[sigSampleName+'_'+Era] = utils.sampleHighPt(
+                    basefolder,Era,"taunu",sigSampleName,False)
+                sigSamples[sigSampleName+'_'+Era].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+
+    else:
+        for sigSampleName in sigSampleNames:
+            sigSamples[sigSampleName] = utils.sampleHighPt(basefolder,args.era,
+                                                           "taunu",sigSampleName,False)
+            sigSamples[sigSampleName].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
 
 
     # running on signal samples (central template and uncertainties)
