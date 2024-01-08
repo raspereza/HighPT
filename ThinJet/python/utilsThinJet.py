@@ -16,9 +16,9 @@ BaseFolder=os.getenv('CMSSW_BASE')+'/src/HighPT/ThinJet/output'
 #########################
 # folder for picotuples #
 #########################
-picoFolderFF='/eos/user/r/rasp/output/HighPT_thinjet'
-picoFolderTauNu='/eos/user/r/rasp/output/HighPT_thinjet'
-picoFolderMuNu='/eos/user/r/rasp/output/HighPT_deepTauV2p5'
+picoFolderFF='/eos/cms/store/group/phys_tau/rasp/HighPT_thinjet'
+picoFolderTauNu='/eos/cms/store/group/phys_tau/rasp/HighPT_thinjet'
+picoFolderMuNu='/eos/cms/store/group/phys_tau/rasp/HighPT_thinjet'
 
 #######################
 # folders for figures #
