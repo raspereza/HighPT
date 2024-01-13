@@ -12,6 +12,8 @@ eraLumiLabel = {
     "UL2017" : "2017, 41.5 fb^{-1} (13TeV)",
     "UL2018" : "2018, 59.8 fb^{-1} (13TeV)",
     "Run2"   : "Run 2, 138 fb^{-1} (13TeV)",
+    "2022_preEE": "2022 preEE, 8.1 fb^{-1} (13.6TeV)",
+    "2022_postEE": "2022 postEE, 27.0 fb^{-1} (13.6TeV)",
     "2022"   : "2022, 35.1 fb^{-1} (13.6 TeV)"
 }
 
@@ -315,11 +317,10 @@ def CMS_label(pad,**kwargs):
         latex.SetTextFont(cmsTextFont)
         latex.SetTextAlign(11) 
         latex.SetTextSize(cmsTextSize*t)    
-        latex.DrawLatex(l,1-t+lumiTextOffset*t,cmsText)
+        latex.DrawLatex(l-0.1,1-t+lumiTextOffset*t,cmsText)
   
     pad.cd()
 
-    posX_=0.
     if iPosX%10<=1:
         posX_ =   l + relPosX*(1-l-r)
     if iPosX%10==2:
@@ -333,12 +334,12 @@ def CMS_label(pad,**kwargs):
         latex.SetTextFont(cmsTextFont)
         latex.SetTextSize(cmsTextSize*t)
         latex.SetTextAlign(align_)
-        latex.DrawLatex(posX_, posY_, cmsText)
+        latex.DrawLatex(posX_-0.07, posY_, cmsText)
         if  writeExtraText:
             latex.SetTextFont(extraTextFont)
             latex.SetTextAlign(align_)
             latex.SetTextSize(extraTextSize*t)
-            latex.DrawLatex(posX_, posY_- relExtraDY*cmsTextSize*t + 0.01, extraText)
+            latex.DrawLatex(posX_-0.07, posY_- relExtraDY*cmsTextSize*t + 0.01, extraText)
     elif writeExtraText:
         if iPosX==0: 
             posX_ =   l +  relPosX*(1-l-r)

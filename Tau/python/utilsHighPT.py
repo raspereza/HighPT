@@ -2,6 +2,7 @@ import ROOT
 import math
 from array import array
 import numpy as np
+import os
 
 #############################
 ##### General settings ######
@@ -31,9 +32,14 @@ figuresFolderWTauNu = figuresFolder+'/WTauNu'
 figuresFolderPT = figuresFolder+'/PT'
 
 ########################
-# folder for datacards #
+# folder for FF        #
 ########################
 fakeFactorsFolder = baseFolder+'/FF'
+
+#########################
+# folder for MetTrigger #
+#########################
+metTriggerFolder = baseFolder+'/MetTrigger'
 
 ########################
 # folder for datacards #
@@ -44,36 +50,7 @@ datacardsFolder = baseFolder+'/datacards'
 # Cross sections  #
 ###################
 
-sampleXSec_2016_postVFP = { 
-    "DYJetsToLL_M-50" : 6077.22,
-    "TTTo2L2Nu" : 88.29,
-    "TTToSemiLeptonic" : 365.35,
-    "TTToHadronic" : 377.96,  
-    "WJetsToLNu_HT-100To200" : 1395.0*1.166,
-    "WJetsToLNu_HT-200To400" : 407.9*1.166,
-    "WJetsToLNu_HT-400To600" : 57.48*1.166,
-    "WJetsToLNu_HT-600To800" : 12.87*1.166,
-    "WJetsToLNu_HT-800To1200" : 5.366*1.166,
-    "WJetsToLNu_HT-1200To2500" : 1.074*1.166,
-    "WJetsToLNu" : 61526.7 ,  
-    "ST_tW_antitop_5f_NoFullyHadronicDecays" : 19.47,
-    "ST_tW_top_5f_NoFullyHadronicDecays" : 19.47,
-    "ST_t-channel_antitop_4f_InclusiveDecays" : 80.95,
-    "ST_t-channel_top_4f_InclusiveDecays" : 136.02,
-    "WW" : 118.7,
-    "WZ" : 27.68,
-    "ZZ" : 12.19,
-    "ZJetsToNuNu_HT-100To200"   : 304.5,
-    "ZJetsToNuNu_HT-200To400"   : 91.82,
-    "ZJetsToNuNu_HT-400To600"   : 13.11,
-    "ZJetsToNuNu_HT-600To800"   : 3.260,
-    "ZJetsToNuNu_HT-800To1200"  : 1.499,
-    "ZJetsToNuNu_HT-1200To2500" : 0.3430,
-    "WToMuNu_M-200" : 5.702,
-    "WToTauNu_M-200" : 6.020
-}
-
-sampleXSec_2016_preVFP = { 
+sampleXSec_2016 = { 
     "DYJetsToLL_M-50" : 6077.22,
     "TTTo2L2Nu" : 88.29,
     "TTToSemiLeptonic" : 365.35,
@@ -180,6 +157,10 @@ sampleXSec_2022 = {
     "WJetsToLNu-4Jets_4J" : 415.4*kfactor_wj,
     "WtoLNu-4Jets_HT-100to400" : 1640.0*kfactor_wj, # 2167.04 
     "WtoLNu-4Jets_HT-400to800" : 60.32*kfactor_wj, # 84.20
+    "Zto2Nu-4Jets_HT-100to200" : 304.5, # needs to be updated
+    "Zto2Nu-4Jets_HT-200to400" : 91.82, # needs to be updated
+    "Zto2Nu-4Jets_HT-400to800" : 16.37, # needs to be updated
+    "Zto2Nu-4Jets_HT-800to1500" : 1.84, # needs to be updated
     "TTTo2L2Nu" : 80.9*kfactor_ttbar, 
     "TTto4Q" : 346.4*kfactor_ttbar, 
     "TTtoLNu2Q" : 334.8*kfactor_ttbar,
@@ -193,7 +174,7 @@ sampleXSec_2022 = {
     "WZ" : 29.1*kfactor_wz,
     "ZZ" : 12.75*kfactor_zz,
     "WtoMuNu" : 7.206,
-    "WtoNuTau" : 7.469,
+    "WtoNuTau" : 7.869,
 }
 
 eraRun = {
@@ -211,15 +192,18 @@ periods = {
     "UL2016" : ["UL2016_preVFP","UL2016_postVFP"],
     "UL2017" : ["UL2017"],
     "UL2018" : ["UL2018"],
-    "2022"   : ["2022","2022_postEE"]    
+    "2022"   : ["2022","2022_postEE"],
+    "2022_preEE"   : ["2022"],
+    "2022_postEE"  : ["2022_postEE"]
 }
 
 eraSamples = {
-    "UL2016_postVFP" : sampleXSec_2016_postVFP,
-    "UL2016_preVFP" : sampleXSec_2016_preVFP,
-    "UL2017" : sampleXSec_2017,    
+    "UL2016_postVFP" : sampleXSec_2016,
+    "UL2016_preVFP" : sampleXSec_2016,
+    "UL2017" : sampleXSec_2017,
     "UL2018" : sampleXSec_2018,
     "2022"   : sampleXSec_2022,
+    "2022_preEE"  : sampleXSec_2022,
     "2022_postEE" : sampleXSec_2022
 } 
 
@@ -250,8 +234,8 @@ jetht_2017 = ['JetHT_Run2017B','JetHT_Run2017C','JetHT_Run2017D','JetHT_Run2017E
 jetht_2016_preVFP = ['JetHT_Run2016B','JetHT_Run2016C','JetHT_Run2016D','JetHT_Run2016E','JetHT_Run2016F']
 jetht_2016_postVFP = ['JetHT_Run2016F','JetHT_Run2016G','JetHT_Run2016H']
 
-met_2022_postEE = ['JetMet_2022E','JetMet_2022F','JetMet_2022G']
-met_2022 = ['JetMet_2022C','JetMet2022D']
+met_2022_postEE = ['JetMet_Run2022E','JetMet_Run2022F','JetMet_Run2022G']
+met_2022 = ['JetMet_Run2022C','JetMet_Run2022D']
 met_2018 = ['MET_Run2018A','MET_Run2018B','MET_Run2018C','MET_Run2018D']
 met_2017 = ['MET_Run2017B','MET_Run2017C','MET_Run2017D','MET_Run2017E','MET_Run2017F']
 met_2016_preVFP = ['MET_Run2016B','MET_Run2016C','MET_Run2016D','MET_Run2016E','MET_Run2016F']
@@ -274,6 +258,7 @@ jetht = {
 }
 
 MCPartons0 = ['WJetsToLNu-4Jets']
+
 MCLowHT = [
     'WJetsToLNu',
     'WJetsToLNu-4Jets',
@@ -348,27 +333,35 @@ tauIntWPs = {
 #############################
 # Shape uncertainties (JME) #
 #############################
-unc_jme = ['JES','Unclustered']
+unc_jme = ['JES','JER','Unclustered']
 
 ###############################
 # Shape uncertainties (taues) #
 ###############################
-unc_taues = ['taues','taues_1pr','taues_1pr1pi0','taues_3pr','taues_3pr1pi0'] 
+unc_taues = ['taues_1pr','taues_1pr1pi0','taues_3pr','taues_3pr1pi0'] 
+
+###############################
+# Shape uncertainties (all)   #
+###############################
+uncs = ['JES','JER','Unclustered','taues_1pr','taues_1pr1pi0','taues_3pr','taues_3pr1pi0']
 
 ##################################
 ### Settings for FF measurements #
 ##################################
-xbinsPt2D = [100, 125, 150, 200, 2000] 
-xbinsPt =   [100, 125, 150, 175, 200, 2000]
-xbinsPt_2016 =   [100, 125, 200, 2000]
-ptUncThreshold = 200. # split pt region for stat. uncertainties (<200, >=200.)
 
-ptratio2DCuts = {
-    'ptratioLow'   : 'jpt_ratio_2<0.85',
-    'ptratioHigh'  : 'jpt_ratio_2>=0.85'
+xbinsPt = {
+    'pt_2': [100, 125, 150, 175, 200, 2000],
+    'jpt_match_2' : [100, 150, 200, 300, 2000]
 }
-ptratio2DThreshold = 0.85
 
+xbinsPtTrig = {
+    'pt_2' : [100, 200, 2000],
+    'jpt_match_2' : [100, 300, 2000]
+}
+ptUncThreshold = {
+    'pt_2' : 200.0, # split pt region for FF stat. uncertainties (<200, >=200.)
+    'jpt_match_2' : 300. # split jet pt region for FF stat. uncertainties (<200, >=200.)
+}
 ptratioCuts = {
     'ptratioLow'   : 'jpt_ratio_2<0.85',
     'ptratioHigh'  : 'jpt_ratio_2>=0.85'
@@ -389,25 +382,35 @@ decayProngCuts = {
 }
 
 xbinsMass = {
+    'incl'     : [0.0,0.2,0.4,0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8], 
+    '1prong'   : [0, 1.],
     '1prongPi0': [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8],
     '3prong'   : [0.9, 1.0, 1.1, 1.2, 1.3, 1.4],
     '3prongPi0': [1.0, 1.1, 1.2, 1.3, 1.4, 1.5]
 }
 
 # histogram labels (W*->tau+v selection)
-histLabels = ['','_SB','_mc_wjets','_data_wjets','_data_dijets']
-trigLabels = ['_trig','_nottrig']
-histSysLabels = ['_mc_wjets','_data_wjets','_data_dijets']
-ptratioLabels = ['_ptratioLow','_ptratioHigh']
-statUncLabels = ['_unc1','_unc2']
+regionLabels = ['SR','SB']
+sampleLabels = ['data_wjets','mc_wjets']
+trigLabels = ['trig','notrig']
+selLabels = ['all','fake','notFake','lepFake','tau']
 
 XTitle = {
     'mt_1'  : "m_{T} (GeV)",
-    'pt_1'  : "p_{T} (GeV)",
+    'pt_1'  : "tau p_{T} (GeV)",
+    'pt_2'  : "tau p_{T} (GeV)",
+    'jpt_match_1' : "jet p_{T} (GeV)",
+    'jpt_match_2' : "jet p_{T} (GeV)",
     'eta_1' : "#eta",
     'met'   : "E_{T}^{mis} (GeV)",
     'm_1'   : "tau mass (GeV)",
+    'm_2'   : "tau mass (GeV)",
 }
+
+
+def makeBaseName(var,wp,wpVsMu,wpVsE,era):
+    basename = '%s_%sVsJet_%sVsMu_%sVsE_%s'%(var,wp,wpVsMu,wpVsE,era)
+    return basename
 
 #######################################
 # Creating shape systematic templates #
@@ -427,73 +430,6 @@ def ComputeSystematics(h_central, h_sys, name):
 
     return h_up, h_down
 
-def extractBinLabels(pt,ptratio):
-    ratLabel = '_ptratioLow'
-    #    if ptratio>=ptratioThresholds[0] and ptratio<ptratioThresholds[1]: ratLabel = '_ptratioMedium'
-    #    if ptratio>=ptratioThresholds[1]: ratLabel = '_ptratioHigh'
-    if ptratio>=ptratioThreshold: ratLabel = '_ptratioHigh'
-    uncLabel = '_unc1'
-    if pt>ptUncThreshold: uncLabel = '_unc2'
-    return ratLabel, uncLabel
-
-# Run over set of samples and create histogram
-def RunSamples(samples,var,weight,cut,xbins,name):
-    print
-    print("Running",name,var,weight,cut)
-    nbins = len(xbins)-1
-    hist = ROOT.TH1D(name,"",nbins,array('d',list(xbins)))
-    for sampleName in samples:
-        sample = samples[sampleName]
-        histsample = sample.CreateHisto(var,weight,cut,xbins,name)
-        hist.Add(hist,histsample,1.,1.)
-    return hist
-
-# Run over set of samples and create histograms for W*->tau+v channel
-# for each sample loop over Tree entries is performed
-def RunSamplesTauNu(samples,var,unc,xbins,selection,name):
-    print
-    print("Running",name,var,unc,selection)
-    nbins = len(xbins)-1
-    hists = {} # discionary of histograms
-    for label in histLabels:
-        histname = name + selection + unc + label
-        hists[histname] = ROOT.TH1D(histname,"",nbins,array('d',list(xbins)))
-        for trigLabel in trigLabels:
-            histname = name + selection + unc + label + trigLabel
-            hists[histname] = ROOT.TH1D(histname,"",nbins,array('d',list(xbins)))
-    for label in histSysLabels:
-        for ptratioLabel in ptratioLabels:
-            for uncLabel in statUncLabels:
-                histname = name + selection + unc + label + ptratioLabel + uncLabel
-                hists[histname] = ROOT.TH1D(histname,"",nbins,array('d',list(xbins)))
-                for trigLabel in trigLabels:
-                    histname = name + selection + unc + label + ptratioLabel + uncLabel + trigLabel
-                    hists[histname] = ROOT.TH1D(histname,"",nbins,array('d',list(xbins)))
-
-    for sampleName in samples:        
-        sample = samples[sampleName]
-        histsample = sample.CreateHistosTauNu(var,unc,xbins,selection)
-        
-        for label in histLabels:
-            histname = name + selection + unc + label
-            histsamplename = sample.sampleName + selection + unc + label
-            hists[histname].Add(hists[histname],histsample[histsamplename],1.,1.)
-            for trigLabel in trigLabels:
-                histname = name + selection + unc + label + trigLabel
-                histsamplename = sample.sampleName + selection + unc + label + trigLabel
-                hists[histname].Add(hists[histname],histsample[histsamplename],1.,1.)
-        for label in histSysLabels:
-            for ptratioLabel in ptratioLabels:
-                for uncLabel in statUncLabels:
-                    histname = name + selection + unc + label + ptratioLabel + uncLabel
-                    histsamplename = sample.sampleName + selection + unc + label + ptratioLabel + uncLabel
-                    hists[histname].Add(hists[histname],histsample[histsamplename],1.,1.)
-                    for trigLabel in trigLabels:
-                        histname = name + selection + unc + label + ptratioLabel + uncLabel + trigLabel
-                        histsamplename = sample.sampleName + selection + unc + label + ptratioLabel + uncLabel + trigLabel
-                        hists[histname].Add(hists[histname],histsample[histsamplename],1.,1.)
-
-    return hists
 
 def createBins(nbins,xmin,xmax):
     binwidth = (xmax-xmin)/float(nbins)
@@ -580,297 +516,3 @@ def histoRatio(numHist,denHist,histName):
 
     return hist
 
-  
-class TauNuCuts:
-    def __init__(self,**kwargs):
-        self.metCut = kwargs.get('metCut',120.)
-        self.mtLowerCut = kwargs.get('mtLowerCut',200.)
-        self.mtUpperCut = kwargs.get('mtUpperCut',2000.)
-        self.etaCut = kwargs.get('etaCut',2.3)
-        self.ptLowerCut = kwargs.get('ptLowerCut',100.)
-        self.ptUpperCut = kwargs.get('ptUpperCut',2000.)
-        self.metdphiCut = kwargs.get('metdphiCut',2.8)
-        self.antiMu = kwargs.get('antiMu',4)
-        self.antiE  = kwargs.get('antiE',2)
-        print
-        print("Setting cuts for W*->tauv selection")
-        print("metCut",self.metCut)
-        print("mtLowerCut",self.mtLowerCut)
-        print("mtUpperCut",self.mtUpperCut)
-        print("etaCut",self.etaCut)
-        print("ptLowerCut",self.ptLowerCut)
-        print("ptUpperCut",self.ptUpperCut)
-        print("metdphiCut",self.metdphiCut)
-        print("antiMu",self.antiMu)
-        print("antiE",self.antiE)
-
-class FakeFactorHighPt:
-
-    def __init__(self,filename):
-        print
-        print('Loading fake factors from file',filename," >>>>>")
-        self.fileName = filename
-        self.fileFF = ROOT.TFile(self.fileName,"READ")
-        self.hists = {}
-        self.trigbins = ['','_trig','_nottrig']
-        self.labels = ['dijets','wjets']
-        #self.ptbins = ['ptratioLow','ptratioMedium','ptratioHigh']
-        self.ptbins = ['ptratioLow','ptratioHigh']
-        for ptbin in self.ptbins:
-            for trigbin in self.trigbins:
-                for label in self.labels:                
-                    name = 'data_' + label + "_" + ptbin + trigbin
-                    self.hists[name] = self.fileFF.Get(name)
-                    print(name,self.hists[name])
-                name = 'mc_wjets_' + ptbin + trigbin
-                self.hists[name] = self.fileFF.Get(name)
-                print(name,self.hists[name])
-
-    def getWeight(self,pttau,ptratio,label,triglabel):
-        ptlabel = 'ptratioLow'
-        if ptratio>=ptratioThreshold: ptlabel = 'ptratioHigh'
-        name = label + "_" + ptlabel + triglabel
-        x = pttau
-        nbins = self.hists[name].GetNbinsX()
-        lowerEdge = self.hists[name].GetBinLowEdge(1)
-        upperEdge = self.hists[name].GetBinLowEdge(nbins+1)
-        if pttau<lowerEdge: x = lowerEdge+0.001
-        if pttau>upperEdge: x = upperEdge-0.001
-        weight = self.hists[name].GetBinContent(self.hists[name].FindBin(x))
-        error = self.hists[name].GetBinError(self.hists[name].FindBin(x))
-        return weight,error
-
-class sampleHighPt:
-
-    def __init__(self,basefolder,era,channel,samplename,isdata,**kwargs):
-        filename = basefolder + "/" + era + "/" + channel + "/" + samplename + ".root"
-        self.additionalCut = kwargs.get('additionalCut', '')
-        self.sampleName = samplename + "_" + era
-        self.sampleFile = ROOT.TFile(filename,"READ")
-        if self.sampleFile.IsZombie():
-            print("")
-            print('File %s is not found '%(filename))
-            print('for specified era : %s'%(era))
-            print('check if variable "PicoFolder" in file utilsHighPT.py is correctly set')
-            print('it is currently set to %s'%(picoFolder))
-            print('or check naming of samples')
-            print("")
-            exit()
-        #self.sampleTree = self.sampleFile.Get("tree")
-        self.norm = 1.0
-        self.isdata = isdata
-        if isdata:
-            self.norm = 1.0
-        else:
-            xsecSamples = eraSamples[era]
-            sampleNotFound = True
-            for xsecSample in xsecSamples:
-                if samplename==xsecSample: 
-                    sampleNotFound = False
-            if sampleNotFound:
-                print("")
-                print('Sample %s is not found in xsec dictionary for era %s'%(samplename,era))
-                print('Available samples and cross sections are')
-                for xsecSample in xsecSamples:
-                    print('%s : %3.1f'%(xsecSample,xsecSamples[xsecSample]))
-                print("")
-                exit()
-            xsec = xsecSamples[samplename]
-            histsumw = self.sampleFile.Get("weightedEvents")
-            sumw = histsumw.GetSumOfWeights()
-            lumi = eraLumi[era]
-            self.norm = xsec*lumi/sumw
-        
-        print('%s : %s : norm = %7.3f : %s'%(era,samplename,self.norm,self.additionalCut))
-
-    def CreateHisto(self,var,weight,cut,bins,name):
-
-        nbins = len(bins)-1
-        histname = self.sampleName+'_'+name
-        hist = ROOT.TH1D(histname,"",nbins,array('d',list(bins)))
-        cutstring = weight+"*("+cut+")"
-        tree = self.sampleFile.Get("tree")
-        if (self.additionalCut!=''):
-            cutstring = weight+"*("+cut+"&&"+self.additionalCut+")"
-        tree.Draw(var+">>"+histname,cutstring)
-        hist.Scale(self.norm)
-        return hist
-
-    def SetTauNuConfig(self,fakeFactorHighPt,WP,tauNuCuts):
-        self.fakeFactorHighPt = fakeFactorHighPt
-        self.WP_index = tauIntWPs[WP]
-        self.tauNuCuts = tauNuCuts
-
-    def CreateHistosTauNu(self,var,unc,bins,selection):
-
-        print("Running over",self.sampleName)
-        tree = self.sampleFile.Get("tree")
-
-        # initialization
-        nbins = len(bins)-1
-        wp_index = self.WP_index
-        cuts = self.tauNuCuts
-        fakeFactor = self.fakeFactorHighPt
-
-        # creating histograms 
-        hists = {}
-        for label in histLabels:
-            name = self.sampleName + selection + unc + label
-            hists[name] = ROOT.TH1D(name,"",nbins,array('d',list(bins)))
-            for trigbin in trigLabels:
-                nametrig = self.sampleName + selection + unc + label + trigbin
-                hists[nametrig] = ROOT.TH1D(nametrig,"",nbins,array('d',list(bins)))
-        for label in histSysLabels:
-            for ptratioLabel in ptratioLabels:
-                for uncLabel in statUncLabels:
-                    name = self.sampleName + selection + unc + label + ptratioLabel + uncLabel
-                    hists[name] = ROOT.TH1D(name,"",nbins,array('d',list(bins)))
-                    for trigbin in trigLabels:
-                        nametrig = self.sampleName + selection + unc + label + ptratioLabel + uncLabel + trigbin
-                        hists[nametrig] = ROOT.TH1D(nametrig,"",nbins,array('d',list(bins)))
-        # floats
-        weight      = np.zeros(1,dtype='f')
-        pt_1        = np.zeros(1,dtype='f')
-        eta_1       = np.zeros(1,dtype='f')
-        metdphi_1   = np.zeros(1,dtype='f')
-        mt_1        = np.zeros(1,dtype='f')
-        met         = np.zeros(1,dtype='f')
-        jpt_ratio_1 = np.zeros(1,dtype='f')
-        jpt_match_1 = np.zeros(1,dtype='f')
-        m_1         = np.zeros(1,dtype='f')
-
-        # booleans
-        mettrigger     = np.zeros(1,dtype='?')
-        metfilter      = np.zeros(1,dtype='?')
-        tautrigger1    = np.zeros(1,dtype='?')
-        tautrigger2    = np.zeros(1,dtype='?')
-        extramuon_veto = np.zeros(1,dtype='?')
-        extraelec_veto = np.zeros(1,dtype='?')
-        extratau_veto  = np.zeros(1,dtype='?')
-        
-        # integers
-        njets                    = np.zeros(1,dtype='i')
-        idDeepTau2018v2p5VSe_1   = np.zeros(1,dtype='i')
-        idDeepTau2018v2p5VSmu_1  = np.zeros(1,dtype='i')
-        idDeepTau2018v2p5VSjet_1 = np.zeros(1,dtype='i')
-        genmatch_1               = np.zeros(1,dtype='i')
-
-        # branches -> 
-        # floats 
-        tree.SetBranchAddress('met',met)
-        tree.SetBranchAddress('metdphi_1',metdphi_1)
-        tree.SetBranchAddress('mt_1',mt_1)
-        tree.SetBranchAddress('pt_1',pt_1)
-        tree.SetBranchAddress('m_1',m_1)
-        tree.SetBranchAddress('weight',weight)
-        tree.SetBranchAddress('eta_1',eta_1)
-        tree.SetBranchAddress('jpt_ratio_1',jpt_ratio_1)
-        tree.SetBranchAddress('jpt_match_1',jpt_match_1)
-
-        # booleans
-        tree.SetBranchAddress('mettrigger',mettrigger)
-        tree.SetBranchAddress('metfilter',metfilter)
-        tree.SetBranchAddress('extramuon_veto',extramuon_veto)
-        tree.SetBranchAddress('extraelec_veto',extraelec_veto)
-        tree.SetBranchAddress('extratau_veto',extratau_veto)
-        tree.SetBranchAddress('tautrigger1',tautrigger1)
-        tree.SetBranchAddress('tautrigger2',tautrigger2)
-
-        # integers
-        tree.SetBranchAddress('njets',njets)
-        tree.SetBranchAddress('idDeepTau2018v2p5VSe_1',idDeepTau2018v2p5VSe_1)
-        tree.SetBranchAddress('idDeepTau2018v2p5VSmu_1',idDeepTau2018v2p5VSmu_1)
-        tree.SetBranchAddress('idDeepTau2018v2p5VSjet_1',idDeepTau2018v2p5VSjet_1)
-        if not self.isdata: tree.SetBranchAddress("genmatch_1",genmatch_1)
-
-        nentries = tree.GetEntries()
-
-        # run over entries
-        for entry in range(0,nentries):
-            tree.GetEntry(entry)
-
-            # mc selection
-            lepFake = genmatch_1[0]==1 or genmatch_1[0]==2 or genmatch_1[0]==3 or genmatch_1[0]==4
-            genuineTau = genmatch_1[0]==5
-            jetFake = genmatch_1[0]==0
-            
-            if not self.isdata:
-                if selection=='_tau' and not genuineTau: continue # genuine taus
-                if selection=='_fake' and not jetFake: continue # jet->tau fakes
-                if selection=="_lfake" and not lfake: continue # l->tau fakes
-                if selection=='_notFake' and genmatch_1[0]==0: continue # not jet->tau fakes
-
-            # met filters, trigger, vetos
-            if not metfilter[0]: continue
-            if not mettrigger[0]: continue
-            if extraelec_veto[0]: continue
-            if extramuon_veto[0]: continue
-            if extratau_veto[0]: continue
-            if njets[0]!=0: continue
-
-            # kinematic cuts
-            if pt_1[0]<cuts.ptLowerCut: continue
-            if pt_1[0]>cuts.ptUpperCut: continue
-            if math.fabs(eta_1[0])>cuts.etaCut: continue
-            if mt_1[0]<cuts.mtLowerCut: continue
-            if mt_1[0]>cuts.mtUpperCut: continue
-            if metdphi_1[0]<cuts.metdphiCut: continue
-            if met[0]<cuts.metCut: continue
-
-            # tau discriminator against e and mu and jet
-            if idDeepTau2018v2p5VSe_1[0]<cuts.antiE: continue
-            if idDeepTau2018v2p5VSmu_1[0]<cuts.antiMu: continue
-            if idDeepTau2018v2p5VSjet_1[0]<1: continue
-
-            variable = mt_1[0]
-            if var=='pt_1': variable = pt_1[0]
-            if var=='eta_1': variable = eta_1[0]
-            if var=='met': variable = met[0]
-            if var=='m_1': variable = m_1[0]
-
-            tautrigger = tautrigger1[0] or tautrigger2[0]
-            triglabel = '_nottrig'
-            if tautrigger: triglabel = '_trig'
-
-            # signal region
-            if idDeepTau2018v2p5VSjet_1[0]>=wp_index:
-                name = self.sampleName + selection + unc
-                nametrig = self.sampleName + selection + triglabel
-                hists[name].Fill(variable,weight[0])
-                hists[nametrig].Fill(variable,weight[0])
-
-            # Sideband region (VVVLoose and not Loose)
-            if idDeepTau2018v2p5VSjet_1[0]<4:
-                name = self.sampleName + selection + unc + "_SB"
-                nametrig = self.sampleName + selection + unc + "_SB" + triglabel
-                hists[name].Fill(variable,weight[0])
-                hists[nametrig].Fill(variable,weight[0])
-                
-                # find label
-                refRatioLabel, refUncLabel = extractBinLabels(pt_1[0],jpt_ratio_1[0])
-                refLabel = refRatioLabel+refUncLabel
-
-                # applying FF and systematics
-                for label in ['mc_wjets','data_wjets','data_dijets']:
-                    weightFF,errorFF = fakeFactor.getWeight(pt_1[0],jpt_ratio_1[0],label,'')
-                    weightFFtrig,errorFFtrig = fakeFactor.getWeight(pt_1[0],jpt_ratio_1[0],label,triglabel)
-                    name = self.sampleName + selection + unc + '_' + label
-                    hists[name].Fill(variable,weight[0]*weightFF)
-                    nametrig = self.sampleName + selection + unc + "_" + label + triglabel
-                    hists[nametrig].Fill(variable,weight[0]*weightFFtrig)
-                    for ptratioLabel in ptratioLabels:
-                        for uncLabel in statUncLabels:
-                            currentLabel = ptratioLabel+uncLabel
-                            name = self.sampleName + selection + unc + "_" + label + currentLabel
-                            nametrig = self.sampleName + selection + unc + "_" + label + currentLabel + triglabel
-                            if currentLabel==refLabel: 
-                                hists[name].Fill(variable,weight[0]*(weightFF+errorFF))
-                                hists[nametrig].Fill(variable,weight[0]*(weightFFtrig+errorFFtrig))
-                            else:
-                                hists[name].Fill(variable,weight[0]*weightFF)
-                                hists[nametrig].Fill(variable,weight[0]*weightFFtrig)
-
-        for hist in hists:
-            hists[hist].Scale(self.norm)
-
-        return hists
