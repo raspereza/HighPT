@@ -23,12 +23,14 @@ dphiCut = "2.8"
 #################################
 RunBkgSampleNames = {
     'Run2' : ['DYJetsToLL_M-50','TTTo2L2Nu','TTToSemiLeptonic','TTToHadronic','ST_t-channel_antitop_4f_InclusiveDecays','ST_t-channel_top_4f_InclusiveDecays','ST_tW_antitop_5f_NoFullyHadronicDecays','ST_tW_top_5f_NoFullyHadronicDecays','WW','WZ','ZZ'],
-    'Run3' : ['DYto2L-4Jets_MLL-50','TTTo2L2Nu','TTtoLNu2Q','TTto4Q','TBbarQ_t-channel','TbarBQ_t-channel','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ']
+    '2022' : ['DYto2L-4Jets_MLL-50','TTTo2L2Nu','TTtoLNu2Q','TTto4Q','TBbarQ_t-channel','TbarBQ_t-channel','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ'],
+    '2023' : ['DYto2L-4Jets_MLL-50','TTto2L2Nu','TTtoLNu2Q','TTto4Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ'],
 }
 
 RunSigSampleNames = { 
     "Run2" : ['WToMuNu_M-200'],
-    "Run3" : ['WtoMuNu']
+    "2022" : ['WtoMuNu'],
+    "2023" : ['WtoMuNu']
 }
 
 def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,era,var):
@@ -188,7 +190,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args() 
 
-    if args.era not in ['UL2016_preVFP','UL2016_postVFP','UL2017','UL2018','UL2016','2022']:
+    if args.era not in ['UL2016_preVFP','UL2016_postVFP','UL2017','UL2018','UL2016','2022','2023C','2023D','2023']:
         print('unknown era',args.era)
         exit()
 

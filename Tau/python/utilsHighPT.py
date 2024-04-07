@@ -11,14 +11,15 @@ import os
 #########################
 # folder for picotuples #
 #########################
-picoFolder = '/eos/user/r/rasp/output/HighPT_2022'
+#picoFolder = '/eos/user/r/rasp/output/HighPT_2023'
+picoFolder = '/eos/user/r/rasp/output/HighPT_2023'
 #picoFolder='/eos/user/r/rasp/output/HighPT_deepTauV2p5'
 #picoFolder='/eos/user/r/rasp/output/HighPT'
 
 #######################
 #    base folder      #
 #######################
-baseFolder = '/afs/cern.ch/work/r/rasp/HighPT_2022'
+baseFolder = '/afs/cern.ch/work/r/rasp/HighPT_2023'
 
 #######################
 # folders for figures #
@@ -177,13 +178,48 @@ sampleXSec_2022 = {
     "WtoNuTau" : 7.869,
 }
 
+sampleXSec_2023 = {
+    "DYto2L-4Jets_MLL-50" : 5455.0*kfactor_dy,
+    "DYto2L-4Jets_MLL-50_1J" : 978.3*kfactor_dy,
+    "DYto2L-4Jets_MLL-50_2J" : 315.1*kfactor_dy,
+    "DYto2L-4Jets_MLL-50_3J" : 93.7*kfactor_dy,
+    "DYto2L-4Jets_MLL-50_4J" : 45.4*kfactor_dy,
+    "WtoLNu-4Jets" : 55300.*kfactor_wj,
+    "WtoLNu-4Jets_1J" : 9128.*kfactor_wj,
+    "WtoLNu-4Jets_2J" : 2922.*kfactor_wj,
+    "WtoLNu-4Jets_3J" : 861.3*kfactor_wj,
+    "WtoLNu-4Jets_4J" : 415.4*kfactor_wj,
+    "WtoLNu_HT100to400" : 1640.0*kfactor_wj, # 2167.04 
+    "WtoLNu_HT400to800" : 60.32*kfactor_wj, # 84.20
+    "Zto2Nu-4Jets_HT-100to200" : 304.5, # needs to be updated
+    "Zto2Nu-4Jets_HT-200to400" : 91.82, # needs to be updated
+    "Zto2Nu-4Jets_HT-400to800" : 16.37, # needs to be updated
+    "Zto2Nu-4Jets_HT-800to1500" : 1.84, # needs to be updated
+    "TTto2L2Nu" : 80.9*kfactor_ttbar, 
+    "TTto4Q" : 346.4*kfactor_ttbar, 
+    "TTtoLNu2Q" : 334.8*kfactor_ttbar,
+    "TBbarQ_t-channel" : 123.8, 
+    "TbarBQ_t-channel" : 75.47, 
+    "TWminustoLNu2Q" : 15.8,
+    "TWminusto2L2Nu" : 3.8, 
+    "TbarWplustoLNu2Q" : 15.9, 
+    "TbarWplusto2L2Nu" : 3.8,
+    "WW" : 80.23*kfactor_ww,
+    "WZ" : 29.1*kfactor_wz,
+    "ZZ" : 12.75*kfactor_zz,
+    "WtoMuNu" : 7.206,
+    "WtoNuTau" : 7.869,
+}
+
 eraRun = {
     "UL2016_preVFP"  : "Run2",
     "UL2016_postVFP" : "Run2",
     "UL2017"         : "Run2",
     "UL2018"         : "Run2",
-    "2022"           : "Run3",
-    "2022_postEE"    : "Run3"
+    "2022"           : "2022",
+    "2022_postEE"    : "2022",
+    "2023C"          : "2023",
+    "2023D"          : "2023"
 }
 
 periods = {
@@ -194,7 +230,10 @@ periods = {
     "UL2018" : ["UL2018"],
     "2022"   : ["2022","2022_postEE"],
     "2022_preEE"   : ["2022"],
-    "2022_postEE"  : ["2022_postEE"]
+    "2022_postEE"  : ["2022_postEE"],
+    "2023C"  : ["2023C"],
+    "2023D"  : ["2023D"],
+    "2023"   : ["2023C","2023D"],
 }
 
 eraSamples = {
@@ -204,7 +243,9 @@ eraSamples = {
     "UL2018" : sampleXSec_2018,
     "2022"   : sampleXSec_2022,
     "2022_preEE"  : sampleXSec_2022,
-    "2022_postEE" : sampleXSec_2022
+    "2022_postEE" : sampleXSec_2022,
+    "2022C" : sampleXSec_2023,
+    "2022D" : sampleXSec_2023,
 } 
 
 eraLumi = {
@@ -214,13 +255,17 @@ eraLumi = {
     "UL2017" : 41480,    
     "UL2018" : 59830,
     "2022" : 8077,
-    "2022_postEE" : 27007
+    "2022_postEE" : 27007,
+    "2023C" : 17650,
+    "2023D" : 9451
 }
 
 ################
 # Data samples #
 ################
 
+singlemu_2023D = ['Muon_Run2023D']
+singlemu_2023C = ['Muon_Run2023C']
 singlemu_2022_postEE = ['Muon_Run2022E','Muon_Run2022F','Muon_Run2022G']
 singlemu_2022 = ['SingleMuon_Run2022C','Muon_Run2022C','Muon_Run2022D']
 singlemu_2018 = ['SingleMuon_Run2018A','SingleMuon_Run2018B','SingleMuon_Run2018C','SingleMuon_Run2018D']
@@ -234,6 +279,8 @@ jetht_2017 = ['JetHT_Run2017B','JetHT_Run2017C','JetHT_Run2017D','JetHT_Run2017E
 jetht_2016_preVFP = ['JetHT_Run2016B','JetHT_Run2016C','JetHT_Run2016D','JetHT_Run2016E','JetHT_Run2016F']
 jetht_2016_postVFP = ['JetHT_Run2016F','JetHT_Run2016G','JetHT_Run2016H']
 
+met_2023D = ['JetMet_Run2023D']
+met_2023C = ['JetMet_Run2023C']
 met_2022_postEE = ['JetMet_Run2022E','JetMet_Run2022F','JetMet_Run2022G']
 met_2022 = ['JetMet_Run2022C','JetMet_Run2022D']
 met_2018 = ['MET_Run2018A','MET_Run2018B','MET_Run2018C','MET_Run2018D']
@@ -247,7 +294,9 @@ singlemu = {
     "UL2017": singlemu_2017,
     "UL2018": singlemu_2018,
     "2022" : singlemu_2022,
-    "2022_postEE" : singlemu_2022_postEE
+    "2022_postEE" : singlemu_2022_postEE,
+    "2023C" : singlemu_2023C,
+    "2023D" : singlemu_2023D
 }
 
 jetht = {
@@ -256,6 +305,19 @@ jetht = {
     "UL2017": jetht_2017,
     "UL2018": jetht_2018
 }
+
+
+met = {
+    "UL2016_preVFP": met_2016_preVFP,
+    "UL2016_postVFP": met_2016_postVFP,
+    "UL2017": met_2017,
+    "UL2018": met_2018,
+    "2022"  : met_2022,
+    "2022_postEE" : met_2022_postEE
+    "2023C" : met_2023C,
+    "2023D" : met_2023D
+}
+
 
 MCPartons0 = ['WJetsToLNu-4Jets']
 
@@ -268,15 +330,6 @@ MCLowHT = [
     'WJetsToLNu-4Jets_4J'
 ]
 
-
-met = {
-    "UL2016_preVFP": met_2016_preVFP,
-    "UL2016_postVFP": met_2016_postVFP,
-    "UL2017": met_2017,
-    "UL2018": met_2018,
-    "2022"  : met_2022,
-    "2022_postEE" : met_2022_postEE
-}
 
 tauVsEleWPs = {
     'VVVLoose': "1",
