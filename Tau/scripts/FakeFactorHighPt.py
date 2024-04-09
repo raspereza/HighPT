@@ -4,10 +4,11 @@
 #              for high pT jet->tau fakes
 
 from ROOT import TFile, TH1, TH1D, TCanvas, TLegend, TH2, gROOT, TF1, TVirtualFitter, kCyan, gStyle, TString
-import TauFW.Plotter.HighPT.utilsHighPT as utils
-from array import array
-import TauFW.Plotter.HighPT.stylesHighPT as styles
+import HighPT.Tau.utilsHighPT as utils
+import HighPT.Tau.stylesHighPT as styles
+import HighPT.Tau.analysisHighPT as analysis
 import os
+from array import array
 
 #################################
 #     definition of cuts        #
@@ -27,34 +28,34 @@ genNotFakeCut = 'genmatch_2!=0'
 #########################
 # Definition of samples #
 #########################
-
 RunMCSampleNames = {
     "Run2" : ['DYJetsToLL_M-50','TTTo2L2Nu','TTToSemiLeptonic','TTToHadronic','WJetsToLNu','WJetsToLNu_HT-100To200','WJetsToLNu_HT-200To400','WJetsToLNu_HT-400To600','WJetsToLNu_HT-600To800','WJetsToLNu_HT-800To1200','WJetsToLNu_HT-1200To2500','ST_t-channel_antitop_4f_InclusiveDecays','ST_t-channel_top_4f_InclusiveDecays','ST_tW_antitop_5f_NoFullyHadronicDecays','ST_tW_top_5f_NoFullyHadronicDecays','WW','WZ','ZZ'],
-    "Run3" : ['DYto2L-4Jets_MLL-50','TTTo2L2Nu','TTtoLNu2Q','TTto4Q','TBbarQ_t-channel','TbarBQ_t-channel','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','WJetsToLNu-4Jets','WJetsToLNu-4Jets_1J','WJetsToLNu-4Jets_2J','WJetsToLNu-4Jets_3J','WJetsToLNu-4Jets_4J','WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800']
+    "2022" : ['DYto2L-4Jets_MLL-50','TTTo2L2Nu','TTtoLNu2Q','TTto4Q','TBbarQ_t-channel','TbarBQ_t-channel','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','WJetsToLNu-4Jets','WJetsToLNu-4Jets_1J','WJetsToLNu-4Jets_2J','WJetsToLNu-4Jets_3J','WJetsToLNu-4Jets_4J','WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800'],
+    "2023" : ['DYto2L-4Jets_MLL-50','TTto2L2Nu','TTtoLNu2Q','TTto4Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','WtoLNu-4Jets_1J','WtoLNu-4Jets_2J','WtoLNu-4Jets_3J','WtoLNu-4Jets_4J','WtoLNu_HT100to400','WtoLNu_HT400to800'],
 }
 
 RunSigSampleNames = {
     'Run2' : ['WJetsToLNu','WJetsToLNu_HT-100To200','WJetsToLNu_HT-200To400','WJetsToLNu_HT-400To600','WJetsToLNu_HT-600To800','WJetsToLNu_HT-800To1200','WJetsToLNu_HT-1200To2500'],
-    'Run3' : ['WJetsToLNu-4Jets','WJetsToLNu-4Jets_1J','WJetsToLNu-4Jets_2J','WJetsToLNu-4Jets_3J','WJetsToLNu-4Jets_4J','WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800']
+    '2022' : ['WJetsToLNu-4Jets_1J','WJetsToLNu-4Jets_2J','WJetsToLNu-4Jets_3J','WJetsToLNu-4Jets_4J','WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800'],
+    '2023' : ['WtoLNu-4Jets_1J','WtoLNu-4Jets_2J','WtoLNu-4Jets_3J','WtoLNu-4Jets_4J','WtoLNu_HT100to400','WtoLNu_HT400to800'],
 }
+
 # Fitting function (tau pt, ptratio bins)
 def FitPt(x,par):
     a = 0.01*(x[0]-100.)
     ff = par[0]+par[1]*a
-    if x[0]>200:
-        ff = par[2]
+    if x[0]>par[2]:
+        ff = par[3]
     return ff
 
 def FitPtConst(x,par):
     ff = par[0]
-    if x[0]>200:
-        ff = par[1]
+    if x[0]>par[1]:
+        ff = par[2]
     return ff
 
-def FitPtConst2016(x,par):
+def FitConst(x,par):
     ff = par[0]
-    if x[0]>150:
-        ff = par[1]
     return ff
 
 # Fitting function (mass, DM bins)
@@ -62,17 +63,51 @@ def FitMass(x,par):
     ff = par[0]+par[1]*x[0]+par[2]*x[0]*x[0]
     return ff
 
+def AuxiliaryHistograms():
+    histos = {}
+
+    pttau_bins = [0,200,10000]
+    pttauHist = TH1D("pttau","pttau",2,array('d',list(pttau_bins)))
+    pttauHist.GetXaxis().SetBinLabel(1,"pttauLow")
+    pttauHist.GetXaxis().SetBinLabel(2,"pttauHigh")
+    histos['pttau'] = pttauHist
+
+    ptjet_bins = [0,300,10000]
+    ptjetHist = TH1D("ptjet","ptjet",2,array('d',list(ptjet_bins)))
+    ptjetHist.GetXaxis().SetBinLabel(1,"ptjetLow")
+    ptjetHist.GetXaxis().SetBinLabel(2,"ptjetHigh")
+    histos['ptjet'] = ptjetHist
+
+    ptratio_bins = [0,0.85,100]
+    ptratioHist = TH1D("ptratio","ptratio",2,array('d',list(ptratio_bins)))
+    ptratioHist.GetXaxis().SetBinLabel(1,"ptratioLow")
+    ptratioHist.GetXaxis().SetBinLabel(2,"ptratioHigh")
+    histos['ptratio'] = ptratioHist
+
+    dm_bins = [-0.5,0.5,9.5,10.5,21.5]
+    dmHist = TH1D("dm","dm",4,array('d',list(dm_bins)))
+    dmHist.GetXaxis().SetBinLabel(1,'1prong')
+    dmHist.GetXaxis().SetBinLabel(2,'1prongPi0')
+    dmHist.GetXaxis().SetBinLabel(3,'3prong')
+    dmHist.GetXaxis().SetBinLabel(4,'3prongPi0')
+    histos['dm'] = dmHist
+
+    return histos
+
 ###########################
 # Plotting and fitting FF #
 ###########################
-def DrawFF(hist,era,channel,label,WP,**kwargs):
-
+def DrawFF(hist,**kwargs):
 
     isdata = kwargs.get('isdata',True)
-    mode   = kwargs.get('mode',0)
+    variable1 = kwargs.get('variable1','pttau')
+    variable2 = kwargs.get('variable2','ptratio')
+    label = kwargs.get('label','ptratioLow')
+    channel = kwargs.get('channel','channel')
+    wp = kwargs.get('wp','Medium')
     wpVsE  = kwargs.get('wpVsE','TightVsE')
     wpVsMu = kwargs.get('wpVsMu','TightVsMu')
-    trigger = kwargs.get('trigger','_incl')
+    trigger = kwargs.get('trigger','incl')
 
     labelSample = "mc"
     color = 2
@@ -93,54 +128,52 @@ def DrawFF(hist,era,channel,label,WP,**kwargs):
     ymax = hist.GetMaximum()
     ymin = hist.GetMinimum()
     average = 0.5*(ymin+ymax)
+    maximum = 0
     for i in range(1,nbins+1):
         x = hist.GetBinContent(i)
         e = hist.GetBinError(i)
-        xcorr = 0.5*e
-        if x<1e-4: 
-            if xcorr<1e-3:
-                xcorr = 1e-3 
+        xe = x+e
+        if xe>maximum:
+            maximum = x+e
+        #        print(i,hist.GetBinContent(i),hist.GetBinError(i))
+        if x<1e-4 or x>0.9:     
+            xcorr = 0.5*hist.GetBinContent(i-1)
             hist.SetBinContent(i,xcorr)
-            hist.SetBinError(i,xcorr)
-            #            print(i,hist.GetBinContent(i),hist.GetBinError(i))
+            hist.SetBinError(i,0.75*xcorr)
+            
+    print('')
 
-    print
     histToPlot = hist.Clone('temp')
     Era = TString(era)
 
-    if mode==0 or mode==2:
-        if trigger=='_trig' and channel=='wjets':
-            if Era.Contains('UL2016'):
-                f1 = TF1("f1",FitPtConst2016,xmin,xmax,2)
-                f1.SetParameter(0,average)
-                f1.SetParameter(1,average)
-            else:
-                f1 = TF1("f1",FitPtConst,xmin,xmax,2)
-                f1.SetParameter(0,average)
-                f1.SetParameter(1,average)
+    if variable1=='pttau' or variable1=='ptjet':
+        if trigger=='incl':
+            f1 = TF1("f1",FitPt,xmin,xmax,4)
+            f1.SetParameter(0,average)
+            f1.SetParameter(1,0.)
+            f1.FixParameter(2,utils.ptUncThreshold[variable1])
+            f1.SetParameter(3,average)
         else:
-            if Era.Contains('UL2016') and channel=='wjets':
-                f1 = TF1("f1",FitPtConst,xmin,xmax,2)
-                f1.SetParameter(0,average)
-                f1.SetParameter(1,average)
-            else:
-                f1 = TF1("f1",FitPt,xmin,xmax,3)
-                f1.SetParameter(0,average)
-                f1.SetParameter(1,0)
-                f1.SetParameter(2,ymax)
-    elif mode==1:
-        f1 = TF1("f1",FitMass,xmin,xmax,3)
-        f1.SetParameter(0,average)
-        f1.SetParameter(1,0)
-        f1.SetParameter(2,0)    
-
+            f1 = TF1("f1",FitPtConst,xmin,xmax,3)
+            f1.SetParameter(0,average)
+            f1.FixParameter(1,utils.ptUncThreshold[variable1])
+            f1.SetParameter(2,average)
+    else:
+        if label=='1prong':
+            f1 = TF1("f1",FitConst,xmin,xmax,1)
+            f1.SetParameter(0,average)
+        else:
+            f1 = TF1("f1",FitMass,xmin,xmax,3)
+            f1.SetParameter(0,average)
+            f1.SetParameter(1,0)
+            f1.SetParameter(2,0)    
 
     canv = styles.MakeCanvas("canv","",700,600)
     hist.Fit('f1',"R")
-    if mode==1: canv.SetLogx(False)
+    if variable1=='mtau': canv.SetLogx(False)
     else: canv.SetLogx(True)
 
-    hfit = TH1D("ff_"+labelSample+"_"+channel+"_"+label+trigger,"",5000,xmin,xmax)
+    hfit = TH1D("ff_"+labelSample+"_"+channel+"_"+variable1+"_"+label+"_"+trigger,"",5000,xmin,xmax)
     TVirtualFitter.GetFitter().GetConfidenceIntervals(hfit,0.68)
 
     hfitline = hfit.Clone('histline')
@@ -157,10 +190,11 @@ def DrawFF(hist,era,channel,label,WP,**kwargs):
     hfit.SetLineColor(4)
     hfit.SetMarkerSize(0)
     hfit.SetMarkerStyle(0)
-    maxFit = 1.5*hfit.GetMaximum()
-    hfit.GetYaxis().SetRangeUser(0.,maxFit)
-    hfit.SetTitle(era+" : "+channel+" : "+label)
-    if mode==1: hfit.GetXaxis().SetTitle("#tau mass [GeV]")
+    maxFit = hfit.GetMaximum()
+    
+    hfit.GetYaxis().SetRangeUser(0.,2*maximum)
+    if variable1=='mtau': hfit.GetXaxis().SetTitle("#tau mass [GeV]")
+    elif variable1=='ptjet': hfit.GetXaxis().SetTitle("jet p_{T} [GeV]")
     else: hfit.GetXaxis().SetTitle("#tau p_{T} [GeV]")
     hfit.GetYaxis().SetTitle("Fake factor")
 
@@ -168,9 +202,9 @@ def DrawFF(hist,era,channel,label,WP,**kwargs):
     hfitline.Draw("hsame")
     histToPlot.Draw("e1same")
 
-    if mode==0 or mode==2: leg = TLegend(0.5,0.15,0.7,0.3)
-    else: leg = TLegend(0.23,0.2,0.43,0.4)
+    leg = TLegend(0.25,0.7,0.5,0.9)
     styles.SetLegendStyle(leg)
+    leg.SetHeader(label)
     leg.SetTextSize(0.04)
     if isdata: leg.AddEntry(hist,"Data",'lp')
     else: leg.AddEntry(hist,"MC",'lp')
@@ -180,7 +214,7 @@ def DrawFF(hist,era,channel,label,WP,**kwargs):
 
     canv.RedrawAxis()
     canv.Update()
-    canv.Print(utils.figuresFolderFF+'/FF_'+labelSample+"_"+channel+'_'+label+trigger+"_"+WP+'_'+wpVsMu+'VsMu_'+wpVsE+'VsE_'+era+'.png')
+    canv.Print(utils.figuresFolderFF+'/FF_'+variable1+"_"+label+"_"+trigger+"_"+wp+'VsJet_'+wpVsMu+'VsMu_'+wpVsE+'VsE.png')
     
     return hfit
 
@@ -189,20 +223,16 @@ def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
     era = kwargs.get("era","UL2018")
     wp = kwargs.get("wp","Medium")
     channel = kwargs.get("channel","wjets")
-    mode = kwargs.get("mode",0)
     wpVsE = kwargs.get("wpVsE","Loose")
     wpVsMu = kwargs.get("wpVsMu","Loose")
+    variable1 = kwargs.get("variable1","pttau")
+    variable2 = kwargs.get("variable2","ptratio")
 
-    print
+    print('')
     print("+++++++++++++++++++++++++++++++++++++++++++")
-    print
-    if mode==0: 
-        print('Computing FF as a function of tau pT in bins of pt_tau/pt_jet',era,wp+"VSjet",wpVsMu+"VSmu",wpVsE+"VSe",channel)
-    elif mode==1: 
-        print('Computing FF as a function of tau mass in bins of DM',era,wp+"VSjet",wpVsMu+"VSmu",wpVsE+"VSe",channel)
-    else: 
-        print('Computing FF as a function of jet pT in bins of DM',era,wp+"VSjet",wpVsMu+"VSmu",wpVsE+"VSe",channel)
-    print
+    print('')
+    print('Computing FF as a function of %s in bins of %s for era %s and WP %s',variable1,variable2,era,wp)
+    print('')
     
     cutTrigger = "(tautrigger1>0.5||tautrigger2>0.5)"
     cutNotTrigger = "(!" + cutTrigger +")"
@@ -216,22 +246,19 @@ def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
     cutTauNum += "&&idDeepTau2018v2p5VSmu_2>=" + utils.tauVsMuWPs[wpVsMu]
     cutTauNum += "&&idDeepTau2018v2p5VSe_2>="  + utils.tauVsEleWPs[wpVsE]
 
-    ##############
-    ## labels ####
-    ##############
+    ######################
+    ## labels of cuts ####
+    ######################
     binCuts = {}
-    if mode==0: binCuts = utils.ptratioCuts
-    elif mode==1: binCuts = utils.decaymodeCuts
-    else:
-        for ptrat in utils.ptratio2DCuts:
-            for dm in utils.decaymode2DCuts:
-                binCuts[ptrat+"_"+dm] = utils.ptratio2DCuts[ptrat] + "&&" + utils.decaymode2DCuts[dm]
+    if variable2=='ptratio': 
+        binCuts = utils.ptratioCuts
+    else: 
+        binCuts = utils.decayModeCuts
     
     ##############
     ## Variable ##
     ##############
-    var = 'pt_2'
-    if mode==1: var = 'm_2'
+    var = utils.variableLabel[variable1]
 
     ############################
     ###### Common cut ##########
@@ -240,155 +267,201 @@ def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
 
     histsdata = {}
     histssig = {}
-    xbinsT = [100,200,2000]
-    if era=='UL2016_preVFP' or era=='UL2016_postVFP':
-        xbinsT = [100,150,2000]
 
+    trigLabels = ['incl','trig','notrig']
+    if variable2=='dm':
+        trigLabels = ['incl']
 
     for label in binCuts:
         xbins = []
-        print
+        xbinsTrig = []
+        print('')
         print('***************************')
         print('Running over',label)
-        print
+        print('')
 
-        Era = TString(era)
-
-        if mode==0:
-            if Era.Contains('UL2016') and channel=='wjets':
-                xbins=utils.xbinsPt_2016
-            else:
-                xbins=utils.xbinsPt
-        elif mode==1: xbins=utils.xbinsMass[label]
-        else: xbins=utils.xbinsPt2D
+        if variable1=='mtau': 
+            xbins=utils.xbinsMass[label]
+            xbinsTrig = xbins
+        else: 
+            xbins=utils.xbinsPt[var]
+            xbinsTrig = utils.xbinsPtTrig[var]
 
         addCut = binCuts[label]
         cut = commonCut + "&&" + addCut
 
-        cutNum = cut + "&&" + cutTauNum
-        cutDen = cut + "&&" + cutTauDen
+        cutNumerator = cut + "&&" + cutTauNum
+        cutDenominator = cut + "&&" + cutTauDen
+
+        cutNumIncl = cutNumerator
+        cutDenIncl = cutDenominator
         
-        cutNumTrig = cutNum + "&&" + cutTrigger
-        cutDenTrig = cutDen + "&&" + cutTrigger
+        cutNumTrig = cutNumIncl + "&&" + cutTrigger
+        cutDenTrig = cutDenIncl + "&&" + cutTrigger
 
-        cutNumNotTrig = cutNum + "&&" + cutNotTrigger
-        cutDenNotTrig = cutDen + "&&" + cutNotTrigger
-        
-        datahistNum = utils.RunSamples(dataSamples,var,"1.0",cutNum,xbins,'data_num_'+label)
-        datahistDen = utils.RunSamples(dataSamples,var,"1.0",cutDen,xbins,'data_den_'+label)
+        cutNumNotTrig = cutNumIncl + "&&" + cutNotTrigger
+        cutDenNotTrig = cutDenIncl + "&&" + cutNotTrigger
 
-        xbinsTrig = xbins
-        if channel=='wjets':
-            xbinsTrig = xbinsT
+        cutNum = {
+            'incl' : cutNumIncl,
+            'trig' : cutNumTrig,
+            'notrig' : cutNumNotTrig
+        }
+        cutDen = {
+            'incl' : cutDenIncl,
+            'trig' : cutDenTrig,
+            'notrig' : cutDenNotTrig
+        }
 
-        datahistNumTrig = utils.RunSamples(dataSamples,var,"1.0",cutNumTrig,xbinsTrig,'data_num_trig_'+label)
-        datahistDenTrig = utils.RunSamples(dataSamples,var,"1.0",cutDenTrig,xbinsTrig,'data_den_trig_'+label)
+        Bins = {
+            'incl' : xbins,
+            'trig' : xbinsTrig,
+            'notrig' : xbinsTrig,
+        }
 
-        datahistNumNotTrig = utils.RunSamples(dataSamples,var,"1.0",cutNumNotTrig,xbins,'data_num_nottrig_'+label)
-        datahistDenNotTrig = utils.RunSamples(dataSamples,var,"1.0",cutDenNotTrig,xbins,'data_den_nottrig_'+label)
+        datahistNum = {}
+        datahistDen = {}
+        for trigLabel in trigLabels:        
+
+            nameNum = 'data_num_'+channel+'_'+variable1+'_'+label+'_'+trigLabel
+            nameDen = 'data_den_'+channel+'_'+variable1+'_'+label+'_'+trigLabel
+            datahistNum[trigLabel] = analysis.RunSamples(dataSamples,
+                                                         var,
+                                                         cutNum[trigLabel],
+                                                         Bins[trigLabel],
+                                                         nameNum)
+            datahistDen[trigLabel] = analysis.RunSamples(dataSamples,
+                                                         var,
+                                                         cutDen[trigLabel],
+                                                         Bins[trigLabel],
+                                                         nameDen)
 
         if channel=="wjets":
-            cutNumMC = cutNum + "&&" + genNotFakeCut
-            cutDenMC = cutDen + "&&" + genNotFakeCut
 
-            cutNumMCTrig = cutNumMC + "&&" + cutTrigger
-            cutDenMCTrig = cutDenMC + "&&" + cutTrigger
+            cutNumMCIncl = cutNumerator + "&&" + genNotFakeCut
+            cutDenMCIncl = cutDenominator + "&&" + genNotFakeCut
 
-            cutNumMCNotTrig = cutNumMC + "&&" + cutNotTrigger
-            cutDenMCNotTrig = cutDenMC + "&&" + cutNotTrigger
+            cutNumMCTrig = cutNumMCIncl + "&&" + cutTrigger
+            cutDenMCTrig = cutDenMCIncl + "&&" + cutTrigger
 
-            mchistNum = utils.RunSamples(mcSamples,var,"weight",cutNumMC,xbins,'mc_num_'+label)
-            mchistDen = utils.RunSamples(mcSamples,var,"weight",cutDenMC,xbins,'mc_den_'+label)
+            cutNumMCNotTrig = cutNumMCIncl + "&&" + cutNotTrigger
+            cutDenMCNotTrig = cutDenMCIncl + "&&" + cutNotTrigger
 
-            xbinsTrig = xbins
-            if channel=='wjets':
-                xbinsTrig = xbinsT
+            cutNumMC = {
+                'incl' : cutNumMCIncl,
+                'trig' : cutNumMCTrig,
+                'notrig' : cutNumMCNotTrig
+            }
+            cutDenMC = {
+                'incl' : cutDenMCIncl,
+                'trig' : cutDenMCTrig,
+                'notrig' : cutDenMCNotTrig
+            }
 
-            mchistNumTrig = utils.RunSamples(mcSamples,var,"weight",cutNumMCTrig,xbinsTrig,'mc_num_trig'+label)
-            mchistDenTrig = utils.RunSamples(mcSamples,var,"weight",cutDenMCTrig,xbinsTrig,'mc_den_trig'+label)
+            for trigLabel in trigLabels:        
 
-            mchistNumNotTrig = utils.RunSamples(mcSamples,var,"weight",cutNumMCNotTrig,xbins,'mc_num_nottrig'+label)
-            mchistDenNotTrig = utils.RunSamples(mcSamples,var,"weight",cutDenMCNotTrig,xbins,'mc_den_nottrig'+label)
+                nameNum = 'mc_num_'+channel+'_'+variable1+'_'+label+'_'+trigLabel
+                nameDen = 'mc_den_'+channel+'_'+variable1+'_'+label+'_'+trigLabel
+                mchistNum = analysis.RunSamples(mcSamples,var,cutNumMC[trigLabel],Bins[trigLabel],nameNum)
+                mchistDen = analysis.RunSamples(mcSamples,var,cutDenMC[trigLabel],Bins[trigLabel],nameDen)
 
-            datahistNum.Add(datahistNum,mchistNum,1.,-1.)
-            datahistDen.Add(datahistDen,mchistDen,1.,-1.)
+                datahistNum[trigLabel].Add(datahistNum[trigLabel],mchistNum,1.,-1.)
+                datahistDen[trigLabel].Add(datahistDen[trigLabel],mchistDen,1.,-1.)
 
-            datahistNumTrig.Add(datahistNumTrig,mchistNumTrig,1.,-1.)
-            datahistDenTrig.Add(datahistDenTrig,mchistDenTrig,1.,-1.)
+        
+        if variable2=='ptratio':
+            yieldNum = datahistNum['incl'].GetSumOfWeights()
+            yieldDen = datahistDen['incl'].GetSumOfWeights()
 
-            datahistNumNotTrig.Add(datahistNumNotTrig,mchistNumNotTrig,1.,-1.)
-            datahistDenNotTrig.Add(datahistDenNotTrig,mchistDenNotTrig,1.,-1.)
+            yieldNumTrig = datahistNum['trig'].GetSumOfWeights()
+            yieldDenTrig = datahistDen['trig'].GetSumOfWeights()
 
-            
-        yieldNum = datahistNum.GetSumOfWeights()
-        yieldDen = datahistDen.GetSumOfWeights()
+            yieldNumNotTrig = datahistNum['notrig'].GetSumOfWeights()
+            yieldDenNotTrig = datahistDen['notrig'].GetSumOfWeights()
 
-        yieldNumTrig = datahistNumTrig.GetSumOfWeights()
-        yieldDenTrig = datahistDenTrig.GetSumOfWeights()
+            checkNum = yieldNumTrig + yieldNumNotTrig
+            checkDen = yieldDenTrig + yieldDenNotTrig
 
-        yieldNumNotTrig = datahistNumNotTrig.GetSumOfWeights()
-        yieldDenNotTrig = datahistDenNotTrig.GetSumOfWeights()
+            print('cross check ->')
+            print('Incl   ',yieldNum,yieldDen)
+            print('Trig   ',yieldNumTrig,yieldDenTrig)
+            print('NotTrig',yieldNumNotTrig,yieldDenNotTrig)
+            print('Check  ',checkNum,checkDen)
 
-        checkNum = yieldNumTrig + yieldNumNotTrig
-        checkDen = yieldDenTrig + yieldDenNotTrig
+        nbins = datahistNum['incl'].GetNbinsX()
+        print('')
+        print('Checking content in data %s'%(label))
+        for ib in range(1,nbins+1):
+            num = datahistNum['incl'].GetBinContent(ib)
+            den = datahistDen['incl'].GetBinContent(ib)
+            print('bin %1i   num = %5.0f   den = %5.0f'%(ib,num,den))
+        print('')
 
-        #        print('Incl   ',yieldNum,yieldDen)
-        #        print('Trig   ',yieldNumTrig,yieldDenTrig)
-        #        print('NotTrig',yieldNumNotTrig,yieldDenNotTrig)
-        #        print('Check  ',checkNum,checkDen)
-        #        print
 
-        histffdata = utils.divideHistos(datahistNum,datahistDen,'d_'+channel+"_"+label)
-        histffdataTrig = utils.divideHistos(datahistNumTrig,datahistDenTrig,'d_'+channel+"_trig_"+label)
-        histffdataNotTrig = utils.divideHistos(datahistNumNotTrig,datahistDenNotTrig,'d_'+channel+"_nottrig_"+label)
+        
+        for trigLabel in trigLabels:
+            nameff = 'data_ff_'+channel+'_'+variable1+'_'+label+'_'+trigLabel
+            histffdata = utils.divideHistos(datahistNum[trigLabel],
+                                            datahistDen[trigLabel],
+                                            nameff)
+            name = 'data_'+channel+'_'+variable1+'_'+label+'_'+trigLabel
+            histsdata[name] = DrawFF(histffdata,
+                                     era=era,
+                                     channel=channel,
+                                     label=label,
+                                     wp=wp,
+                                     variable1=variable1,
+                                     variable2=variable2,
+                                     isdata=True,
+                                     wpVsMu=wpVsMu,
+                                     wpVsE=wpVsE,
+                                     trigger=trigLabel)
 
-        #        nbins = histffdata.GetNbinsX()
-        #        for i in range(1,nbins+1):
-        #            print(histffdata.GetBinContent(i),histffdataNotTrig.GetBinContent(i))
-
-        histsdata["data_"+channel+"_"+label] = DrawFF(histffdata,era,channel,
-                                                      label,args.wp,mode=mode,isdata=True,
-                                                      wpVsMu=wpVsMu,wpVsE=wpVsE,trigger='_incl')
-        histsdata["data_"+channel+"_"+label+"_trig"] = DrawFF(histffdataTrig,era,channel,
-                                                              label,args.wp,mode=mode,isdata=True,
-                                                              wpVsMu=wpVsMu,wpVsE=wpVsE,trigger='_trig')
-        histsdata["data_"+channel+"_"+label+"_nottrig"] = DrawFF(histffdataNotTrig,era,channel,
-                                                                 label,args.wp,mode=mode,isdata=True,
-                                                                 wpVsMu=wpVsMu,wpVsE=wpVsE,trigger='_nottrig')
         if channel=="wjets":
 
-            cutNumSig = cutNum + "&&" + genFakeCut
-            cutDenSig = cutDen + "&&" + genFakeCut
+            cutNumSigIncl = cutNumerator + "&&" + genFakeCut
+            cutDenSigIncl = cutDenominator + "&&" + genFakeCut
 
-            cutNumSigTrig = cutNumSig + "&&" + cutTrigger
-            cutDenSigTrig = cutDenSig + "&&" + cutTrigger
+            cutNumSigTrig = cutNumSigIncl + "&&" + cutTrigger
+            cutDenSigTrig = cutDenSigIncl + "&&" + cutTrigger
 
-            cutNumSigNotTrig = cutNumSig + "&&" + cutNotTrigger
-            cutDenSigNotTrig = cutDenSig + "&&" + cutNotTrigger
+            cutNumSigNotTrig = cutNumSigIncl + "&&" + cutNotTrigger
+            cutDenSigNotTrig = cutDenSigIncl + "&&" + cutNotTrigger
 
-            sighistNum = utils.RunSamples(sigSamples,var,"weight",cutNumSig,xbins,"sig_num_"+label)
-            sighistDen = utils.RunSamples(sigSamples,var,"weight",cutDenSig,xbins,"sig_den_"+label)
+            cutNumSig = {
+                'incl' : cutNumSigIncl,
+                'trig' : cutNumSigTrig,
+                'notrig' : cutNumSigNotTrig
+            }
 
-            sighistNumTrig = utils.RunSamples(sigSamples,var,"weight",cutNumSigTrig,xbinsT,"sig_num_"+label+"_trig")
-            sighistDenTrig = utils.RunSamples(sigSamples,var,"weight",cutDenSigTrig,xbinsT,"sig_den_"+label+"_trig")
+            cutDenSig = {
+                'incl' : cutDenSigIncl,
+                'trig' : cutDenSigTrig,
+                'notrig' : cutDenSigNotTrig
+            }
 
-            sighistNumNotTrig = utils.RunSamples(sigSamples,var,"weight",cutNumSigNotTrig,xbins,"sig_num_"+label+"_nottrig")
-            sighistDenNotTrig = utils.RunSamples(sigSamples,var,"weight",cutDenSigNotTrig,xbins,"sig_den_"+label+"_nottrig")
+            for trigLabel in trigLabels:
+                nameNum = 'sig_num_'+channel+'_'+variable1+'_'+label+'_'+trigLabel
+                nameDen = 'sig_den_'+channel+'_'+variable1+'_'+label+'_'+trigLabel
+                sighistNum = analysis.RunSamples(sigSamples,var,cutNumSig[trigLabel],Bins[trigLabel],nameNum)
+                sighistDen = analysis.RunSamples(sigSamples,var,cutDenSig[trigLabel],Bins[trigLabel],nameDen)
+                nameff = 'sig_'+channel+'_'+variable1+'_'+label+'_'+trigLabel
+                histffsig  = utils.divideHistos(sighistNum,
+                                                sighistDen,
+                                                nameff)
+                name = 'mc_'+channel+'_'+variable1+'_'+label+'_'+trigLabel
+                histssig[name] = DrawFF(histffsig,
+                                        era=era,
+                                        channel=channel,
+                                        label=label,
+                                        wp=wp,
+                                        variable1=variable1,
+                                        variable2=variable2,
+                                        isdata=False,
+                                        wpVsMu=wpVsMu,
+                                        wpVsE=wpVsE,
+                                        trigger=trigLabel)
 
-            histffsig  = utils.divideHistos(sighistNum,sighistDen,"s_"+channel+"_"+label)
-            histffsigTrig  = utils.divideHistos(sighistNumTrig,sighistDenTrig,"s_"+channel+"_"+label+"_trig")
-            histffsigNotTrig  = utils.divideHistos(sighistNumNotTrig,sighistDenNotTrig,"s_"+channel+"_"+label+"_nottrig")
-
-            histssig["mc_"+channel+"_"+label] = DrawFF(histffsig,era,channel,
-                                                       label,args.wp,mode=mode,isdata=False,
-                                                       wpVsMu=wpVsMu,wpVsE=wpVsE,trigger='_incl')
-            histssig["mc_"+channel+"_"+label+"_trig"] = DrawFF(histffsigTrig,era,channel,
-                                                               label,args.wp,mode=mode,isdata=False,
-                                                               wpVsMu=wpVsMu,wpVsE=wpVsE,trigger="_trig")
-            histssig["mc_"+channel+"_"+label+"_nottrig"] = DrawFF(histffsigNotTrig,era,channel,
-                                                                  label,args.wp,mode=mode,isdata=False,
-                                                                  wpVsMu=wpVsMu,wpVsE=wpVsE,trigger="_nottrig")
-                      
     outputfile.cd('')
     for hist in histsdata:
         histsdata[hist].Write(hist)
@@ -407,19 +480,11 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='UL2018', help="""Era : UL2016_preVFP, UL2016_postVFP, UL2017, UL2018""")
-    parser.add_argument('-wp','--WP', dest='wp',  default='Medium', help="""WP : Loose, Medium, Tight, 
-VTight, VVTight """)
-    parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu',  default='Tight', help="""WP vs. mu : VLoose Loose, Medium, Tight """)
-    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE',  default='VLoose', help="""WP : VVVLoose, Loose, Medium, Tight, VTight, VVTight """)
+    parser.add_argument('-e','--era', dest='era', default='UL2018',choices=['UL2016','UL2017','UL2018','2022','2023'])
+    parser.add_argument('-wp','--WP', dest='wp',  default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
+    parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu',  default='Tight',choices=['VLoose','Tight'])
+    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE',  default='VVLoose',choices=['VVLoose','Tight'])
     args = parser.parse_args() 
-
-    if args.wp not in ['Loose','Medium','Tight','VTight','VVTight']:
-        print('unknown WP',args.wp)
-        exit()
-    if args.era not in ['UL2016_preVFP','UL2016_postVFP','UL2017','UL2018','2022']:
-        print('unknown era',args.era)
-        exit()
 
     basefolder = utils.picoFolder
 
@@ -431,18 +496,18 @@ VTight, VVTight """)
         singlemuNames = utils.singlemu[era]
         for singlemuName in singlemuNames:
             name = singlemuName + '_' + era
-            singlemuSamples[singlemuName] = utils.sampleHighPt(basefolder,era,
-                                                               "wjets",singlemuName,True)
+            singlemuSamples[name] = analysis.sampleHighPt(basefolder,era,
+                                                          "wjets",singlemuName,True)
 
     #    print
     #    print('initializing JetHT samples >>>')
     #    jethtSamples = {} # data samples disctionary
     #    jethtNames = utils.jetht[args.era]
     #    for jethtName in jethtNames:
-    #        jethtSamples[jethtName] = utils.sampleHighPt(basefolder,args.era,
+    #        jethtSamples[jethtName] = analysis.sampleHighPt(basefolder,args.era,
     #                                                     "dijets",jethtName,True)
 
-    print
+    print('')
     print('initializing MC samples >>>')
     mcSamples = {} # mc samples dictionary
     for era in eras:
@@ -454,10 +519,10 @@ VTight, VVTight """)
                 addCut='(HT<100||HT>800)'
                 if mcSampleName in utils.MCPartons0:
                     addCut += '&&NUP_LO==0'
-                mcSamples[name] = utils.sampleHighPt(basefolder,era,"wjets",mcSampleName,
+                mcSamples[name] = analysis.sampleHighPt(basefolder,era,"wjets",mcSampleName,
                                                      False,additionalCut=addCut)
             else:
-                mcSamples[name] = utils.sampleHighPt(basefolder,era,"wjets",mcSampleName,
+                mcSamples[name] = analysis.sampleHighPt(basefolder,era,"wjets",mcSampleName,
                                                      False)
     print
     print('initializing W+Jets samples >>>') 
@@ -471,36 +536,52 @@ VTight, VVTight """)
                 addCut='(HT<100||HT>800)'
                 if sigSampleName in utils.MCPartons0:
                     addCut += '&&NUP_LO==0'
-                sigSamples[name] = utils.sampleHighPt(basefolder,era,"wjets",sigSampleName,
+                sigSamples[name] = analysis.sampleHighPt(basefolder,era,"wjets",sigSampleName,
                                                       False,additionalCut=addCut)
             else:
-                sigSamples[name] = utils.sampleHighPt(basefolder,era,"wjets",sigSampleName,
+                sigSamples[name] = analysis.sampleHighPt(basefolder,era,"wjets",sigSampleName,
                                                       False)
 
     fullpathout = utils.fakeFactorsFolder + '/ff_'+args.wp+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+".root"
     if not os.path.isdir(utils.fakeFactorsFolder):
         print('folder for fake factors does not exist')
         print('create folder for fake factors : %s'%())
+        exit()
     outputfile = TFile(fullpathout,'recreate')
 
+    #   measurements ->
+    for var1 in ['pttau','ptjet']:
+        main(outputfile,
+             singlemuSamples,
+             mcSamples,
+             sigSamples,
+             wp=args.wp,
+             wpVsE=args.wpVsE,
+             wpVsMu=args.wpVsMu,
+             era=args.era,
+             channel='wjets',
+             variable1=var1,
+             variable2='ptratio')
 
-    #   mode of measurement ->
-    #   mode = 0 : FF as a function of pT(tau) in bins of pT(tau)/pT(jet), 
-    #   mode = 1 : FF as a function of tau mass in bins of tau DM (1prPi0, 3pr, 3prPi0)
-    #   mode = 2 : FF as a function of pT(jet) in bins tau DM
-    
-    main(outputfile,singlemuSamples,mcSamples,sigSamples,
-         wp=args.wp,wpVsE=args.wpVsE,wpVsMu=args.wpVsMu,era=args.era,channel="wjets",mode=0)
-    #main(outputfile,singlemuSamples,mcSamples,sigSamples,
-    #     wp=args.wp,wpVsE=args.wpVsE,wpVsMu=args.wpVsMu,era=args.era,channel="wjets",mode=1)
-    #main(outputfile,singlemuSamples,mcSamples,sigSamples,
-    #     wp=args.wp,wpVsE=args.wpVsE,wpVsMu=args.wpVsMu,era=args.era,channel="wjets",mode=2)
-    
-        
-    #    main(outputfile,jethtSamples,mcSamples,sigSamples,
-    #         wp=args.wp,wpVsE=args.wpVsE,wpVsMu=args.wpVsMu,era=args.era,channel="dijets",mode=0)
+    for var1 in ['pttau','ptjet','mtau']:
+        main(outputfile,
+             singlemuSamples,
+             mcSamples,
+             sigSamples,
+             wp=args.wp,
+             wpVsE=args.wpVsE,
+             wpVsMu=args.wpVsMu,
+             era=args.era,
+             channel='wjets',
+             variable1=var1,
+             variable2='dm')
 
+    outputfile.cd('')
+    hists = AuxiliaryHistograms()
+    for hist in hists:
+        hists[hist].Write(hist)
     outputfile.Close()
+
     print("")
     print('Fake factors are save in file %s'%(fullpathout))
     print("")

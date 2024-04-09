@@ -12,11 +12,17 @@ import os
 #################################
 #     definition of samples     #
 #################################
-bkgSampleNames = ['DYJetsToLL_M-50','TTTo2L2Nu','TTToSemiLeptonic','TTToHadronic','ST_t-channel_antitop_4f_InclusiveDecays','ST_t-channel_top_4f_InclusiveDecays','ST_tW_antitop_5f_NoFullyHadronicDecays','ST_tW_top_5f_NoFullyHadronicDecays','WW','WZ','ZZ','ZJetsToNuNu_HT-100To200','ZJetsToNuNu_HT-200To400','ZJetsToNuNu_HT-400To600','ZJetsToNuNu_HT-600To800','ZJetsToNuNu_HT-800To1200','ZJetsToNuNu_HT-1200To2500']
+BkgSampleNames = {
+    "Run2" : ['DYJetsToLL_M-50','TTTo2L2Nu','TTToSemiLeptonic','TTToHadronic','ST_t-channel_antitop_4f_InclusiveDecays','ST_t-channel_top_4f_InclusiveDecays','ST_tW_antitop_5f_NoFullyHadronicDecays','ST_tW_top_5f_NoFullyHadronicDecays','WW','WZ','ZZ','ZJetsToNuNu_HT-100To200','ZJetsToNuNu_HT-200To400','ZJetsToNuNu_HT-400To600','ZJetsToNuNu_HT-600To800','ZJetsToNuNu_HT-800To1200','ZJetsToNuNu_HT-1200To2500'],
+    '2022' : ['DYto2L-4Jets_MLL-50','TTTo2L2Nu','TTtoLNu2Q','TTto4Q','TBbarQ_t-channel','TbarBQ_t-channel','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','WJetsToLNu-4Jets','WJetsToLNu-4Jets_1J','WJetsToLNu-4Jets_2J','WJetsToLNu-4Jets_3J','WJetsToLNu-4Jets_4J','WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800'],
+    '2023' : ['DYto2L-4Jets_MLL-50','TTto2L2Nu','TTtoLNu2Q','TTto4Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','WtoLNu-4Jets','WtoLNu-4Jets_1J','WtoLNu-4Jets_2J','WtoLNu-4Jets_3J','WtoLNu-4Jets_4J','WtoLNu_HT100to400','WtoLNu_HT-400to800']
+}
 
-bkgSampleNamesLepFake = ['DYJetsToLL_M-50','TTTo2L2Nu','TTToSemiLeptonic','TTToHadronic','ST_t-channel_antitop_4f_InclusiveDecays','ST_t-channel_top_4f_InclusiveDecays','ST_tW_antitop_5f_NoFullyHadronicDecays','ST_tW_top_5f_NoFullyHadronicDecays','WW','WZ','ZZ','WJetsToLNu','ZJetsToNuNu_HT-100To200','ZJetsToNuNu_HT-200To400','ZJetsToNuNu_HT-400To600','ZJetsToNuNu_HT-600To800','ZJetsToNuNu_HT-800To1200','ZJetsToNuNu_HT-1200To2500']
-
-sigSampleNames = ['WToTauNu_M-200']
+SigSampleNames = {
+    'Run2' : ['WToTauNu_M-200'],
+    '2022' : ['WtoNuTau'],
+    '2023' : ['WtoNuTau']
+}
 
 def FitConst(x,par):
     return par[0]
@@ -194,14 +200,6 @@ def PlotWToTauNu(h_data_input,h_fake_input,h_tau_input,h_bkg_input,h_sig_input,w
     # protection from zero entries
     xb1 = max(h_bkg_input.GetBinContent(1),0.1)
     h_bkg_input.SetBinContent(1,xb1)
-
-    if era=='UL2017' and suffix=='lowpt':
-        if var=='mt_1':
-            h_tau_input.SetBinContent(1,2.5*h_tau_input.GetBinContent(1))
-            h_tau_input.SetBinContent(2,1.5*h_tau_input.GetBinContent(2))
-        if var=='pt_1':
-            for ib in range(1,7):
-                h_fake_input.SetBinContent(ib,1.1*h_fake_input.GetBinContent(ib))
 
     h_data = h_data_input.Clone("data_plot")
     h_fake = h_fake_input.Clone("fake_plot")
@@ -403,17 +401,7 @@ if __name__ == "__main__":
 
     print("\n")
 
-    if args.era not in ['UL2016_preVFP','UL2016_postVFP','UL2017','UL2018']:
-        print('unknown era specified',args.era,'quitting')
-        exit()
-
-    if args.wp not in ['Loose','Medium','Tight','VTight','VVTight']:
-        print('unknown working point vsJet specified',args.wp,'quitting')
-        exit()
-
-    if args.ptbin not in ['highpt','lowpt']:
-        print('unknow pt bin',args.ptbin,'quitting')
-        exit()
+    eras = utils.periods[args.era]
 
     suffix = args.ptbin
     isHighPt = True
@@ -423,11 +411,10 @@ if __name__ == "__main__":
     xbins_lowpt_mt = [200,250,300,350,400,1000]
     xbins_highpt_mt = [200,400,500,600,800,1000]
     
-    if args.era=='UL2016_preVFP' or args.era=='UL2016_postVFP':
+    if args.era=='UL2016':
         xbins_highpt_mt = [200,400,500,600,1000]
 
     xbins_lowpt_pt = [100,110,120,130,140,150,160,170,180,190,200] # use fine binning 
-#    xbins_highpt_pt = [200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000] # use fine binning 
     xbins_highpt_pt = [200,250,300,350,500] # use fine binning 
     xbins_eta = [-2.4, -1.8, -1.2, -0.6, 0.0, 0.6, 1.2, 1.8, 2.4]
     xbins = xbins_lowpt_mt
@@ -451,7 +438,7 @@ if __name__ == "__main__":
     print("WP vs mu",args.wpVsMu)
 
     # initializing instance of FF class    
-    fullpathFF = os.getenv('CMSSW_BASE') + '/src/TauFW/Plotter/data/ff_HighPT/ff_'+args.wp+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+".root"
+    fullpathFF = utils.'/ff_'+args.wp+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+".root"
     fakeFactor = utils.FakeFactorHighPt(fullpathFF)
 
     # initializing instance of TauNuCuts class
@@ -474,17 +461,22 @@ if __name__ == "__main__":
     print
     print('initializing data samples >>>')
     metSamples = {} # data samples dictionary
-    metNames = utils.met[args.era]
-    for metName in metNames:
-        metSamples[metName] = utils.sampleHighPt(basefolder,args.era,
+    for era in eras:
+        metNames = utils.met[era]
+        for metName in metNames:
+            name = metName + '_' + era
+            metSamples[name] = utils.sampleHighPt(basefolder,era,
                                                       "taunu",metName,True)
-        metSamples[metName].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+            metSamples[name].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
 
-    print
+    print('')
     print('initializing background samples >>>')
     bkgSamples = {} # MC bkg samples dictionary 
-    for bkgSampleName in bkgSampleNames:
-        bkgSamples[bkgSampleName] = utils.sampleHighPt(basefolder,args.era,
+    for era in eras:
+        run = utils.eraRun[era]
+        for bkgSampleName in bkgSampleNames[run]:
+            name = bkgSampleName + '_' + era
+            bkgSamples[name] = utils.sampleHighPt(basefolder,args.era,
                                                        "taunu",bkgSampleName,False)
         bkgSamples[bkgSampleName].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
 

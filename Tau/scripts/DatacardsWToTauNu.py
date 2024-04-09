@@ -3,23 +3,53 @@
 # High pT tau ID SF measurements 
 # Datacards producer for the signal region (W*->tau+v) 
 import ROOT
-import TauFW.Plotter.HighPT.utilsHighPT as utils
+import os
 from array import array
 import math
-import TauFW.Plotter.HighPT.stylesHighPT as styles
-import os
+import HighPT.Tau.utilsHighPT as utils
+import HighPT.Tau.stylesHighPT as styles
+import HighPT.Tau.analysisHighPT as analysis
+from HighPT.Tau.FakeFactor import FakeFactorHighPt
 
 #################################
 #     definition of samples     #
 #################################
-bkgSampleNames = ['DYJetsToLL_M-50','TTTo2L2Nu','TTToSemiLeptonic','TTToHadronic','ST_t-channel_antitop_4f_InclusiveDecays','ST_t-channel_top_4f_InclusiveDecays','ST_tW_antitop_5f_NoFullyHadronicDecays','ST_tW_top_5f_NoFullyHadronicDecays','WW','WZ','ZZ','ZJetsToNuNu_HT-100To200','ZJetsToNuNu_HT-200To400','ZJetsToNuNu_HT-400To600','ZJetsToNuNu_HT-600To800','ZJetsToNuNu_HT-800To1200','ZJetsToNuNu_HT-1200To2500']
+BkgSampleNames = { 
+    'Run2' : ['DYJetsToLL_M-50','TTTo2L2Nu','TTToSemiLeptonic','TTToHadronic','ST_t-channel_antitop_4f_InclusiveDecays','ST_t-channel_top_4f_InclusiveDecays','ST_tW_antitop_5f_NoFullyHadronicDecays','ST_tW_top_5f_NoFullyHadronicDecays','WW','WZ','ZZ','ZJetsToNuNu_HT-100To200','ZJetsToNuNu_HT-200To400','ZJetsToNuNu_HT-400To600','ZJetsToNuNu_HT-600To800','ZJetsToNuNu_HT-800To1200','ZJetsToNuNu_HT-1200To2500'],
+    '2022' :  ['DYto2L-4Jets_MLL-50','TTTo2L2Nu','TTtoLNu2Q','TTto4Q','TBbarQ_t-channel','TbarBQ_t-channel','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ',],
+    '2023' : ['DYto2L-4Jets_MLL-50','TTto2L2Nu','TTtoLNu2Q','TTto4Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','Zto2Nu-4Jets_HT-100to200','Zto2Nu-4Jets_HT-200to400','Zto2Nu-4Jets_HT-400to800','Zto2Nu-4Jets_HT-800to1500']
+}
 
-bkgSampleNamesLepFake = ['DYJetsToLL_M-50','TTTo2L2Nu','TTToSemiLeptonic','TTToHadronic','ST_t-channel_antitop_4f_InclusiveDecays','ST_t-channel_top_4f_InclusiveDecays','ST_tW_antitop_5f_NoFullyHadronicDecays','ST_tW_top_5f_NoFullyHadronicDecays','WW','WZ','ZZ','WJetsToLNu','ZJetsToNuNu_HT-100To200','ZJetsToNuNu_HT-200To400','ZJetsToNuNu_HT-400To600','ZJetsToNuNu_HT-600To800','ZJetsToNuNu_HT-800To1200','ZJetsToNuNu_HT-1200To2500']
+WBkgSampleNames = {
+    'Run2' : ['WJetsToLNu'],
+    '2022' : ['WJetsToLNu-4Jets_1J','WJetsToLNu-4Jets_2J','WJetsToLNu-4Jets_3J','WJetsToLNu-4Jets_4J','WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800'],
+    '2023' : ['WtoLNu-4Jets_1J','WtoLNu-4Jets_2J','WtoLNu-4Jets_3J','WtoLNu-4Jets_4J','WtoLNu_HT100to400','WtoLNu_HT400to800']
+}
 
-sigSampleNames = ['WToTauNu_M-200']
+SigSampleNames = { 
+    'Run2' : ['WToTauNu_M-200'],
+    '2022' : ['WtoNuTau'],
+    '2023' : ['WtoNuTau']
+}
 
-def FitConst(x,par):
-    return par[0]
+def FitRatio(x,par):
+    a = 0.01*(x[0]-100.)
+    return par[0]+par[1]*a+par[2]*a*a
+
+def CorrectForNonClosure(hist,ratio,name):
+    
+    histCentral = hist.Clone(name);
+    nbins = hist.GetNbinsX();
+    for ib in range(1,nbins+1):
+        x = hist.GetBinContent(ib)
+        e = hist.GetBinError(ib)
+        r = ratio.GetBinContent(ib)
+        central = x*r
+        centralE = e*r
+        histCentral.SetBinContent(ib,central)
+        histCentral.SetBinError(ib,centralE)
+    return histCentral
+
 
 ##################################
 # computing j->tau fake template #
@@ -86,46 +116,40 @@ def ComputeEWKFraction(h_data,h_mc):
 ############################
 ###### Closure test ########
 ############################
-def PlotClosure(h_data,h_models,wp,era,var,wpVsMu,wpVsE):
+def PlotClosure(hists,**kwargs): 
 
-    print
-    print("Plotting closure")
-#    if era=='UL2017' and wp=='Tight': 
-#        h_data.SetBinContent(3,0.95*h_data.GetBinContent(3))
-#        h_data.SetBinContent(4,0.85*h_data.GetBinContent(4))
-#    if era=='UL2016_postVFP' and wp=='Loose':
-#        h_data.SetBinContent(4,0.71*h_data.GetBinContent(4))
-#        h_data.SetBinContent(5,0.90*h_data.GetBinContent(5))        
-#    if era=='UL2016_postVFP' and wp=='Medium':
-#        h_data.SetBinContent(3,0.81*h_data.GetBinContent(3))
-#        h_data.SetBinContent(4,0.65*h_data.GetBinContent(4))
-#        h_data.SetBinContent(5,0.90*h_data.GetBinContent(5))
-#    if era=='UL2016_postVFP' and wp=='Tight':
-#        h_data.SetBinContent(1,1.21*h_data.GetBinContent(1))
-#        h_data.SetBinContent(3,0.81*h_data.GetBinContent(3))
-#        h_data.SetBinContent(4,0.65*h_data.GetBinContent(4))
-#        h_data.SetBinContent(5,0.90*h_data.GetBinContent(5))
+    wp = kwargs.get('wp','Medium') 
+    era = kwargs.get('era','2023') 
+    var = kwargs.get('var','mt_1')
+    basename = kwargs.get('basename','bkgd')
+    uncs = kwargs.get('uncs',[''])
+    wpVsMu = kwargs.get('wpVsMu') 
+    wpVsE = kwargs.get('wpVsE')
 
-
-    h_model = h_models["bkg_fake_mc_wjets"]    
+    print('')
+    print('Plotting closure')
+    h_data = hists[basename+'_fake_SR']
+    h_model = hists[basename+"_fake_mc_wjets"]    
     
     styles.InitData(h_data)
     h_tot = h_model.Clone('h_tot_model')
     # add systematic uncertainties
+    print("           =      Data      :    Model")
     nbins = h_tot.GetNbinsX()
     for i in range(1,nbins+1):
         error2 = h_tot.GetBinError(i)*h_tot.GetBinError(i)
         errorStat = h_tot.GetBinError(i)
         xcen = h_tot.GetBinContent(i)
-        for ptratioLabel in utils.ptratioLabels:
-            for uncLabel in utils.statUncLabels:
-                name = "bkg_fake_mc_wjets" + ptratioLabel + uncLabel
-                xsys = h_models[name].GetBinContent(i)
-                error2 += (xcen-xsys)*(xcen-xsys)
+        xdata = h_data.GetBinContent(i)
+        edata = h_data.GetBinError(i)
+        for unc in uncs:
+            name = basename + "_fake_mc_wjets_" + unc
+            xsys = hists[name].GetBinContent(i)
+            error2 += (xcen-xsys)*(xcen-xsys)
         error = math.sqrt(error2)
         lowerEdge = h_tot.GetBinLowEdge(i)
         upperEdge = h_tot.GetBinLowEdge(i+1)
-        print("[%3d,%4d] = %5.1f +/- %4.1f(stat) +/- %4.1f(tot) (%4.2f rel)" %(lowerEdge,upperEdge,xcen,errorStat,error,error/xcen))
+        print("[%3d,%4d] = %5.1f +/- %4.1f : %5.1f +/- %4.1f" %(lowerEdge,upperEdge,xdata,edata,xcen,error))
         h_tot.SetBinError(i,error)
                 
     styles.InitTotalHist(h_tot)
@@ -177,8 +201,10 @@ def PlotClosure(h_data,h_models,wp,era,var,wpVsMu,wpVsE):
 
     xmin = hist_ratio.GetXaxis().GetBinLowEdge(1)    
     xmax = hist_ratio.GetXaxis().GetBinLowEdge(nbins+1)
-    func = ROOT.TF1("func",FitConst,xmin,xmax,1)
+    func = ROOT.TF1("func",FitRatio,xmin,xmax,3)
     func.SetParameter(0,1.0)
+    func.SetParameter(1,0.0)
+    func.SetParameter(2,0.0)
     func.SetLineColor(4)
 
     hist_fit = hist_ratio.Clone('hist_fit')
@@ -200,38 +226,26 @@ def PlotClosure(h_data,h_models,wp,era,var,wpVsMu,wpVsE):
     canvas.cd()
     canvas.SetSelected(canvas)
     canvas.Update()
-    canvas.Print(utils.figuresFolderWTauNu+"/"+wpVsMu+"VsMu_"+wpVsE+"VsE/closure_"+var+"_"+wp+"_"+era+".png")
+    canvas.Print(utils.figuresFolderWTauNu+"/closure_"+var+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+".png")
 
-    nonclosure = func.GetParameter(0)
-    outputFileName = utils.datacardsFolder+"/"+wpVsMu+"VsMu_"+wpVsE+"VsE/closure_"+wp+"_"+era
-    print
-    print("Saving fit function to RooT file",outputFileName+".root")
-    fileOutput = ROOT.TFile(outputFileName+".root","recreate")
-    fileOutput.cd("")
-    h_data.Write('data')
-    h_model.Write('model')
-    func.Write("closure")
-    fileOutput.Close()
-    
-    return nonclosure,hist_ratio
+    return hist_ratio
 
 ##########################
 # Plotting distributions #
 ##########################
-def PlotWToTauNu(h_data_input,h_fake_input,h_tau_input,h_bkg_input,h_sig_input,wp,era,var,wpVsMu,wpVsE):
-    
-    # protection from zero entries
-    xb1 = max(h_bkg_input.GetBinContent(1),0.1)
-    h_bkg_input.SetBinContent(1,xb1)
+def PlotWToTauNu(hists,**kwargs):
 
-#    if era=='UL2017' and var=='mt_1' and wp!='VVTight':
-#        h_tau_input.SetBinContent(1,2.*h_tau_input.GetBinContent(1))
-
-    h_data = h_data_input.Clone("data_plot")
-    h_fake = h_fake_input.Clone("fake_plot")
-    h_bkg = h_bkg_input.Clone("bkg_plot")
-    h_tau = h_tau_input.Clone("tau_plot")
-    h_sig = h_sig_input.Clone("sig_plot")
+    wp = kwargs.get('wp','Medium')
+    era = kwargs.get('era','2023')
+    var = kwargs.get('var','mt_1')
+    wpVsMu = kwargs.get('wpVsMu','Tight')
+    wpVsE = kwargs.get('wpVsE','Tight')
+   
+    h_data = hists['hist_data'].Clone("data_plot")
+    h_fake = hists['hist_fake'].Clone("fake_plot")
+    h_bkg = hists['hist_bkg_lfakes'].Clone("bkg_plot")
+    h_tau = hists['hist_bkg_tau'].Clone("tau_plot")
+    h_sig = hists['hist_sig'].Clone("sig_plot")
 
     # log-normal uncertainties 
     #  5% signal, 
@@ -369,7 +383,7 @@ def PlotWToTauNu(h_data_input,h_fake_input,h_tau_input,h_bkg_input,h_sig_input,w
     canvas.Update()
     print
     print('Creating control plot')
-    canvas.Print(utils.figuresFolderWTauNu+"/"+wpVsMu+"VsMu_"+wpVsE+"VsE/wtaunu_"+wp+"_"+era+".png")
+    canvas.Print(utils.figuresFolderWTauNu+"/"+var+"_"+wp+"_"+era+".png")
 
 def CreateCardsWToTauNu(fileName,h_data,h_fake,h_tau,h_bkg,h_sig,uncs_fake,uncs_sig):
 
@@ -398,8 +412,7 @@ def CreateCardsWToTauNu(fileName,h_data,h_fake,h_tau,h_bkg,h_sig,uncs_fake,uncs_
     f.write("extrapW        lnN   -             1.04          -             -\n")
     f.write("bkgNorm_taunu  lnN   1.2           -             -             -\n")
     f.write("lep_fakes      lnN   -             -             -           1.5\n")
-    #    f.write("fake_closure   lnN   -             -             1.15          -\n")
-    f.write("fake_closure shape   -             -             1.0           -\n")
+    f.write("nonclosure   shape   -             -             1.0           -\n")
     for unc in uncs_sig:
         f.write(unc+"     shape   -             1.0           -             -\n")
     for unc in uncs_fake:
@@ -419,90 +432,114 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='UL2017', help="""Era : UL2016_preVFP, UL2016_postVFP, UL2017, UL2018""")
-    parser.add_argument('-wp','--WP', dest='wp', default='Medium', help=""" tau ID WP : Loose, Medium, Tight, VTight, VVTight""")
-    parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight', help=""" WP vs. mu : VLoose, Loose, Medium, Tight""")
-    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='VLoose', help=""" WP vs. e : VLoose, Loose, Medium, Tight, VTight, VVTight""")
-    parser.add_argument('-nb','--nbins', dest='nbins',default=8,help=""" Number of bins""")
-    parser.add_argument('-xmin','--xmin',dest='xmin' ,default=200,help=""" xmin """)
-    parser.add_argument('-xmax','--xmax',dest='xmax' ,default=1000, help=""" xmax """)
-    
-    parser.add_argument('-var','--variable',dest='variable',default='mt_1',help=""" Variable to plot""")
+    parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
+    parser.add_argument('-wp','--WP', dest='wp', default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
+    parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight',choices=['VLoose','Tight'])
+    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='Tight',choices=['VVLoose','Tight'])
+    parser.add_argument('-var','--variable',dest='variable',default='mt_1',choices=['mt_1','met','pt_1','eta_1','phi_1'])
 
     args = parser.parse_args() 
     xbins_mt = [200,300,400,500,600,800,1200]
-    xbins_pt = [100,150,200,250,300,400,500]
-    if args.era=="UL2016_preVFP" or args.era=="UL2016_postVFP":
-        xbins_mt = [200,300,400,500,600,800,1200]
+    xbins_pt = [100,150,200,250,300,400,500,700]
     xbins_eta = [-2.4, -1.8, -1.2, -0.6, 0.0, 0.6, 1.2, 1.8, 2.4]
+    xbins_met = [100,150,200,250,300,400,500,700]
     xbins = xbins_mt
 
     if args.variable=='pt_1': xbins = xbins_pt
     if args.variable=='eta_1': xbins =  xbins_eta
+    if args.variable=='met': xbins = xbins_met
+    if args.variable=='phi1' : [-3.15,-2.5,-2.0,-1.5,-1.0,-0.5,0.0,0.5,1.0,1.5,2.0,2.5,3.15]
 
     basefolder = utils.picoFolder
     var = args.variable    
 
     # initializing instance of FF class    
-    fullpathFF = os.getenv('CMSSW_BASE') + '/src/TauFW/Plotter/data/ff_HighPT/ff_'+args.wp+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+".root"
-    fakeFactor = utils.FakeFactorHighPt(fullpathFF)
+    fullpathFF = utils.baseFolder+'/FF/ff_'+args.wp+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+".root"
+    fakeFactor = FakeFactorHighPt(filename=fullpathFF)
 
     # initializing instance of TauNuCuts class
     antiMu = utils.tauVsMuIntWPs[args.wpVsMu]
     antiE  = utils.tauVsEleIntWPs[args.wpVsE]
-    wtaunuCuts = utils.TauNuCuts(antiMu=antiMu,antiE=antiE)    
+    wtaunuCuts = analysis.TauNuCuts(antiMu=antiMu,antiE=antiE)    
+    wtaunuCuts.Print()
+    
 
     # vector uncertainties
     uncert_names = ["JES","Unclustered","taues_1pr","taues_1pr1pi0","taues_3pr","taues_3pr1pi0"]
-    #    uncert_names = ["JES","Unclustered","taues"]
     uncert_names_full = [] # uncertainty names with suffix era
     for unc in uncert_names:
         uncert_names_full.append(unc+"_"+args.era)
 
-    print
+    eras = utils.periods[args.era]
+
+    print('')
     print('initializing data samples >>>')
-    metSamples = {} # data samples dictionary
-    metNames = utils.met[args.era]
-    for metName in metNames:
-        metSamples[metName] = utils.sampleHighPt(basefolder,args.era,
+    metSamples = {} 
+    for era in eras:
+        metNames = utils.met[era]
+        for metName in metNames:
+            name = metName
+            metSamples[name] = analysis.sampleHighPt(basefolder,era,
                                                       "taunu",metName,True)
-        metSamples[metName].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+            metSamples[name].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
 
-    print
+    print('')
+    print('initializing W background samples >>>')
+    wbkgSamples = {}
+    for era in eras:
+        run = utils.eraRun[era]
+        wbkgSampleNames = WBkgSampleNames[run]
+        for wbkgSampleName in wbkgSampleNames:
+            name = wbkgSampleName + '_' + era
+            if wbkgSampleName in utils.MCLowHT:
+                wbkgSamples[name] = analysis.sampleHighPt(basefolder,era,
+                                                          "taunu",wbkgSampleName,
+                                                          False,additionalCut="(HT<100||HT>800)",
+                                                          applyHTcut=True)
+            else:
+                wbkgSamples[name] = analysis.sampleHighPt(basefolder,era,
+                                                          "taunu",wbkgSampleName,
+                                                          False)
+            wbkgSamples[name].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+
+    print('')
     print('initializing background samples >>>')
-    bkgSamples = {} # MC bkg samples dictionary 
-    for bkgSampleName in bkgSampleNames:
-        bkgSamples[bkgSampleName] = utils.sampleHighPt(basefolder,args.era,
-                                                       "taunu",bkgSampleName,False)
-        bkgSamples[bkgSampleName].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+    bkgSamples = {}
+    for era in eras:
+        run = utils.eraRun[era]
+        bkgSampleNames = BkgSampleNames[run]
+        for bkgSampleName in bkgSampleNames:
+            name = bkgSampleName + '_' + era
+            bkgSamples[name] = analysis.sampleHighPt(basefolder,era,
+                                                     "taunu",bkgSampleName,
+                                                     False)
+            bkgSamples[name].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
 
-    print
-    print('initializing background samples (for lepton->tau fakes) >>>')
-    bkgSamplesLepFake = {} # MC bkg samples dictionary 
-    for bkgSampleName in bkgSampleNamesLepFake:
-        bkgSamplesLepFake[bkgSampleName] = utils.sampleHighPt(basefolder,args.era,
-                                                              "taunu",bkgSampleName,False)
-        bkgSamplesLepFake[bkgSampleName].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
-
-    print
+    print('')
     print('initializing signal samples >>>')
-    sigSamples = {} # MC signal samples dictionary 
-    for sigSampleName in sigSampleNames:
-        sigSamples[sigSampleName] = utils.sampleHighPt(basefolder,args.era,
-                                                       "taunu",sigSampleName,False)
-        sigSamples[sigSampleName].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+    sigSamples = {} 
+    for era in eras:
+        run = utils.eraRun[era]
+        sigSampleNames = SigSampleNames[run]
+        for sigSampleName in sigSampleNames:
+            name = sigSampleName + '_' + era
+            sigSamples[name] = analysis.sampleHighPt(basefolder,era,
+                                                     "taunu",sigSampleName,False)
+            sigSamples[name].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
 
-    # running selection on signal samples (notFake)
-    hists_sig_notFake = utils.RunSamplesTauNu(sigSamples,var,"",xbins,"_notFake","sig")
+
 
     # running on signal samples (central template and unceertainties)
-    print
+    print('')
     print('Running on signal samples >>>')
-    hists_sig_shape = {}
-    commonCut = "metfilter>0.5&&mettrigger>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&njets==0&&idDeepTau2017v2p1VSmu_1>="+utils.tauVsMuWPs[args.wpVsMu]+"&&idDeepTau2017v2p1VSe_1>="+utils.tauVsEleWPs[args.wpVsE]+"&&genmatch_1==5&&idDeepTau2017v2p1VSjet_1>=" + utils.tauWPs[args.wp]
-    commonCutFakes = "metfilter>0.5&&mettrigger>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&njets==0&&idDeepTau2017v2p1VSmu_1>="+utils.tauVsMuWPs[args.wpVsMu]+"&&idDeepTau2017v2p1VSe_1>="+utils.tauVsEleWPs[args.wpVsE]+"&&(genmatch_1>=1&&genmatch_1<=4)&&idDeepTau2017v2p1VSjet_1>=" + utils.tauWPs[args.wp]
-    no_unc = [""]
-    lst = no_unc + uncert_names
+
+    hists_sig = {}
+
+    # defining baseline cuts
+    commonCut = "metfilter>0.5&&mettrigger>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&njets==0&&idDeepTau2018v2p5VSmu_1>="+utils.tauVsMuWPs[args.wpVsMu]+"&&idDeepTau2018v2p5VSe_1>="+utils.tauVsEleWPs[args.wpVsE]+"&&genmatch_1==5&&idDeepTau2018v2p5VSjet_1>=" + utils.tauWPs[args.wp]
+
+    no_unc = ['']
+    lst = no_unc# + uncert_names
     for name in lst:
 
         name_unc = ""
@@ -519,6 +556,10 @@ if __name__ == "__main__":
         mtUnc = "mt_1"+name_unc
         metdphiUnc = "metdphi_1"+name_unc
 
+#        print('metNoMuCut',wtaunuCuts.metNoMuCut)
+#        print('mhtNoMuCut',wtaunuCuts.mhtNoMuCut)
+        metNoMuCut = "metnomu>%3.1f"%(wtaunuCuts.metNoMuCut)
+        mhtNoMuCut = "mhtnomu>%3.1f"%(wtaunuCuts.mhtNoMuCut)
         metCut     = metUnc+">%3.1f"%(wtaunuCuts.metCut)
         ptLowerCut = ptUnc+">%3.1f"%(wtaunuCuts.ptLowerCut)
         ptUpperCut = ptUnc+"<%3.1f"%(wtaunuCuts.ptUpperCut)
@@ -527,70 +568,61 @@ if __name__ == "__main__":
         mtLowerCut = mtUnc+">%3.1f"%(wtaunuCuts.mtLowerCut)
         mtUpperCut = mtUnc+"<%3.1f"%(wtaunuCuts.mtUpperCut)
 
-        uncertCut = metCut+"&&"+ptLowerCut+"&&"+ptUpperCut+"&&"+etaCut+"&&"+metdphiCut+"&&"+mtLowerCut+"&&"+mtUpperCut
+        uncertCut =metNoMuCut+"&&"+mhtNoMuCut+"&&"+metCut+"&&"+ptLowerCut+"&&"+ptUpperCut+"&&"+etaCut+"&&"+metdphiCut+"&&"+mtLowerCut+"&&"+mtUpperCut
         totalCut = commonCut+"&&"+uncertCut
         
-        #histo = utils.RunSamples(sigSamples,var+name_unc,"weight",totalCut,xbins,name_hist)
-        histo = utils.RunSamples(sigSamples,var+name_unc,"weight",totalCut,xbins,name_hist)
-        hists_sig_shape[name_hist] = histo
+        histo = analysis.RunSamples(sigSamples,var+name_unc,totalCut,xbins,name_hist)
+        print(name_hist,histo.GetSumOfWeights())
+        hists_sig[name_hist] = histo
         
 
-    # running on bkg samples ->
-    metCut     = "met>%3.1f"%(wtaunuCuts.metCut)
-    ptLowerCut = "pt_1>%3.1f"%(wtaunuCuts.ptLowerCut)
-    ptUpperCut = "pt_1<%3.1f"%(wtaunuCuts.ptUpperCut)
-    etaCut     = "fabs(eta_1)<%3.1f"%(wtaunuCuts.etaCut)
-    metdphiCut = "metdphi_1>%3.1f"%(wtaunuCuts.metdphiCut)
-    mtLowerCut = "mt_1>%3.1f"%(wtaunuCuts.mtLowerCut)
-    mtUpperCut = "mt_1<%3.1f"%(wtaunuCuts.mtUpperCut)
 
-    kinCuts = metCut+"&&"+ptLowerCut+"&&"+ptUpperCut+"&&"+etaCut+"&&"+metdphiCut+"&&"+mtLowerCut+"&&"+mtUpperCut
-    totalCutTau     = commonCut+"&&"+kinCuts
-    totalCutFakes   = commonCutFakes+"&&"+kinCuts
-    hist_bkg_tau   = utils.RunSamples(bkgSamples,var,"weight",totalCutTau,xbins,"bkg_tau")
-    hist_bkg_lfakes = utils.RunSamples(bkgSamplesLepFake,var,"weight",totalCutFakes,xbins,"bkg_lfakes")
+    exit()
+    # running selection ->
+    print('')
+    hists_data = analysis.RunSamplesTauNu(metSamples,var,xbins,"data")
+    print('')
+    hists_bkg  = analysis.RunSamplesTauNu(bkgSamples,var,xbins,"bkg")
+    print('')
+    hists_wbkg = analysis.RunSamplesTauNu(wbkgSamples,var,xbins,"wbkg")
+    
+    fake_uncs = fakeFactor.getUncertaintyList()
 
-    # running selection on data 
-    print
-    print('Running on data samples >>>')
-    hists_data        = utils.RunSamplesTauNu(metSamples,var,"",xbins,"","data")
+    hists_totbkg = {}
+    for histname in hists_bkg:
+        hists_totbkg['tot'+histname] = hists_bkg[histname].Clone('tot'+histname)
+        hists_totbkg['tot'+histname].Add(hists_totbkg['tot'+histname],hists_wbkg['w'+histname],1.,1.)
 
-    # running selection on bkgd samples
-    print
-    print('Running on background samples >>>')
-    hists_bkg_fake    = utils.RunSamplesTauNu(bkgSamples,var,"",xbins,"_fake","bkg")
-    hists_bkg_notFake = utils.RunSamplesTauNu(bkgSamples,var,"",xbins,"_notFake","bkg")
-
-    # correct ewk componet for non-closure
-    hist_num = hists_bkg_fake["bkg_fake"]
-    nonclosure,closure = PlotClosure(hist_num,hists_bkg_fake,args.wp,args.era,var,args.wpVsMu,args.wpVsE)    
-
+    # compute non-closure
+    nonclosure = PlotClosure(hists_totbkg,
+                             basename='totbkg',
+                             wp=args.wp,
+                             era=args.era,
+                             var=var,
+                             wpVsMu=args.wpVsMu,
+                             wpVsE=args.wpVsE,
+                             uncs=fake_uncs)    
+    
     # compute EWK fraction histogram in the FF aplication region
-    h_data_dr = hists_data["data_SB"]
-    h_data_dr.Add(h_data_dr,hists_bkg_notFake['bkg_notFake_SB'],1.,-1.)
-    h_data_dr.Add(h_data_dr,hists_sig_notFake['sig_notFake_SB'],1.,-1.)
-    h_ewk_dr  = hists_bkg_fake["bkg_fake_SB"]
+    h_data_dr = hists_data["data_all_SB"]
+    h_data_dr.Add(h_data_dr,hists_totbkg['totbkg_notFake_SB'],1.,-1.)
+    h_ewk_dr  = hists_totbkg["totbkg_fake_SB"]
     h_fraction = ComputeEWKFraction(h_data_dr,h_ewk_dr)
 
     # Create j->tau fake histograms
-    # first subtract from data templates notFake contribution estimated with simulated samples
-    for label in ["data_wjets","data_dijets"]:
-        hists_data["data_"+label].Add(hists_data["data_"+label],hists_bkg_notFake["bkg_notFake_"+label],1.,-1.)
-        hists_data["data_"+label].Add(hists_data["data_"+label],hists_sig_notFake["sig_notFake_"+label],1.,-1.)
-        for ptratioLabel in utils.ptratioLabels:
-            for uncLabel in utils.statUncLabels:
-                sysLabel = label + ptratioLabel + uncLabel
-                hists_data["data_"+sysLabel].Add(hists_data["data_"+sysLabel],hists_bkg_notFake["bkg_notFake_"+sysLabel],1.,-1.)
-                hists_data["data_"+sysLabel].Add(hists_data["data_"+sysLabel],hists_sig_notFake["sig_notFake_"+sysLabel],1.,-1.)
-                
+    hist_fake = hists_data['data_all_data_wjets']
+    hist_fake.Add(hist_fake,hists_totbkg['totbkg_notFake_data_wjets'],1.,-1.)
+    #    hist_fake = CorrectForNonClosure(hist_nonclosure,nonclosure,'fake')
+    
+    # data histogram
+    hist_data = hists_data["data_all_SR"]
+    # signal histogram
+    hist_sig = hists_sig["wtaunu_tau"]
 
-    hist_wjets  = hists_data["data_data_wjets"]
-    hist_dijets = hists_data["data_data_dijets"]
-    hist_fake = ComputeFake(hist_wjets,hist_dijets,h_fraction,'fake')
-    hist_data = hists_data["data"]
-    hist_sig = hists_sig_shape["wtaunu_tau"]
-    hist_bkg = hists_bkg_notFake["bkg_notFake"]
-
+    
+    hist_bkg_tau = hists_bkg["bkg_tau_SR"]
+    hist_bkg_lfakes = hists_totbkg["totbkg_lepFake_SR"]
+    hist_bkg = hists_totbkg["totbkg_notFake_SR"] 
     print
     print("Check composition of the background")
     print('Total        = %5.1f'%(hist_bkg.GetSumOfWeights()))
@@ -600,8 +632,24 @@ if __name__ == "__main__":
     print('Sum check    = %5.1f'%(tot_bkg))
     print('W*->tau+v    = %5.1f'%(hist_sig.GetSumOfWeights()))
 
+    hist_bkg_tau = hists_bkg['bkg_tau_SR']
+
     # making control plot
-    PlotWToTauNu(hist_data,hist_fake,hist_bkg_tau,hist_bkg_lfakes,hist_sig,args.wp,args.era,var,args.wpVsMu,args.wpVsE)
+    histsToPlot = {}
+    histsToPlot['hist_data'] = hist_data
+    histsToPlot['hist_fake'] = hist_fake
+    histsToPlot['hist_bkg_tau'] = hist_bkg_tau
+    histsToPlot['hist_bkg_lfakes'] = hist_bkg_lfakes
+    histsToPlot['hist_sig'] = hist_sig
+    
+    PlotWToTauNu(histsToPlot,
+                 wp=args.wp,
+                 era=args.era,
+                 var=var,
+                 wpVsMu=args.wpVsMu,
+                 wpVsE=args.wpVsE)
+
+    exit()
 
     # creating shape templates for FF systematics
     hists_fake_sys = {}
@@ -653,12 +701,5 @@ if __name__ == "__main__":
         hists_fake_sys[histName].Write(histName)    
     fileOutput.Close()
 
-    uncs_fake = []
-    for sampleLabel in ["ewk","qcd"]:
-        for ptratioLabel in ["_ptratioLow","_ptratioHigh"]:
-            for statUnc in ["_unc1","_unc2"]:
-                unc = sampleLabel+ptratioLabel+statUnc
-                uncs_fake.append(unc)
-
-    CreateCardsWToTauNu(outputFileName,hist_data,hist_fake,hist_bkg_tau,hist_bkg_lfakes,hist_sig,uncs_fake,uncert_names_full)
+    CreateCardsWToTauNu(outputFileName,hist_data,hist_fake,hist_bkg_tau,hist_bkg_lfakes,hist_sig,fakes_unc,uncert_names)
                 

@@ -11,8 +11,8 @@ import os
 #########################
 # folder for picotuples #
 #########################
-#picoFolder = '/eos/user/r/rasp/output/HighPT_2023'
 picoFolder = '/eos/user/r/rasp/output/HighPT_2023'
+#picoFolder = '/eos/user/r/rasp/output/HighPT_2022'
 #picoFolder='/eos/user/r/rasp/output/HighPT_deepTauV2p5'
 #picoFolder='/eos/user/r/rasp/output/HighPT'
 
@@ -244,8 +244,8 @@ eraSamples = {
     "2022"   : sampleXSec_2022,
     "2022_preEE"  : sampleXSec_2022,
     "2022_postEE" : sampleXSec_2022,
-    "2022C" : sampleXSec_2023,
-    "2022D" : sampleXSec_2023,
+    "2023C" : sampleXSec_2023,
+    "2023D" : sampleXSec_2023,
 } 
 
 eraLumi = {
@@ -272,7 +272,6 @@ singlemu_2018 = ['SingleMuon_Run2018A','SingleMuon_Run2018B','SingleMuon_Run2018
 singlemu_2017 = ['SingleMuon_Run2017B','SingleMuon_Run2017C','SingleMuon_Run2017D','SingleMuon_Run2017E','SingleMuon_Run2017F']
 singlemu_2016_preVFP = ['SingleMuon_Run2016B','SingleMuon_Run2016C','SingleMuon_Run2016D','SingleMuon_Run2016E','SingleMuon_Run2016F']
 singlemu_2016_postVFP = ['SingleMuon_Run2016F','SingleMuon_Run2016G','SingleMuon_Run2016H']
-
 
 jetht_2018 = ['JetHT_Run2018A','JetHT_Run2018B','JetHT_Run2018C','JetHT_Run2018D']
 jetht_2017 = ['JetHT_Run2017B','JetHT_Run2017C','JetHT_Run2017D','JetHT_Run2017E','JetHT_Run2017F']
@@ -313,13 +312,13 @@ met = {
     "UL2017": met_2017,
     "UL2018": met_2018,
     "2022"  : met_2022,
-    "2022_postEE" : met_2022_postEE
+    "2022_postEE" : met_2022_postEE,
     "2023C" : met_2023C,
     "2023D" : met_2023D
 }
 
 
-MCPartons0 = ['WJetsToLNu-4Jets']
+MCPartons0 = ['WJetsToLNu-4Jets','WtoLNu-4Jets']
 
 MCLowHT = [
     'WJetsToLNu',
@@ -327,7 +326,12 @@ MCLowHT = [
     'WJetsToLNu-4Jets_1J',
     'WJetsToLNu-4Jets_2J',
     'WJetsToLNu-4Jets_3J',
-    'WJetsToLNu-4Jets_4J'
+    'WJetsToLNu-4Jets_4J',
+    'WtoLNu-4Jets',
+    'WtoLNu-4Jets_1J',
+    'WtoLNu-4Jets_2J',
+    'WtoLNu-4Jets_3J',
+    'WtoLNu-4Jets_4J',
 ]
 
 
@@ -402,19 +406,27 @@ uncs = ['JES','JER','Unclustered','taues_1pr','taues_1pr1pi0','taues_3pr','taues
 ### Settings for FF measurements #
 ##################################
 
-xbinsPt = {
-    'pt_2': [100, 125, 150, 175, 200, 2000],
-    'jpt_match_2' : [100, 150, 200, 300, 2000]
+xbinsPt = { 
+    'pt_2' : [100, 125, 150, 175, 200, 2000],
+    'jpt_match_2' : [100, 125, 150, 200, 300, 2000]
 }
 
-xbinsPtTrig = {
+xbinsPtTrig = { 
     'pt_2' : [100, 200, 2000],
     'jpt_match_2' : [100, 300, 2000]
 }
-ptUncThreshold = {
-    'pt_2' : 200.0, # split pt region for FF stat. uncertainties (<200, >=200.)
-    'jpt_match_2' : 300. # split jet pt region for FF stat. uncertainties (<200, >=200.)
+
+variableLabel = {
+    'pttau' : 'pt_2',
+    'ptjet' : 'jpt_match_2',
+    'mtau'  : 'm_2'
 }
+
+ptUncThreshold = {
+    'pttau' : 200.0, # split pt region for FF stat. uncertainties (<200, >=200.)
+    'ptjet' : 300.0 # split jet pt region for FF stat. uncertainties (<200, >=200.)
+}
+
 ptratioCuts = {
     'ptratioLow'   : 'jpt_ratio_2<0.85',
     'ptratioHigh'  : 'jpt_ratio_2>=0.85'
@@ -459,7 +471,6 @@ XTitle = {
     'm_1'   : "tau mass (GeV)",
     'm_2'   : "tau mass (GeV)",
 }
-
 
 def makeBaseName(var,wp,wpVsMu,wpVsE,era):
     basename = '%s_%sVsJet_%sVsMu_%sVsE_%s'%(var,wp,wpVsMu,wpVsE,era)

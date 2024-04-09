@@ -4,10 +4,13 @@
 # Datacard producer (W*->mu+v control region)
 import ROOT
 import math
-import TauFW.Plotter.HighPT.utilsHighPT as utils
+import HighPT.Tau.utilsHighPT as utils
+import HighPT.Tau.stylesHighPT as styles
+import HighPT.Tau.analysisHighPT as analysis
 from array import array
-import TauFW.Plotter.HighPT.stylesHighPT as styles
+
 import os
+
 
 #################################
 #     definition of cuts        #
@@ -42,6 +45,7 @@ def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,era,var):
     styles.InitHist(h_bkg,"","",ROOT.TColor.GetColor("#6F2D35"),1001)
     styles.InitHist(h_sig,"","",ROOT.TColor.GetColor("#FFCC66"),1001)
 
+    print('Yields ->')
     nbins = h_data.GetNbinsX()
     # log-normal systematic uncertainties (5% signal, 10% background)
     e_sig_sys = 0.05
@@ -55,7 +59,13 @@ def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,era,var):
         e_bkg_stat = h_bkg.GetBinError(i)
         e_bkg = math.sqrt(e_bkg_stat*e_bkg_stat+e_bkg_sys*e_bkg_sys*x_bkg*x_bkg)
         h_bkg.SetBinError(i,e_bkg)
+        xlower = int(h_data.GetBinLowEdge(i))
+        xupper = int(h_data.GetBinLowEdge(i+1))
+        x_data = h_data.GetBinContent(i)
+        print('[%4i,%4i] ->  data = %4.0f   W = %4.0f   bkg = %4.0f'%(xlower,xupper,x_data,x_sig,x_bkg))
+        
 
+    print('')
     h_sig.Add(h_sig,h_bkg,1.,1.)
     h_tot = h_sig.Clone("total")
     styles.InitTotalHist(h_tot)
@@ -64,7 +74,7 @@ def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,era,var):
     h_tot_ratio = utils.createUnitHisto(h_tot,'tot_ratio')
 
     styles.InitRatioHist(h_ratio)
-    h_ratio.GetYaxis().SetRangeUser(0.201,1.799)
+    h_ratio.GetYaxis().SetRangeUser(0.001,1.999)
     
     utils.zeroBinErrors(h_sig)
     utils.zeroBinErrors(h_bkg)
@@ -77,6 +87,8 @@ def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,era,var):
     h_data.GetYaxis().SetTitle("events / bin")
     h_ratio.GetYaxis().SetTitle("obs/exp")
     h_ratio.GetXaxis().SetTitle(utils.XTitle[var])
+
+    
 
     # canvas and pads
     canvas = styles.MakeCanvas("canv","",600,700)
@@ -133,7 +145,7 @@ def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,era,var):
     canvas.cd()
     canvas.SetSelected(canvas)
     canvas.Update()
-    print
+    print('')
     print('Creating control plot')
     canvas.Print(utils.figuresFolderWMuNu+"/wmunu_"+era+".png")
 
@@ -181,7 +193,7 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='UL2017', help="""Era : UL2016_preVFP, UL2016_postVFP, UL2017, UL2018""")
+    parser.add_argument('-e','--era', dest='era', default='UL2017',choices=['UL2016','UL2017','UL2018','2022','2023'])
     parser.add_argument('-nb','--nbins', dest='nbins',default=8,help=""" Number of bins""")
     parser.add_argument('-xmin','--xmin',dest='xmin' ,default=200,help=""" xmin """)
     parser.add_argument('-xmax','--xmax',dest='xmax' ,default=1000, help=""" xmax """)
@@ -189,11 +201,6 @@ if __name__ == "__main__":
 
 
     args = parser.parse_args() 
-
-    if args.era not in ['UL2016_preVFP','UL2016_postVFP','UL2017','UL2018','UL2016','2022','2023C','2023D','2023']:
-        print('unknown era',args.era)
-        exit()
-
     period = args.era
 
     xbins = [200,300,400,500,600,700,800,1000,1200,1400]
@@ -203,17 +210,17 @@ if __name__ == "__main__":
     
     eras = utils.periods[args.era]
 
-    print
+    print('')
     print('initializing SingleMuon samples >>>')
     singlemuSamples = {} # data samples dictionary
     for era in eras:
         singlemuNames = utils.singlemu[era]
         for singlemuName in singlemuNames:
             name = singlemuName + "_" + era
-            singlemuSamples[name] = utils.sampleHighPt(basefolder,era,
+            singlemuSamples[name] = analysis.sampleHighPt(basefolder,era,
                                                        "munu",singlemuName,True)
 
-    print
+    print('')
     print('initializing background samples >>>')
     bkgSamples = {} # MC bkg samples dictionary 
     for era in eras:
@@ -221,10 +228,10 @@ if __name__ == "__main__":
         bkgSampleNames = RunBkgSampleNames[run]
         for bkgSampleName in bkgSampleNames:
             name = bkgSampleName + "_" + era
-            bkgSamples[name] = utils.sampleHighPt(basefolder,era,
+            bkgSamples[name] = analysis.sampleHighPt(basefolder,era,
                                                   "munu",bkgSampleName,False)
 
-    print
+    print('')
     print('initializing signal samples >>>')
     sigSamples = {} # MC signal samples dictionary 
     for era in eras:
@@ -232,7 +239,7 @@ if __name__ == "__main__":
         sigSampleNames = RunSigSampleNames[run]
         for sigSampleName in sigSampleNames:
             name = sigSampleName + "_" + era
-            sigSamples[name] = utils.sampleHighPt(basefolder,era,
+            sigSamples[name] = analysis.sampleHighPt(basefolder,era,
                                                   "munu",sigSampleName,False)
 
 
@@ -240,9 +247,9 @@ if __name__ == "__main__":
 
     cut_data = basecut + "&&" + jmetcut
     cut = basecut + "&&" + jmetcut
-    hist_data = utils.RunSamples(singlemuSamples,var,"1.",cut_data,xbins,"data_obs")
-    hist_bkg  = utils.RunSamples(bkgSamples,var,"weight",cut,xbins,"bkgd")
-    hist_sig  = utils.RunSamples(sigSamples,var,"weight",cut,xbins,"wmunu")
+    hist_data = analysis.RunSamples(singlemuSamples,var,cut_data,xbins,"data_obs")
+    hist_bkg  = analysis.RunSamples(bkgSamples,var,cut,xbins,"bkgd")
+    hist_sig  = analysis.RunSamples(sigSamples,var,cut,xbins,"wmunu")
 
 
     hists_unc = {} # uncertainty histograms  
@@ -256,7 +263,7 @@ if __name__ == "__main__":
             jmetcut_unc = met_cut + "&&" + mt_1_cut + "&&" + metdphi_1_cut
             cut_unc = basecut + "&&" + jmetcut_unc
             name = "wmunu_" + name_unc
-            hist_sys = utils.RunSamples(sigSamples,var_unc,"weight",cut_unc,xbins,name)
+            hist_sys = analysis.RunSamples(sigSamples,var_unc,cut_unc,xbins,name)
             name_hist = "wmunu_" + unc
             hist_up,hist_down = utils.ComputeSystematics(hist_sig,hist_sys,name_hist)
             hists_unc[name_hist+"_"+args.era+"Up"] = hist_up
