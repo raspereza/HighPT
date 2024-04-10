@@ -16,7 +16,8 @@ nomettrig = 'mettrigger<0.5'
 
 RunMCSampleNames = { 
     "Run2": ['WJetsToLNu','WJetsToLNu_HT-100To200','WJetsToLNu_HT-200To400','WJetsToLNu_HT-400To600','WJetsToLNu_HT-600To800','WJetsToLNu_HT-800To1200','WJetsToLNu_HT-1200To2500'],
-    "2022": ['WJetsToLNu-4Jets','WJetsToLNu-4Jets_1J','WJetsToLNu-4Jets_2J','WJetsToLNu-4Jets_3J','WJetsToLNu-4Jets_4J','WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800'],
+#    "2022": ['WJetsToLNu-4Jets','WJetsToLNu-4Jets_1J','WJetsToLNu-4Jets_2J','WJetsToLNu-4Jets_3J','WJetsToLNu-4Jets_4J','WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800'],
+    "2022" : ['WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800'],
 #    "2023": ['WtoLNu-4Jets','WtoLNu-4Jets_1J','WtoLNu-4Jets_2J','WtoLNu-4Jets_3J','WtoLNu-4Jets_4J','WtoLNu_HT100to400','WtoLNu_HT400to800']
     "2023": ['WtoLNu_HT100to400','WtoLNu_HT400to800']
     
@@ -72,8 +73,8 @@ def main(args):
     var = 'metnomu'
     mhtLabels = {
         'mht100to130': 'mhtnomu>100&&mhtnomu<200',
-        'mht130to160': 'mhtnomu>100&&mhtnomu<200',
-        'mht160to200': 'mhtnomu>100&&mhtnomu<200',
+        'mht130to160': 'mhtnomu>130&&mhtnomu<160',
+        'mht160to200': 'mhtnomu>160&&mhtnomu<2000',
         'mhtGt200': 'mhtnomu>200',
     }
     mhtBins = {

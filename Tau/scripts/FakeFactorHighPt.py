@@ -30,13 +30,17 @@ genNotFakeCut = 'genmatch_2!=0'
 #########################
 RunMCSampleNames = {
     "Run2" : ['DYJetsToLL_M-50','TTTo2L2Nu','TTToSemiLeptonic','TTToHadronic','WJetsToLNu','WJetsToLNu_HT-100To200','WJetsToLNu_HT-200To400','WJetsToLNu_HT-400To600','WJetsToLNu_HT-600To800','WJetsToLNu_HT-800To1200','WJetsToLNu_HT-1200To2500','ST_t-channel_antitop_4f_InclusiveDecays','ST_t-channel_top_4f_InclusiveDecays','ST_tW_antitop_5f_NoFullyHadronicDecays','ST_tW_top_5f_NoFullyHadronicDecays','WW','WZ','ZZ'],
-    "2022" : ['DYto2L-4Jets_MLL-50','TTTo2L2Nu','TTtoLNu2Q','TTto4Q','TBbarQ_t-channel','TbarBQ_t-channel','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','WJetsToLNu-4Jets','WJetsToLNu-4Jets_1J','WJetsToLNu-4Jets_2J','WJetsToLNu-4Jets_3J','WJetsToLNu-4Jets_4J','WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800'],
+
+    "2022" : ['DYto2L-4Jets_MLL-50','TTTo2L2Nu','TTtoLNu2Q','TTto4Q','TBbarQ_t-channel','TbarBQ_t-channel','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','WJetsToLNu-4Jets_1J','WJetsToLNu-4Jets_2J','WJetsToLNu-4Jets_3J','WJetsToLNu-4Jets_4J','WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800'],
+
     "2023" : ['DYto2L-4Jets_MLL-50','TTto2L2Nu','TTtoLNu2Q','TTto4Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','WtoLNu-4Jets_1J','WtoLNu-4Jets_2J','WtoLNu-4Jets_3J','WtoLNu-4Jets_4J','WtoLNu_HT100to400','WtoLNu_HT400to800'],
 }
 
 RunSigSampleNames = {
     'Run2' : ['WJetsToLNu','WJetsToLNu_HT-100To200','WJetsToLNu_HT-200To400','WJetsToLNu_HT-400To600','WJetsToLNu_HT-600To800','WJetsToLNu_HT-800To1200','WJetsToLNu_HT-1200To2500'],
+
     '2022' : ['WJetsToLNu-4Jets_1J','WJetsToLNu-4Jets_2J','WJetsToLNu-4Jets_3J','WJetsToLNu-4Jets_4J','WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800'],
+
     '2023' : ['WtoLNu-4Jets_1J','WtoLNu-4Jets_2J','WtoLNu-4Jets_3J','WtoLNu-4Jets_4J','WtoLNu_HT100to400','WtoLNu_HT400to800'],
 }
 
@@ -108,6 +112,7 @@ def DrawFF(hist,**kwargs):
     wpVsE  = kwargs.get('wpVsE','TightVsE')
     wpVsMu = kwargs.get('wpVsMu','TightVsMu')
     trigger = kwargs.get('trigger','incl')
+    era = kwargs.get('era','2023')
 
     labelSample = "mc"
     color = 2
@@ -144,7 +149,6 @@ def DrawFF(hist,**kwargs):
     print('')
 
     histToPlot = hist.Clone('temp')
-    Era = TString(era)
 
     if variable1=='pttau' or variable1=='ptjet':
         if trigger=='incl':
@@ -220,7 +224,7 @@ def DrawFF(hist,**kwargs):
 
 def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
 
-    era = kwargs.get("era","UL2018")
+    era = kwargs.get("era","2023")
     wp = kwargs.get("wp","Medium")
     channel = kwargs.get("channel","wjets")
     wpVsE = kwargs.get("wpVsE","Loose")
@@ -517,14 +521,12 @@ if __name__ == "__main__":
             name = mcSampleName + '_' + era
             if mcSampleName in utils.MCLowHT:
                 addCut='(HT<100||HT>800)'
-                if mcSampleName in utils.MCPartons0:
-                    addCut += '&&NUP_LO==0'
                 mcSamples[name] = analysis.sampleHighPt(basefolder,era,"wjets",mcSampleName,
                                                      False,additionalCut=addCut)
             else:
                 mcSamples[name] = analysis.sampleHighPt(basefolder,era,"wjets",mcSampleName,
                                                      False)
-    print
+    print('')
     print('initializing W+Jets samples >>>') 
     sigSamples = {} # wjets samples dictionary
     for era in eras:
@@ -534,8 +536,6 @@ if __name__ == "__main__":
             name = sigSampleName + '_' + era
             if sigSampleName in utils.MCLowHT:
                 addCut='(HT<100||HT>800)'
-                if sigSampleName in utils.MCPartons0:
-                    addCut += '&&NUP_LO==0'
                 sigSamples[name] = analysis.sampleHighPt(basefolder,era,"wjets",sigSampleName,
                                                       False,additionalCut=addCut)
             else:
@@ -547,8 +547,8 @@ if __name__ == "__main__":
         print('folder for fake factors does not exist')
         print('create folder for fake factors : %s'%())
         exit()
-    outputfile = TFile(fullpathout,'recreate')
 
+    outputfile = TFile(fullpathout,'recreate')
     #   measurements ->
     for var1 in ['pttau','ptjet']:
         main(outputfile,

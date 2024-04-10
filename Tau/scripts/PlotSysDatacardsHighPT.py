@@ -103,11 +103,11 @@ if __name__ == "__main__":
 #   Systematics :
 #   jmet    = JES, Unclustered
 #   taues   = taues, taues_1pr taues_1pr1pi0 taues_3pr taues_3pr1pi0    
-#   fakes   = [ewk,qcd]_unc[1,2] FFclosure
+#   fakes   = variable1_variable2 nonclosure
 #   ------
 #   WP      = [Loose,Medium,Tight,VTight,VVTight]
 #   ------
-#   samples = [wmunu,wtaunu,fake]
+#   samples = [wtaunu,fake]
 #####################################################################
     from argparse import ArgumentParser
     parser = ArgumentParser()
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     parser.add_argument('-sys','--sysname',dest='sysname', default='JES',help=""" Systematics name : JES, JER, Unclustered, taues, taues_1pr, taues_1pr1pi0, taues_3pr, taues_3pr1pi0, fake tau uncertainties """)
     args = parser.parse_args() 
 
-    basefolder = utils.datacardsFolder + "/" + args.wpVsMu + "VsMu_" + args.wpVsE + "VsE" 
+    basefolder = utils.datacardsFolder 
     filename = args.channel + "_" + args.era + ".root"
     if args.channel=='taunu':
         filename = args.channel + "_" + args.wp + "_" + args.dm + "_" + args.era + ".root"
