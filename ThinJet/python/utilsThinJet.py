@@ -513,6 +513,7 @@ class TauNuCuts:
         self.dm = kwargs.get('dm','1prong')
         print
         print("Setting cuts for W*->tauv selection")
+        print("CHTO SKAZESH SUKA BLYADSKAJA VONYUCHAJA")
         print("metCut",self.metCut)
         print("etaCut",self.etaCut)
         print("etaJetCut",self.etaJetCut)
@@ -524,6 +525,9 @@ class TauNuCuts:
         print("antiMu",self.antiMu)
         print("antiE",self.antiE)
         print("dm",self.dm)
+
+    def Print(self):
+        print("EBUCHAJA SUKA")
 
 class FakeFactorHighPt:
 

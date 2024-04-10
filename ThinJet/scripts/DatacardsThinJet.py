@@ -468,6 +468,7 @@ if __name__ == "__main__":
     antiE  = utils.tauVsEleIntWPs[wpVsE]
     decaymode = args.dm
     wtaunuCuts = utils.TauNuCuts(antiMu=antiMu,antiE=antiE,dm=decaymode)    
+    wtaunuCuts.Print()
 
     # definition of cuts
     commonCut = "metfilter>0.5&&mettrigger>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&njets==0&&idDeepTau2017v2p1VSmu_1>="+utils.tauVsMuWPs[wpVsMu]+"&&idDeepTau2017v2p1VSe_1>="+utils.tauVsEleWPs[wpVsE]+"&&idDeepTau2017v2p1VSjet_1>=" + utils.tauWPs[args.wp] + "&&" + utils.dmCuts[args.dm]
