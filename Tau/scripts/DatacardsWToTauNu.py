@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # Author: Alexei Raspereza (December 2022)
 # High pT tau ID SF measurements 
 # Datacards producer for the signal region (W*->tau+v) 
@@ -423,7 +423,6 @@ def CreateCardsWToTauNu(fileName,h_data,h_fake,h_tau,h_bkg,h_sig,uncs_fake,uncs_
     f.write("extrapW        lnN   -             1.04          -             -\n")
     f.write("bkgNorm_taunu  lnN   1.2           -             -             -\n")
     f.write("lep_fakes      lnN   -             -             -           1.5\n")
-    f.write("nonclosure   shape   -             -             1.0           -\n")
     for unc in uncs_sig:
         f.write(unc+"     shape   -             1.0           -             -\n")
     for unc in uncs_fake:
@@ -687,7 +686,7 @@ if __name__ == "__main__":
         bkg_sys  = hists_totbkg['totbkg_notFake_data_wjets_%s'%(unc)]
         data_sys.Add(data_sys,bkg_sys,1.,-1.)
         hist_corr = CorrectForNonClosure(data_sys,nonclosure,name_sys)
-        hist_up,hist_down = utils.ComputeSystematics(data_sys,nonclosure,'fake_%s'%(unc))
+        hist_up,hist_down = utils.ComputeSystematics(hist_fake,data_sys,'fake_%s'%(unc))
         names_fake_sys.append(name_sys)
         hists_fake_sys['%sUp'%(name_sys)] = hist_up
         hists_fake_sys['%sDown'%(name_sys)] = hist_down

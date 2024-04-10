@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # Author: Alexei Raspereza (December 2022)
 # High pT tau ID efficiency measurement
 # Datacard producer (W*->mu+v control region)

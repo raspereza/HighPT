@@ -1,10 +1,10 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # Author: Alexei Raspereza (December 2022)
 # Checking systematic variations in datacards
 import ROOT
-import TauFW.Plotter.HighPT.utilsHighPT as utils
+import HighPT.Tau.utilsHighPT as utils
 from array import array
-import TauFW.Plotter.HighPT.stylesHighPT as styles
+import HighPT.Tau.stylesHighPT as styles
 import os
 
 def PlotSystematics(h_central,h_up,h_down,era,sampleName,sysName,ratioLower,ratioUpper):
@@ -28,6 +28,17 @@ def PlotSystematics(h_central,h_up,h_down,era,sampleName,sysName,ratioLower,rati
     h_ratio = utils.createUnitHisto(h_central,'ratio')
     styles.InitRatioHist(h_ratio)
     h_ratio.GetYaxis().SetRangeUser(ratioLower,ratioUpper)
+
+    print('')
+    print('Template %s  systematics %s'%(sampleName,sysName))
+    nbins = h_central.GetNbinsX()
+    for ib in range(1,nbins+1):
+        lower = h_central.GetBinLowEdge(ib)
+        upper = h_central.GetBinLowEdge(ib+1)
+        xcentral = h_central.GetBinContent(ib)
+        xup = h_up.GetBinContent(ib)
+        xdown = h_down.GetBinContent(ib)
+        print('[%3i,%4i]  %6.1f  %6.1f  %6.1f'%(lower,upper,xdown,xcentral,xup))
 
     utils.zeroBinErrors(h_up)
     utils.zeroBinErrors(h_down)
@@ -53,7 +64,7 @@ def PlotSystematics(h_central,h_up,h_down,era,sampleName,sysName,ratioLower,rati
     h_up.Draw('hsame')
     h_central.Draw('e1same')
     
-    leg = ROOT.TLegend(0.6,0.6,0.9,0.9)
+    leg = ROOT.TLegend(0.4,0.55,0.7,0.85)
     styles.SetLegendStyle(leg)
     leg.SetTextSize(0.045)
     leg.SetHeader(era+"  "+sampleName+":"+sysName)
@@ -93,7 +104,6 @@ def PlotSystematics(h_central,h_up,h_down,era,sampleName,sysName,ratioLower,rati
     canvas.Update()
     canvas.Print(utils.figuresFolderSys+"/sys_cards_"+era+"_"+sampleName+"_"+sysName+".png")
 
-
 if __name__ == "__main__":
 
     styles.InitROOT()
@@ -111,28 +121,54 @@ if __name__ == "__main__":
 #####################################################################
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era',      dest='era',     default='UL2018',help=""" era : UL2017, UL2018""")
-    parser.add_argument('-c','--channel',  dest='channel', default='taunu', help=""" channel : munu, wtaunu""")
-    parser.add_argument('-s','--sample',   dest='sample',  default='wtaunu', help=""" sample : wmunu, wtaunu, fake""")
-    parser.add_argument('-wp','--WP',      dest='wp',      default='Medium', help="""  """)
-    parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight', help=""" WP vs. mu : VLoose, Loose, Medium, Tight""")
-    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='Tight', help=""" WP vs. e : VLoose, Loose, Medium, Tight, VTight, VVTight""")
-    parser.add_argument('-dm','--DM', dest='dm', default='1prong', help=""" Decay mode : 1prong, 2prong, 3prong """)
-    parser.add_argument('-sys','--sysname',dest='sysname', default='JES',help=""" Systematics name : JES, JER, Unclustered, taues, taues_1pr, taues_1pr1pi0, taues_3pr, taues_3pr1pi0, fake tau uncertainties """)
+    parser.add_argument('-e','--era',dest='era',default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
+    parser.add_argument('-c','--channel',dest='channel', default='taunu',)
+    parser.add_argument('-s','--sample',dest='sample',default='fake')
+    parser.add_argument('-wp','--WP',dest='wp',      default='Medium')
+    parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight')
+    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='VVLoose')
+    parser.add_argument('-sys','--sysname',dest='sysname', default='ptratioLow_ptjetLow_2023')
+    parser.add_argument('-ymin','--ymin',dest='ymin',default=0.5)
+    parser.add_argument('-ymax','--ymax',dest='ymax',default=1.5)
     args = parser.parse_args() 
 
     basefolder = utils.datacardsFolder 
-    filename = args.channel + "_" + args.era + ".root"
+    filename = "%s_%s.root"%(args.channel,args.era)
     if args.channel=='taunu':
-        filename = args.channel + "_" + args.wp + "_" + args.dm + "_" + args.era + ".root"
-    print("filename",filename)
-    cardsFile = ROOT.TFile(basefolder+"/"+filename)
-    
+        filename = "%s_%s_%s_%s_%s.root"%(args.channel,args.wp,args.wpVsMu,args.wpVsE,args.era)
+    fullpath = basefolder+'/'+filename
+    print('')
+    if os.path.isfile(fullpath):
+        print('Opening file %s'%(fullpath))
+    else:
+        print('File %s does not exist'%(fullpath))
+        exit()
+    print('')
+
+    cardsFile = ROOT.TFile(fullpath)
+    if cardsFile==None or cardsFile.IsZombie():
+        print('File %s cannot be opened'%(fullpath))
+        exit()
+
     hist_central = cardsFile.Get(args.channel+"/"+args.sample)
     hist_up = cardsFile.Get(args.channel+"/"+args.sample+"_"+args.sysname+"Up")
     hist_down = cardsFile.Get(args.channel+"/"+args.sample+"_"+args.sysname+"Down")
-    print("hist_central",hist_central)
-    print("hist_up",hist_up)
-    print("hist_down",hist_down)
+    if hist_central==None:
+        print('Histogram %s is not found'%(hist.GetName()))
+        exit()
+    if hist_up==None:
+        print('Histogram %s is not found'%(hist_up.GetName()))
+        exit()
+    if hist_down==None:
+        print('Histogram %s is not found'%(hist_down.GetName()))
+        exit()
 
-    PlotSystematics(hist_central,hist_up,hist_down,args.era,args.sample,args.sysname,0.8,1.2)
+    print('Plotting histograms : %s  %s  %s'%(hist_central.GetName(),hist_up.GetName(),hist_down.GetName()))
+
+    PlotSystematics(hist_central,
+                    hist_up,
+                    hist_down,
+                    args.era,
+                    args.sample,
+                    args.sysname,
+                    args.ymin,args.ymax)
