@@ -12,9 +12,8 @@ import os
 # folder for picotuples #
 #########################
 picoFolder = '/eos/user/r/rasp/output/HighPT_2023'
-#picoFolder = '/eos/user/r/rasp/output/HighPT_2022'
+#picoFolder = '/eos/user/r/rasp/output/HighPT_2022',
 #picoFolder='/eos/user/r/rasp/output/HighPT_deepTauV2p5'
-#picoFolder='/eos/user/r/rasp/output/HighPT'
 
 #######################
 #    base folder      #
@@ -467,6 +466,7 @@ XTitle = {
     'jpt_match_1' : "jet p_{T} (GeV)",
     'jpt_match_2' : "jet p_{T} (GeV)",
     'eta_1' : "#eta",
+    'phi_1' : "#phi",
     'met'   : "E_{T}^{mis} (GeV)",
     'm_1'   : "tau mass (GeV)",
     'm_2'   : "tau mass (GeV)",
