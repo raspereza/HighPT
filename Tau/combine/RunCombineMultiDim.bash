@@ -1,9 +1,18 @@
 #!/bin/bash
-WP=$1
-subfolder=$2
-folder=/afs/cern.ch/work/r/rasp/public/HighPT_deepTauV2p5/datacards
-cd ${folder}/${subfolder}
-combine -M FitDiagnostics --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --redefineSignalPOIs r_lowpt_16APV,r_highpt_16APV,r_lowpt_16,r_highpt_16,r_lowpt_17,r_highpt_17,r_lowpt_18,r_highpt_18 --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND --X-rtd ADDNLL_RECURSIVE=0 --X-rtd FITTER_NEW_CROSSING_ALGO --robustFit 1 -m 200 -d tauID_${WP}.root --cminDefaultMinimizerTolerance 0.01 --cminDefaultMinimizerStrategy=0 -v 3
-mv fitDiagnosticsTest.root tauID_${WP}_multidim.root
+era=$1
+WPvsJet=$2
+WPvsMu=$3
+WPvsE=$4
+name=${WPvsJet}_${WPvsMu}_${WPvsE}
+folder=/afs/cern.ch/work/r/rasp/HighPT/${era}/datacards
+cd ${folder}
+combineCards.py munu_${era}.txt taunu_${name}_lowpt_${era}.txt taunu_${name}_highpt_${era}.txt > tauID_${name}_ptbinned.txt
+
+combineTool.py -M T2W -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO '"map=^.*/*_highpt_${era}:r_highpt[1,0,2]"' --PO '"map=^.*/*_lowpt_${era}:r_lowpt[1,0,2]"' -o tauID_${name}_ptbinned.root -i tauID_${name}_ptbinned.txt 
+
+combineTool.py -M FitDiagnostics --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --redefineSignalPOIs r_lowpt,r_highpt --robustFit 1 -m 200 -d tauID_${name}_ptbinned.root --cminDefaultMinimizerTolerance 0.1 --cminDefaultMinimizerStrategy 1 -v 2
+
+mv fitDiagnostics.Test.root tauID_${name}_ptbinned_fit.root
+rm higgsCombine*
 
 cd -
