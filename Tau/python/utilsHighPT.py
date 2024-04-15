@@ -11,40 +11,12 @@ import os
 #########################
 # folder for picotuples #
 #########################
-picoFolder = '/eos/user/r/rasp/output/HighPT_2023'
-#picoFolder = '/eos/user/r/rasp/output/HighPT_2022',
-#picoFolder='/eos/user/r/rasp/output/HighPT_deepTauV2p5'
+picoFolder='/eos/user/r/rasp/output/HighPT'
 
 #######################
 #    base folder      #
 #######################
-baseFolder = '/afs/cern.ch/work/r/rasp/HighPT_2023'
-
-#######################
-# folders for figures #
-#######################
-figuresFolder = baseFolder+'/figures'
-figuresFolderFF = figuresFolder+'/FF'
-figuresFolderMetTrigger = figuresFolder+'/MetTrigger'
-figuresFolderSys = figuresFolder+'/Sys'
-figuresFolderWMuNu = figuresFolder+'/WMuNu'
-figuresFolderWTauNu = figuresFolder+'/WTauNu'
-figuresFolderPT = figuresFolder+'/PT'
-
-########################
-# folder for FF        #
-########################
-fakeFactorsFolder = baseFolder+'/FF'
-
-#########################
-# folder for MetTrigger #
-#########################
-metTriggerFolder = baseFolder+'/MetTrigger'
-
-########################
-# folder for datacards #
-########################
-datacardsFolder = baseFolder+'/datacards'
+baseFolder = '/afs/cern.ch/work/r/rasp/HighPT'
 
 ###################
 # Cross sections  #
@@ -155,12 +127,12 @@ sampleXSec_2022 = {
     "WJetsToLNu-4Jets_2J" : 2922.*kfactor_wj,
     "WJetsToLNu-4Jets_3J" : 861.3*kfactor_wj,
     "WJetsToLNu-4Jets_4J" : 415.4*kfactor_wj,
-    "WtoLNu-4Jets_HT-100to400" : 1640.0*kfactor_wj, # 2167.04 
-    "WtoLNu-4Jets_HT-400to800" : 60.32*kfactor_wj, # 84.20
-    "Zto2Nu-4Jets_HT-100to200" : 304.5, # needs to be updated
-    "Zto2Nu-4Jets_HT-200to400" : 91.82, # needs to be updated
-    "Zto2Nu-4Jets_HT-400to800" : 16.37, # needs to be updated
-    "Zto2Nu-4Jets_HT-800to1500" : 1.84, # needs to be updated
+    "WtoLNu-4Jets_HT-100to400" : 1626.0*kfactor_wj,
+    "WtoLNu-4Jets_HT-400to800" : 59.99*kfactor_wj,
+    "Zto2Nu-4Jets_HT-100to200" : 273.7*kfactor_dy, 
+    "Zto2Nu-4Jets_HT-200to400" : 75.96*kfactor_dy, 
+    "Zto2Nu-4Jets_HT-400to800" : 13.19*kfactor_dy, 
+    "Zto2Nu-4Jets_HT-800to1500" : 1.364*kfactor_dy,
     "TTTo2L2Nu" : 80.9*kfactor_ttbar, 
     "TTto4Q" : 346.4*kfactor_ttbar, 
     "TTtoLNu2Q" : 334.8*kfactor_ttbar,
@@ -173,8 +145,8 @@ sampleXSec_2022 = {
     "WW" : 80.23*kfactor_ww,
     "WZ" : 29.1*kfactor_wz,
     "ZZ" : 12.75*kfactor_zz,
-    "WtoMuNu" : 7.206,
-    "WtoNuTau" : 7.869,
+    "WtoMuNu" : 7.393,
+    "WtoNuTau" : 7.910,
 }
 
 sampleXSec_2023 = {
@@ -188,12 +160,12 @@ sampleXSec_2023 = {
     "WtoLNu-4Jets_2J" : 2922.*kfactor_wj,
     "WtoLNu-4Jets_3J" : 861.3*kfactor_wj,
     "WtoLNu-4Jets_4J" : 415.4*kfactor_wj,
-    "WtoLNu_HT100to400" : 1640.0*kfactor_wj, # 2167.04 
-    "WtoLNu_HT400to800" : 60.32*kfactor_wj, # 84.20
-    "Zto2Nu-4Jets_HT-100to200" : 304.5, # needs to be updated
-    "Zto2Nu-4Jets_HT-200to400" : 91.82, # needs to be updated
-    "Zto2Nu-4Jets_HT-400to800" : 16.37, # needs to be updated
-    "Zto2Nu-4Jets_HT-800to1500" : 1.84, # needs to be updated
+    "WtoLNu_HT100to400" : 1626.0*kfactor_wj,
+    "WtoLNu_HT400to800" : 59.99*kfactor_wj,
+    "Zto2Nu-4Jets_HT-100to200" : 273.7*kfactor_dy, 
+    "Zto2Nu-4Jets_HT-200to400" : 75.96*kfactor_dy, 
+    "Zto2Nu-4Jets_HT-400to800" : 13.19*kfactor_dy, 
+    "Zto2Nu-4Jets_HT-800to1500" : 1.364*kfactor_dy,
     "TTto2L2Nu" : 80.9*kfactor_ttbar, 
     "TTto4Q" : 346.4*kfactor_ttbar, 
     "TTtoLNu2Q" : 334.8*kfactor_ttbar,
@@ -206,8 +178,8 @@ sampleXSec_2023 = {
     "WW" : 80.23*kfactor_ww,
     "WZ" : 29.1*kfactor_wz,
     "ZZ" : 12.75*kfactor_zz,
-    "WtoMuNu" : 7.206,
-    "WtoNuTau" : 7.869,
+    "WtoMuNu" : 7.393,
+    "WtoNuTau" : 7.910,
 }
 
 eraRun = {
@@ -272,15 +244,21 @@ singlemu_2017 = ['SingleMuon_Run2017B','SingleMuon_Run2017C','SingleMuon_Run2017
 singlemu_2016_preVFP = ['SingleMuon_Run2016B','SingleMuon_Run2016C','SingleMuon_Run2016D','SingleMuon_Run2016E','SingleMuon_Run2016F']
 singlemu_2016_postVFP = ['SingleMuon_Run2016F','SingleMuon_Run2016G','SingleMuon_Run2016H']
 
+
+jetht_2023D = ['JetMet_Run2023D']
+jetht_2023C = ['JetMet_Run2023C']
+jetht_2022_postEE = ['JetMet_Run2022E','JetMet_Run2022F','JetMet_Run2022G']
+jetht_2022 = ['JetHT_Run2022C','JetMet_Run2022C','JetMet_Run2022D']
 jetht_2018 = ['JetHT_Run2018A','JetHT_Run2018B','JetHT_Run2018C','JetHT_Run2018D']
 jetht_2017 = ['JetHT_Run2017B','JetHT_Run2017C','JetHT_Run2017D','JetHT_Run2017E','JetHT_Run2017F']
 jetht_2016_preVFP = ['JetHT_Run2016B','JetHT_Run2016C','JetHT_Run2016D','JetHT_Run2016E','JetHT_Run2016F']
 jetht_2016_postVFP = ['JetHT_Run2016F','JetHT_Run2016G','JetHT_Run2016H']
 
+
 met_2023D = ['JetMet_Run2023D']
 met_2023C = ['JetMet_Run2023C']
 met_2022_postEE = ['JetMet_Run2022E','JetMet_Run2022F','JetMet_Run2022G']
-met_2022 = ['JetMet_Run2022C','JetMet_Run2022D']
+met_2022 = ['MET_Run2022C','JetMet_Run2022C','JetMet_Run2022D']
 met_2018 = ['MET_Run2018A','MET_Run2018B','MET_Run2018C','MET_Run2018D']
 met_2017 = ['MET_Run2017B','MET_Run2017C','MET_Run2017D','MET_Run2017E','MET_Run2017F']
 met_2016_preVFP = ['MET_Run2016B','MET_Run2016C','MET_Run2016D','MET_Run2016E','MET_Run2016F']
@@ -301,9 +279,12 @@ jetht = {
     "UL2016_preVFP": jetht_2016_preVFP,
     "UL2016_postVFP": jetht_2016_postVFP,
     "UL2017": jetht_2017,
-    "UL2018": jetht_2018
+    "UL2018": jetht_2018,
+    "2022": jetht_2022,
+    "2022_postEE": jetht_2022_postEE,
+    "2023C" : jetht_2023C,
+    "2023D" : jetht_2023D
 }
-
 
 met = {
     "UL2016_preVFP": met_2016_preVFP,
@@ -315,9 +296,6 @@ met = {
     "2023C" : met_2023C,
     "2023D" : met_2023D
 }
-
-
-MCPartons0 = ['WJetsToLNu-4Jets','WtoLNu-4Jets']
 
 MCLowHT = [
     'WJetsToLNu',
@@ -387,19 +365,11 @@ tauIntWPs = {
 }
 
 #############################
-# Shape uncertainties (JME) #
+# Shape uncertainties       #
 #############################
-unc_jme = ['JES','JER','Unclustered']
-
-###############################
-# Shape uncertainties (taues) #
-###############################
+unc_jme = ['JES','Unclustered']
 unc_taues = ['taues_1pr','taues_1pr1pi0','taues_3pr','taues_3pr1pi0'] 
-
-###############################
-# Shape uncertainties (all)   #
-###############################
-uncs = ['JES','JER','Unclustered','taues_1pr','taues_1pr1pi0','taues_3pr','taues_3pr1pi0']
+uncs = ['JES','Unclustered','taues_1pr','taues_1pr1pi0','taues_3pr','taues_3pr1pi0']
 
 ##################################
 ### Settings for FF measurements #
@@ -423,7 +393,7 @@ variableLabel = {
 
 ptUncThreshold = {
     'pttau' : 200.0, # split pt region for FF stat. uncertainties (<200, >=200.)
-    'ptjet' : 300.0 # split jet pt region for FF stat. uncertainties (<200, >=200.)
+    'ptjet' : 300.0  # split jet pt region for FF stat. uncertainties (<200, >=200.)
 }
 
 ptratioCuts = {
@@ -461,12 +431,14 @@ selLabels = ['all','fake','notFake','lepFake','tau']
 
 XTitle = {
     'mt_1'  : "m_{T} (GeV)",
+    'mt_jet_1' : "m_{T}(HPS jet,MET) (GeV)",
     'pt_1'  : "tau p_{T} (GeV)",
     'pt_2'  : "tau p_{T} (GeV)",
-    'jpt_match_1' : "jet p_{T} (GeV)",
-    'jpt_match_2' : "jet p_{T} (GeV)",
-    'eta_1' : "#eta",
-    'phi_1' : "#phi",
+    'jpt_match_1' : "HPS jet p_{T} (GeV)",
+    'jpt_match_2' : "HPS jet p_{T} (GeV)",
+    'eta_1' : "tau #eta",
+    'metphi': "MET #phi",
+    'phi_1' : "tau #phi",
     'met'   : "E_{T}^{mis} (GeV)",
     'm_1'   : "tau mass (GeV)",
     'm_2'   : "tau mass (GeV)",
@@ -486,12 +458,9 @@ def ComputeSystematics(h_central, h_sys, name):
     for i in range(1,nbins+1):
         x_up = h_sys.GetBinContent(i)
         x_central = h_central.GetBinContent(i)
-        x_down = x_central
-        if x_up>0:
-            x_down = x_central*x_central/x_up
+        x_down = max(0,2.0*x_central-x_up)
         h_up.SetBinContent(i,x_up)
         h_down.SetBinContent(i,x_down)
-
     return h_up, h_down
 
 
@@ -518,7 +487,6 @@ def createUnitHisto(hist,histName):
             rat = e/x
             unitHist.SetBinContent(i,1.)
             unitHist.SetBinError(i,rat)
-
     return unitHist
 
 def dividePassProbe(passHist,failHist,histName):
@@ -539,7 +507,6 @@ def dividePassProbe(passHist,failHist,histName):
             eratio = math.sqrt(dpass*dpass+dfail*dfail)
         hist.SetBinContent(i,ratio)
         hist.SetBinError(i,eratio)
-
     return hist
 
 def divideHistos(numHist,denHist,histName):
@@ -552,15 +519,18 @@ def divideHistos(numHist,denHist,histName):
         eDen = denHist.GetBinError(i)
         ratio = 1
         eratio = 0
-        if xNum>1e-7 and xDen>1e-7:
+        if xNum>1e-7:
             ratio = xNum/xDen
             rNum = eNum/xNum
             rDen = eDen/xDen
             rratio = math.sqrt(rNum*rNum+rDen*rDen)
             eratio = rratio * ratio
+        else:
+            ratio = 0.5*eNum/xDen
+            eratio = ratio
+            
         hist.SetBinContent(i,ratio)
         hist.SetBinError(i,eratio)
-
     return hist
 
 def histoRatio(numHist,denHist,histName):
@@ -577,6 +547,5 @@ def histoRatio(numHist,denHist,histName):
             eratio = eNum/xDen
         hist.SetBinContent(i,ratio)
         hist.SetBinError(i,eratio)
-
     return hist
 

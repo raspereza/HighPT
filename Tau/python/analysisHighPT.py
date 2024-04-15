@@ -19,6 +19,11 @@ class TauNuCuts:
         self.metdphiCut = kwargs.get('metdphiCut',2.8)
         self.antiMu = kwargs.get('antiMu',4)
         self.antiE  = kwargs.get('antiE',2)
+        self.etaHotMin = kwargs.get('etaHotMin',-1.380)
+        self.etaHotMax = kwargs.get('etaHotMax',-1.196)
+        self.phiHotMin = kwargs.get('phiHotMin',0.754)
+        self.phiHotMax = kwargs.get('phiHotMax',0.880)
+        self.hotJetVeto = kwargs.get('hotJetVeto',False)
         print('')
         print("Setting cuts for W*->tauv selection")
         print("metNoMuCut",self.metNoMuCut)
@@ -32,6 +37,7 @@ class TauNuCuts:
         print("metdphiCut",self.metdphiCut)
         print("antiMu",self.antiMu)
         print("antiE",self.antiE)
+        print("hotJetVeto",self.hotJetVeto)
 
 # Run over set of samples and create histogram
 def RunSamples(samples,var,cut,xbins,name,**kwargs):
@@ -221,12 +227,14 @@ class sampleHighPt:
         eta_1       = np.zeros(1,dtype='f')
         phi_1       = np.zeros(1,dtype='f')
         metdphi_1   = np.zeros(1,dtype='f')
+        metphi      = np.zeros(1,dtype='f')
         mt_1        = np.zeros(1,dtype='f')
         met         = np.zeros(1,dtype='f')
         metnomu     = np.zeros(1,dtype='f')
         mhtnomu     = np.zeros(1,dtype='f')
         jpt_ratio_1 = np.zeros(1,dtype='f')
         jpt_match_1 = np.zeros(1,dtype='f')
+        mt_jet_1    = np.zeros(1,dtype='f')
         m_1         = np.zeros(1,dtype='f')
         HT          = np.zeros(1,dtype='f')
         
@@ -238,6 +246,7 @@ class sampleHighPt:
         extramuon_veto = np.zeros(1,dtype='?')
         extraelec_veto = np.zeros(1,dtype='?')
         extratau_veto  = np.zeros(1,dtype='?')
+        hotjet_veto    = np.zeros(1,dtype='?')
         
         # integers
         njets                    = np.zeros(1,dtype='i')
@@ -254,8 +263,10 @@ class sampleHighPt:
         # uncertainty dependent
         if uncert_name=='':
             tree.SetBranchAddress('met',met)
+            tree.SetBranchAddress('metphi',metphi)
             tree.SetBranchAddress('metdphi_1',metdphi_1)
             tree.SetBranchAddress('mt_1',mt_1)
+            tree.SetBranchAddress('mt_jet_1',mt_jet_1)
             tree.SetBranchAddress('pt_1',pt_1)
             tree.SetBranchAddress('phi_1',phi_1)
             tree.SetBranchAddress('m_1',m_1)
@@ -268,6 +279,7 @@ class sampleHighPt:
                 tree.SetBranchAddress('m_1_'+uncert,m_1)
             else:
                 tree.SetBranchAddress('met_'+uncert,met)
+                tree.SetBranchAddress('mt_jet_1_'+uncert,mt_jet_1)
                 tree.SetBranchAddress('metdphi_1_'+uncert,metdphi_1)
                 tree.SetBranchAddress('mt_1_'+uncert,mt_1)
                 tree.SetBranchAddress('pt_1',pt_1)
@@ -290,6 +302,9 @@ class sampleHighPt:
         tree.SetBranchAddress('extratau_veto',extratau_veto)
         tree.SetBranchAddress('tautrigger1',tautrigger1)
         tree.SetBranchAddress('tautrigger2',tautrigger2)
+
+        if cuts.hotJetVeto:
+            tree.SetBranchAddress('hotjet_veto',hotjet_veto)
 
         # integers
         tree.SetBranchAddress('njets',njets)
@@ -317,6 +332,10 @@ class sampleHighPt:
             if extramuon_veto[0]: continue
             if extratau_veto[0]: continue
             if njets[0]!=0: continue
+            if cuts.hotJetVeto:
+                if hotjet_veto[0]: 
+                    #                    print('hotspot : [eta,phi] = [%5.2f,%5.2f]'%(eta_1[0],phi_1[0]))
+                    continue
 
             dmcut = dm_1[0]==0 or dm_1[0]==1 or dm_1[0]==10 or dm_1[0]==11
             if not dmcut: continue
@@ -339,12 +358,20 @@ class sampleHighPt:
             if idDeepTau2018v2p5VSmu_1[0]<cuts.antiMu: continue
             if idDeepTau2018v2p5VSjet_1[0]<1: continue
 
+            # remove hot region
+            if cuts.hotJetVeto:
+                hotspot = eta_1[0]>cuts.etaHotMin and eta_1[0]<cuts.etaHotMax and phi_1[0]>cuts.phiHotMin and phi_1[0]<cuts.phiHotMax
+                if hotspot: continue 
+
             variable = mt_1[0]
             if var=='pt_1': variable = pt_1[0]
             if var=='eta_1': variable = eta_1[0]
             if var=='met': variable = met[0]
             if var=='m_1': variable = m_1[0]
             if var=='phi_1': variable = phi_1[0]
+            if var=='jpt_match_1': variable = jpt_match_1[0]
+            if var=='mt_jet_1': variable = mt_jet_1[0]
+            if var=='metphi': variable = metphi
 
             # mc selection
             lepFake = genmatch_1[0]==1 or genmatch_1[0]==2 or genmatch_1[0]==3 or genmatch_1[0]==4
@@ -430,8 +457,6 @@ class sampleHighPt:
                                             name = '%s_%s_%s_%s'%(selFlag,label,trigFlag,ffname)
                                         hists[name].Fill(variable,weight[0]*ffweights[ffname])
                                         
-
         for hist in hists:
             hists[hist].Scale(self.norm)
-
         return hists

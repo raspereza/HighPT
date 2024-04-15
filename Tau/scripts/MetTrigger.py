@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # Author: Alexei Raspereza (November 2022)
 # Description: compute MET trigger efficiencies and SF 
 from ROOT import TFile, TH1, TH1D, TCanvas, TLegend, TH2, gROOT
@@ -15,7 +15,7 @@ mettrig   = 'mettrigger>0.5'
 nomettrig = 'mettrigger<0.5'
 
 RunMCSampleNames = { 
-    "Run2": ['WJetsToLNu','WJetsToLNu_HT-100To200','WJetsToLNu_HT-200To400','WJetsToLNu_HT-400To600','WJetsToLNu_HT-600To800','WJetsToLNu_HT-800To1200','WJetsToLNu_HT-1200To2500'],
+    "Run2": ['WJetsToLNu_HT-100To200','WJetsToLNu_HT-200To400','WJetsToLNu_HT-400To600','WJetsToLNu_HT-600To800','WJetsToLNu_HT-800To1200','WJetsToLNu_HT-1200To2500'],
 #    "2022": ['WJetsToLNu-4Jets','WJetsToLNu-4Jets_1J','WJetsToLNu-4Jets_2J','WJetsToLNu-4Jets_3J','WJetsToLNu-4Jets_4J','WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800'],
     "2022" : ['WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800'],
 #    "2023": ['WtoLNu-4Jets','WtoLNu-4Jets_1J','WtoLNu-4Jets_2J','WtoLNu-4Jets_3J','WtoLNu-4Jets_4J','WtoLNu_HT100to400','WtoLNu_HT400to800']
@@ -57,7 +57,7 @@ def DrawEfficiency(histdata,histmc,era,legend):
     styles.CMS_label(canv,era=era)
 
     canv.Update()
-    canv.Print(utils.figuresFolderMetTrigger+'/mettrig_'+era+'_'+legend+'.png')
+    canv.Print(utils.baseFolder+'/'+era+'/figures/MetTrigger/mettrig_'+era+'_'+legend+'.png')
     print 
 
 def main(args):
@@ -65,10 +65,15 @@ def main(args):
     print('')
 
     channel = "munu"
-    basefolder = utils.picoFolder
+    basefolder = utils.picoFolder+'/'+args.era
     xbinsLt200 = [100,120,140,160,180,200,220,240,280,1000]
     xbinsGt200 = [100,150,175,200,220,240,260,280,1000]
     basecut = 'met>50&&mt_1>50&&pt_1>30&&fabs(eta_1)<2.1&&metfilter>0.5'
+
+    # applying hot jet veto in 2023
+    if args.era=='2023':
+        basecut += '&&hotjet_veto<0.5'
+
     weight = 'weight'
     var = 'metnomu'
     mhtLabels = {
@@ -121,7 +126,7 @@ def main(args):
         cutfail = basecut + '&&' + nomettrig + '&&' + mhtLabels[mhtcut]
 
         # Data ----->
-        datahistpass = analysis.RunSamples(dataSamples,var,cutpass,xbins,'data_pass_'+mhtcut)
+        datahistpass = analysis.RunSamples(dataSamples,var,cutpass,xbins,'data_pass_'+mhtcut,verbosity=True)
         datahistfail = analysis.RunSamples(dataSamples,var,cutfail,xbins,'data_fail_'+mhtcut)
         histeffdata = utils.dividePassProbe(datahistpass,datahistfail,'data_'+mhtcut)
         histsdata['data_'+mhtcut] = histeffdata
@@ -134,7 +139,7 @@ def main(args):
 
         DrawEfficiency(histeffdata,histeffmc,args.era,mhtcut)
 
-    fullpathout = utils.baseFolder + '/mettrigger_'+args.era+".root"
+    fullpathout = utils.baseFolder+'/'+args.era+'/mettrigger_'+args.era+".root"
     outputfile = TFile(fullpathout,'recreate')
     outputfile.cd('')
 
@@ -145,6 +150,8 @@ def main(args):
         histsmc[hist].Write(hist)
         
     outputfile.Close()
+    print('')
+    print('trigger SFs are saved to file %s'%(fullpathout))
 
 ############
 #   MAIN   #
@@ -156,7 +163,7 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='UL2018',choices=['UL2016','UL2016_preVFP','UL2016_postVFP','UL2017','UL2018','2022','2023'])
+    parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2016_preVFP','UL2016_postVFP','UL2017','UL2018','2022','2023'])
     args = parser.parse_args() 
 
     main(args)

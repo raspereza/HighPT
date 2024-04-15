@@ -11,7 +11,6 @@ from array import array
 
 import os
 
-
 #################################
 #     definition of cuts        #
 #################################
@@ -36,7 +35,20 @@ RunSigSampleNames = {
     "2023" : ['WtoMuNu']
 }
 
-def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,era,var):
+XTitle = {
+    'mt_1'  : "m_{T} (GeV)",
+    'pt_1'  : "muon p_{T} (GeV)",
+    'eta_1' : "muon #eta",
+    'metphi': "MET #phi",
+    'phi_1' : "muon #phi",
+    'met'   : "E_{T}^{mis} (GeV)"
+}
+
+def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,**kwargs):
+
+    era = kwargs.get('era','2023')
+    var = kwargs.get('var','mt_1')
+    plotLegend = kwargs.get('plotLegend',True)
 
     h_data = h_data_input.Clone("data")
     h_sig = h_sig_input.Clone("signal")
@@ -45,11 +57,12 @@ def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,era,var):
     styles.InitHist(h_bkg,"","",ROOT.TColor.GetColor("#6F2D35"),1001)
     styles.InitHist(h_sig,"","",ROOT.TColor.GetColor("#FFCC66"),1001)
 
+    print('')
     print('Yields ->')
     nbins = h_data.GetNbinsX()
     # log-normal systematic uncertainties (5% signal, 10% background)
     e_sig_sys = 0.05
-    e_bkg_sys = 0.10
+    e_bkg_sys = 0.20
     for i in range(1,nbins+1):
         x_sig = h_sig.GetBinContent(i)
         x_bkg = h_bkg.GetBinContent(i)
@@ -62,7 +75,7 @@ def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,era,var):
         xlower = int(h_data.GetBinLowEdge(i))
         xupper = int(h_data.GetBinLowEdge(i+1))
         x_data = h_data.GetBinContent(i)
-        print('[%4i,%4i] ->  data = %4.0f   W = %4.0f   bkg = %4.0f'%(xlower,xupper,x_data,x_sig,x_bkg))
+        print('[%4i,%4i] ->  data = %5.0f   W = %5.0f   bkg = %4.0f'%(xlower,xupper,x_data,x_sig,x_bkg))
         
 
     print('')
@@ -86,9 +99,7 @@ def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,era,var):
     h_data.GetXaxis().SetLabelSize(0)
     h_data.GetYaxis().SetTitle("events / bin")
     h_ratio.GetYaxis().SetTitle("obs/exp")
-    h_ratio.GetXaxis().SetTitle(utils.XTitle[var])
-
-    
+    h_ratio.GetXaxis().SetTitle(XTitle[var])
 
     # canvas and pads
     canvas = styles.MakeCanvas("canv","",600,700)
@@ -104,13 +115,13 @@ def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,era,var):
     h_data.Draw('e1same')
     h_tot.Draw('e2same')
 
-    leg = ROOT.TLegend(0.5,0.4,0.8,0.7)
+    leg = ROOT.TLegend(0.55,0.45,0.8,0.7)
     styles.SetLegendStyle(leg)
-    leg.SetTextSize(0.047)
+    leg.SetTextSize(0.045)
     leg.AddEntry(h_data,'data','lp')
     leg.AddEntry(h_sig,'W#rightarrow #mu#nu','f')
     leg.AddEntry(h_bkg,'bkg','f')
-    leg.Draw()
+    if plotLegend: leg.Draw()
 
     styles.CMS_label(upper,era=era)
 
@@ -147,7 +158,7 @@ def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,era,var):
     canvas.Update()
     print('')
     print('Creating control plot')
-    canvas.Print(utils.figuresFolderWMuNu+"/wmunu_"+era+".png")
+    canvas.Print(utils.baseFolder+"/"+era+"/figures/WMuNu/wmunu_"+var+"_"+era+".png")
 
 def CreateCardsWToMuNu(fileName,h_data,h_bkg,h_sig,uncs,era):
 
@@ -170,19 +181,17 @@ def CreateCardsWToMuNu(fileName,h_data,h_bkg,h_sig,uncs,era):
     f.write("process             wmunu       bkg_munu\n")
     f.write("process             1           2\n")
     f.write("rate                %4.3f   %4.3f\n"%(x_sig,x_bkg))
-    f.write("---------------------------\n")
-    f.write("muEff         lnN   1.02        -\n")
+    f.write("-----------------------------------\n")
+    f.write("muEff         lnN   1.04        -\n")
     f.write("bkgNorm_munu  lnN   -           1.2\n")
     for unc in uncs:
         f.write(unc+"_"+era+"    shape  1.0          -\n")
-        #    for unc in uncs:
-        #        f.write(unc+"    shape  1.0          -\n")
     f.write("normW  rateParam  WtoMuNu wmunu  1.0  [0.5,1.5]\n")
     f.write("* autoMCStats 0\n")
-    #    groups = "sysUnc group = normW muEff bkgNorm_munu"
-    #    for unc in uncs:
-    #        groups = groups + " " + unc
-    #    f.write(groups+"\n")
+    groups = "sysUnc group = normW muEff bkgNorm_munu"
+    for unc in uncs:
+        groups = groups + " " + unc + "_" + era
+    f.write(groups+"\n")
     f.close()
 
 
@@ -193,20 +202,27 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='UL2017',choices=['UL2016','UL2017','UL2018','2022','2023'])
-    parser.add_argument('-nb','--nbins', dest='nbins',default=8,help=""" Number of bins""")
-    parser.add_argument('-xmin','--xmin',dest='xmin' ,default=200,help=""" xmin """)
-    parser.add_argument('-xmax','--xmax',dest='xmax' ,default=1000, help=""" xmax """)
-    parser.add_argument('-var','--variable',dest='variable',default='mt_1',help=""" Variable to plot""")
-
+    parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
+    parser.add_argument('-var','--variable',dest='variable',default='mt_1',choices=['mt_1','pt_1','met','phi_1','eta_1','metphi'])
 
     args = parser.parse_args() 
     period = args.era
 
-    xbins = [200,300,400,500,600,700,800,1000,1200,1400]
-    #    xbins = utils.createBins(args.nbins,args.xmin,args.xmax)
-    basefolder = utils.picoFolder
+    xbins_phi = utils.createBins(20,-3.14,3.14)
+    xbins_eta = utils.createBins(20,-2.4,2.4)
+    xbins_var = {
+        'mt_1' : [200,300,400,500,600,700,800,1000,1200,1400],
+        'pt_1' : [100,150,200,250,300,350,400,500,600,700],
+        'met' : [100,150,200,250,300,350,400,500,600,700],
+        'metphi' : xbins_phi,
+        'phi_1' : xbins_phi,
+        'eta_1' : xbins_eta
+    }
+
+
+    basefolder = utils.picoFolder+'/'+args.era
     var = args.variable    
+    xbins = xbins_var[var]
     
     eras = utils.periods[args.era]
 
@@ -243,6 +259,10 @@ if __name__ == "__main__":
                                                   "munu",sigSampleName,False)
 
 
+    # apply hot jet veto in 2023 dataset
+    if args.era=='2023':
+        basecut += "&&hotjet_veto<0.5"
+
     jmetcut = 'met>'+metCut+'&&metdphi_1>'+dphiCut+'&&mt_1>'+mtCut # additional cuts (MET related variables)
 
     cut_data = basecut + "&&" + jmetcut
@@ -251,6 +271,17 @@ if __name__ == "__main__":
     hist_bkg  = analysis.RunSamples(bkgSamples,var,cut,xbins,"bkgd")
     hist_sig  = analysis.RunSamples(sigSamples,var,cut,xbins,"wmunu")
 
+    # making control plot
+    plotlLegend = True
+    if var=='phi_1' or var=='eta_1':
+        plotlLegend = False
+
+
+    PlotWToMuNu(hist_data,hist_bkg,hist_sig,
+                era=args.era,var=var,plotLegend=plotlLegend)
+
+    if var not in ['mt_1']:
+        exit()
 
     hists_unc = {} # uncertainty histograms  
     for unc in utils.unc_jme:
@@ -269,13 +300,11 @@ if __name__ == "__main__":
             hists_unc[name_hist+"_"+args.era+"Up"] = hist_up
             hists_unc[name_hist+"_"+args.era+"Down"] = hist_down
 
-    # making control plot
-    PlotWToMuNu(hist_data,hist_bkg,hist_sig,args.era,var)
 
     # saving histograms to file
-    outputFileName = utils.datacardsFolder + "/munu_" + args.era
+    outputFileName = utils.baseFolder + "/" + args.era + "/datacards/munu_" + args.era
     print('')
-    print("Saving shapes to file",outputFileName+'.root')
+    print("Saving shapes to file %s.root"%(outputFileName))
     fileOutput = ROOT.TFile(outputFileName+".root","recreate")
     fileOutput.mkdir("munu")
     fileOutput.cd("munu")
@@ -288,3 +317,4 @@ if __name__ == "__main__":
     fileOutput.Close()
     
     CreateCardsWToMuNu(outputFileName,hist_data,hist_bkg,hist_sig,utils.unc_jme,args.era)
+    print("Saving cards to file %s.txt"%(outputFileName))

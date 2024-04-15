@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # Author: Alexei Raspereza (November 2022)
 # Description: computes fake factors 
 #              for high pT jet->tau fakes
@@ -13,9 +13,9 @@ from array import array
 #################################
 #     definition of cuts        #
 #################################
-basecutEWK = 'mt_1>50&&iso_1<0.3&&pt_1>30&&fabs(eta_1)<2.4&&metfilter>0.5&&njets==0&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&dphi>2.4&&pt_2>100&&fabs(eta_2)<2.3&&idDeepTau2018v2p5VSjet_2>0&&idDeepTau2018v2p5VSe_2>=4&&idDeepTau2018v2p5VSmu_2>=1'
+basecutEWK = 'mt_1>50&&iso_1<0.15&&pt_1>30&&fabs(eta_1)<2.4&&metfilter>0.5&&njets==0&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&dphi>2.4&&pt_2>100&&fabs(eta_2)<2.3&&idDeepTau2018v2p5VSjet_2>0&&idDeepTau2018v2p5VSe_2>0&&idDeepTau2018v2p5VSmu_2>0'
 
-basecutQCD = 'jpt>100&&njets==1&&dphi>2.4&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&pt_2>100&&fabs(eta_2)<2.3&&idDeepTau2018v2p5VSjet_2>0&&idDeepTau2018v2p5VSe_2>=4&&idDeepTau2018v2p5VSmu_2>=1'
+basecutQCD = 'jpt>100&&njets==1&&dphi>2.4&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&pt_2>90&&fabs(eta_2)<2.3&&idDeepTau2018v2p5VSjet_2>0&&idDeepTau2018v2p5VSe_2>0&&idDeepTau2018v2p5VSmu_2>0'
 
 basecut = {
     "dijets": basecutQCD,
@@ -139,7 +139,7 @@ def DrawFF(hist,**kwargs):
         e = hist.GetBinError(i)
         xe = x+e
         if xe>maximum:
-            maximum = x+e
+            maximum = xe
         #        print(i,hist.GetBinContent(i),hist.GetBinError(i))
         if x<1e-4 or x>0.9:     
             xcorr = 0.5*hist.GetBinContent(i-1)
@@ -196,7 +196,7 @@ def DrawFF(hist,**kwargs):
     hfit.SetMarkerStyle(0)
     maxFit = hfit.GetMaximum()
     
-    hfit.GetYaxis().SetRangeUser(0.,2*maximum)
+    hfit.GetYaxis().SetRangeUser(0.,1.5*maximum)
     if variable1=='mtau': hfit.GetXaxis().SetTitle("#tau mass [GeV]")
     elif variable1=='ptjet': hfit.GetXaxis().SetTitle("jet p_{T} [GeV]")
     else: hfit.GetXaxis().SetTitle("#tau p_{T} [GeV]")
@@ -218,7 +218,16 @@ def DrawFF(hist,**kwargs):
 
     canv.RedrawAxis()
     canv.Update()
-    canv.Print(utils.figuresFolderFF+'/FF_'+variable1+"_"+label+"_"+trigger+"_"+wp+'VsJet_'+wpVsMu+'VsMu_'+wpVsE+'VsE.png')
+    outdir = utils.baseFolder
+    png_file='FF_%s_%s_%s_%s_%s_%s_%s_%s'%(labelSample,
+                                           channel,
+                                           variable1,
+                                           label,
+                                           trigger,
+                                           wp,
+                                           wpVsMu,
+                                           wpVsE);
+    canv.Print('%s/%s/figures/FF/%s.png'%(utils.baseFolder,era,png_file))
     
     return hfit
 
@@ -235,8 +244,8 @@ def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
     print('')
     print("+++++++++++++++++++++++++++++++++++++++++++")
     print('')
-    print('Computing FF as a function of %s in bins of %s for era %s and WP %s',variable1,variable2,era,wp)
-    print('')
+    print('Computing FF as a function of %s in bins of %s for era %s'%(variable1,variable2,era))
+    print('%sVsJet  %sVsMu  %sVsE'%(wp,wpVsMu,wpVsE))
     
     cutTrigger = "(tautrigger1>0.5||tautrigger2>0.5)"
     cutNotTrigger = "(!" + cutTrigger +")"
@@ -268,6 +277,10 @@ def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
     ###### Common cut ##########
     ############################
     commonCut = basecut[channel]
+
+    # hotjet veto in 2023
+    if era=='2023':
+        commonCut += '&&hotjet_veto<0.5'
 
     histsdata = {}
     histssig = {}
@@ -484,13 +497,13 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='UL2018',choices=['UL2016','UL2017','UL2018','2022','2023'])
+    parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
     parser.add_argument('-wp','--WP', dest='wp',  default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
     parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu',  default='Tight',choices=['VLoose','Tight'])
     parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE',  default='VVLoose',choices=['VVLoose','Tight'])
     args = parser.parse_args() 
 
-    basefolder = utils.picoFolder
+    basefolder = utils.picoFolder+'/'+args.era
 
     eras = utils.periods[args.era]
 
@@ -503,13 +516,15 @@ if __name__ == "__main__":
             singlemuSamples[name] = analysis.sampleHighPt(basefolder,era,
                                                           "wjets",singlemuName,True)
 
-    #    print
-    #    print('initializing JetHT samples >>>')
-    #    jethtSamples = {} # data samples disctionary
-    #    jethtNames = utils.jetht[args.era]
-    #    for jethtName in jethtNames:
-    #        jethtSamples[jethtName] = analysis.sampleHighPt(basefolder,args.era,
-    #                                                     "dijets",jethtName,True)
+    print('')
+    print('initializing JetHT samples >>>')
+    jethtSamples = {} # data samples disctionary
+    for era in eras:
+        jethtNames = utils.jetht[era]
+        for jethtName in jethtNames:
+            name = jethtName + '_' + era
+            jethtSamples[name] = analysis.sampleHighPt(basefolder,era,
+                                                       "dijets",jethtName,True)
 
     print('')
     print('initializing MC samples >>>')
@@ -542,39 +557,47 @@ if __name__ == "__main__":
                 sigSamples[name] = analysis.sampleHighPt(basefolder,era,"wjets",sigSampleName,
                                                       False)
 
-    fullpathout = utils.fakeFactorsFolder + '/ff_'+args.wp+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+".root"
-    if not os.path.isdir(utils.fakeFactorsFolder):
+    FFfolder = utils.baseFolder+'/'+args.era+'/FF'
+    if not os.path.isdir(FFfolder):
         print('folder for fake factors does not exist')
-        print('create folder for fake factors : %s'%())
+        print('create folder for fake factors : %s'%(FFfolder))
         exit()
 
+    FFfilename='ff_'+args.wp+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+".root"
+    fullpathout=FFfolder+'/'+FFfilename
     outputfile = TFile(fullpathout,'recreate')
     #   measurements ->
-    for var1 in ['pttau','ptjet']:
-        main(outputfile,
-             singlemuSamples,
-             mcSamples,
-             sigSamples,
-             wp=args.wp,
-             wpVsE=args.wpVsE,
-             wpVsMu=args.wpVsMu,
-             era=args.era,
-             channel='wjets',
-             variable1=var1,
-             variable2='ptratio')
+    channels = ['wjets','dijets']
+    dataSamples = {
+        'wjets' : singlemuSamples,
+        'dijets' : jethtSamples
+    }
+    for channel in channels:
+        for var1 in ['pttau','ptjet']:
+            main(outputfile,
+                 dataSamples[channel],
+                 mcSamples,
+                 sigSamples,
+                 wp=args.wp,
+                 wpVsE=args.wpVsE,
+                 wpVsMu=args.wpVsMu,
+                 era=args.era,
+                 channel=channel,
+                 variable1=var1,
+                 variable2='ptratio')
 
-    for var1 in ['pttau','ptjet','mtau']:
-        main(outputfile,
-             singlemuSamples,
-             mcSamples,
-             sigSamples,
-             wp=args.wp,
-             wpVsE=args.wpVsE,
-             wpVsMu=args.wpVsMu,
-             era=args.era,
-             channel='wjets',
-             variable1=var1,
-             variable2='dm')
+        for var1 in ['pttau','ptjet','mtau']:
+            main(outputfile,
+                 dataSamples[channel],
+                 mcSamples,
+                 sigSamples,
+                 wp=args.wp,
+                 wpVsE=args.wpVsE,
+                 wpVsMu=args.wpVsMu,
+                 era=args.era,
+                 channel=channel,
+                 variable1=var1,
+                 variable2='dm')
 
     outputfile.cd('')
     hists = AuxiliaryHistograms()

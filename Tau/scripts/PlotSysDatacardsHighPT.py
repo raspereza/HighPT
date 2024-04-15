@@ -31,6 +31,11 @@ def PlotSystematics(h_central,h_up,h_down,era,sampleName,sysName,ratioLower,rati
 
     print('')
     print('Template %s  systematics %s'%(sampleName,sysName))
+    print('')
+    print('             down     nom     up')
+    print('----------------------------------')
+    #      [200, 300]  1091.8  1085.6  1079.4
+
     nbins = h_central.GetNbinsX()
     for ib in range(1,nbins+1):
         lower = h_central.GetBinLowEdge(ib)
@@ -102,7 +107,7 @@ def PlotSystematics(h_central,h_up,h_down,era,sampleName,sysName,ratioLower,rati
     canvas.cd()
     canvas.SetSelected(canvas)
     canvas.Update()
-    canvas.Print(utils.figuresFolderSys+"/sys_cards_"+era+"_"+sampleName+"_"+sysName+".png")
+    canvas.Print(utils.baseFolder+"/"era+"sigures/Sys/sys_cards_"+era+"_"+sampleName+"_"+sysName+".png")
 
 if __name__ == "__main__":
 
@@ -113,26 +118,27 @@ if __name__ == "__main__":
 #   Systematics :
 #   jmet    = JES, Unclustered
 #   taues   = taues, taues_1pr taues_1pr1pi0 taues_3pr taues_3pr1pi0    
-#   fakes   = variable1_variable2 nonclosure
+#   fakes   = sample_variable1_variable2 nonclosure
 #   ------
 #   WP      = [Loose,Medium,Tight,VTight,VVTight]
 #   ------
 #   samples = [wtaunu,fake]
+# 
 #####################################################################
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument('-e','--era',dest='era',default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
     parser.add_argument('-c','--channel',dest='channel', default='taunu',)
     parser.add_argument('-s','--sample',dest='sample',default='fake')
-    parser.add_argument('-wp','--WP',dest='wp',      default='Medium')
+    parser.add_argument('-wp','--WP',dest='wp',default='Medium')
     parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight')
     parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='VVLoose')
-    parser.add_argument('-sys','--sysname',dest='sysname', default='ptratioLow_ptjetLow_2023')
+    parser.add_argument('-sys','--sysname',dest='sysname', default='wjets_ptratioLow_ptjetLow')
     parser.add_argument('-ymin','--ymin',dest='ymin',default=0.5)
     parser.add_argument('-ymax','--ymax',dest='ymax',default=1.5)
     args = parser.parse_args() 
 
-    basefolder = utils.datacardsFolder 
+    basefolder = utils.baseFolder+"/"+args.era+"/datacards"
     filename = "%s_%s.root"%(args.channel,args.era)
     if args.channel=='taunu':
         filename = "%s_%s_%s_%s_%s.root"%(args.channel,args.wp,args.wpVsMu,args.wpVsE,args.era)
@@ -150,20 +156,23 @@ if __name__ == "__main__":
         print('File %s cannot be opened'%(fullpath))
         exit()
 
-    hist_central = cardsFile.Get(args.channel+"/"+args.sample)
-    hist_up = cardsFile.Get(args.channel+"/"+args.sample+"_"+args.sysname+"Up")
-    hist_down = cardsFile.Get(args.channel+"/"+args.sample+"_"+args.sysname+"Down")
+    name_central=args.channel+"/"+args.sample
+    name_up=args.channel+"/"+args.sample+"_"+args.sysname+"Up"
+    name_down=args.channel+"/"+args.sample+"_"+args.sysname+"Down"
+    hist_central = cardsFile.Get(name_central)
+    hist_up = cardsFile.Get(name_up)
+    hist_down = cardsFile.Get(name_down)
     if hist_central==None:
-        print('Histogram %s is not found'%(hist.GetName()))
+        print('Histogram %s is not found'%(name_central))
         exit()
     if hist_up==None:
-        print('Histogram %s is not found'%(hist_up.GetName()))
+        print('Histogram %s is not found'%(name_up))
         exit()
     if hist_down==None:
-        print('Histogram %s is not found'%(hist_down.GetName()))
+        print('Histogram %s is not found'%(name_down))
         exit()
 
-    print('Plotting histograms : %s  %s  %s'%(hist_central.GetName(),hist_up.GetName(),hist_down.GetName()))
+    print('Plotting histograms : %s  %s  %s'%(name_central,name_up,name_down))
 
     PlotSystematics(hist_central,
                     hist_up,

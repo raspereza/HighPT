@@ -1,30 +1,39 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # Author: Alexei Raspereza (December 2022)
 # High pT tau ID efficiency measurements 
 # Plotting macro: signal region (W*->tau+v) 
 import ROOT
-import TauFW.Plotter.HighPT.utilsHighPT as utils
+import HighPT.Tau.utilsHighPT as utils
 from array import array
 import math
-import TauFW.Plotter.HighPT.stylesHighPT as styles
+import HighPT.Tau.stylesHighPT as styles
 import os
 
 ##########################
 # Plotting distributions #
 ##########################
-def Plot(h_data_input,h_tot_input,h_fake_input,h_bkg_input,h_sig_input,wp,era,var,postFit):
+def Plot(hists,**kwargs):
+    wp = kwargs.get('wp','Medium')
+    wpVsMu = kwargs.get('wpVsMu','Tight')
+    wpVsE = kwargs.get('wpVsE','VVLoose')
+    era = kwargs.get('era','2023')
+    var = kwargs.get('var','mt_jet_1')
+    postfit = kwargs.get('postfit',True)
     
-    h_data = h_data_input.Clone("data_plot")
-    h_fake = h_fake_input.Clone("fake_plot")
-    h_bkg = h_bkg_input.Clone("bkg_plot")
-    h_sig = h_sig_input.Clone("sig_plot")
-    h_tot = h_tot_input.Clone("h_tot_plot")
+    h_data = hists['data']
+    h_fake = hists['fake']
+    h_lfakes = hists['lfakes']
+    h_bkg = hists['tau']
+    h_sig = hists['wtaunu']
+    h_tot = hists['total']
 
     styles.InitData(h_data)
-    styles.InitHist(h_bkg,"","",ROOT.TColor.GetColor("#6F2D35"),1001)
+    styles.InitHist(h_lfakes,"","",ROOT.TColor.GetColor("#6F2D35"),1001)
+    styles.InitHist(h_bkg,"","",ROOT.TColor.GetColor("#c6f74a"),1001)
     styles.InitHist(h_sig,"","",ROOT.TColor.GetColor("#FFCC66"),1001)
     styles.InitHist(h_fake,"","",ROOT.TColor.GetColor("#FFCCFF"),1001)
 
+    h_bkg.Add(h_bkg,h_lfakes,1.,1.)
     h_fake.Add(h_fake,h_bkg,1.,1.)
     h_sig.Add(h_sig,h_fake,1.,1.)
     styles.InitTotalHist(h_tot)
@@ -62,18 +71,20 @@ def Plot(h_data_input,h_tot_input,h_fake_input,h_bkg_input,h_sig_input,wp,era,va
     h_data.Draw('e1')
     h_sig.Draw('hsame')
     h_fake.Draw('hsame')
+    h_lfakes.Draw('hsame')
     h_bkg.Draw('hsame')
     h_data.Draw('e1same')
     h_tot.Draw('e2same')
 
-    leg = ROOT.TLegend(0.5,0.4,0.75,0.75)
+    leg = ROOT.TLegend(0.58,0.2,0.83,0.6)
     styles.SetLegendStyle(leg)
-    leg.SetTextSize(0.047)
-    leg.SetHeader(wp)
+    leg.SetTextSize(0.042)
+    leg.SetHeader('%s,%s,%s'%(wp,wpVsMu,wpVsE))
     leg.AddEntry(h_data,'data','lp')
     leg.AddEntry(h_sig,'W#rightarrow #tau#nu','f')
     leg.AddEntry(h_fake,'j#rightarrow#tau misId','f')
-    leg.AddEntry(h_bkg,'genuine #tau bkg','f')
+    leg.AddEntry(h_bkg,'true #tau','f')
+    leg.AddEntry(h_lfakes,'e/#mu#rightarrow#tau misId','f')
     leg.Draw()
 
     styles.CMS_label(upper,era=era)
@@ -114,10 +125,10 @@ def Plot(h_data_input,h_tot_input,h_fake_input,h_bkg_input,h_sig_input,wp,era,va
     canvas.Update()
     print
     print('Creating control plot')
-    if postFit:
-        canvas.Print(utils.figuresFolderWTauNu+"/wtaunu_"+wp+"_"+era+"_postFit.png")
+    if postfit:
+        canvas.Print(utils.figuresFolderWTauNu+"/tauID_"+wp+"_"+wpVsMu+"_"+wpVsE+"_"+era+"_postFit.png")
     else:
-        canvas.Print(utils.figuresFolderWTauNu+"/wtaunu_"+wp+"_"+era+"_preFit.png")
+        canvas.Print(utils.figuresFolderWTauNu+"/tauID_"+wp+"_"+wpVsMu+"_"+wpVsE+"_"+era+"_preFit.png")
 
 ############
 ### MAIN ###
@@ -129,15 +140,17 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='UL2018', help="""Era : UL2017, UL2018""")
-    parser.add_argument('-wp','--WP', dest='wp', default='Medium', help=""" tau ID WP : Loose, Medium, Tight, VTight, VVTight""")
-    parser.add_argument('-var','--variable', dest='variable', default='mt_1', help=""" Variable to plot""")
-    parser.add_argument('-post','--PostFit',dest='postfit',default=False, help=""" Postfit (true), Prefit (false) """)
+    parser.add_argument('-e','--era', dest='era', default='2023',choices=['2022','2023'])
+    parser.add_argument('-wp','--WP', dest='wp', default='Medium',choices=['Loose','Medium','Tight'])
+    parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight',choices=['VLoose','Tight'])
+    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='VVLoose',choices=['VVLoose','Tight'])
+    parser.add_argument('-var','--variable', dest='variable', default='mt_jet_1')
+    parser.add_argument('-post','--postfit',dest='postfit',action='store_true')
     args = parser.parse_args()
     basedir = utils.datacardsFolder
-    fullpathFit = basedir +"/tauID_"+args.wp+"_"+args.era+"_fit.root"
+    fullpathFit = basedir +"/tauID_"+args.wp+"_"+args.wpVsMu+"_"+args.wpVsE+"_fit.root"
     fileFit = ROOT.TFile(fullpathFit,"read")
-    fullpathCards = basedir + "/taunu_"+args.wp+"_"+args.era+".root" 
+    fullpathCards = basedir + "/taunu_"+args.wp+"_"+args.wpVsMu+"_"+args.wpVsE+"_"+args.era+".root" 
     fileCards = ROOT.TFile(fullpathCards,"read")
 
     folder='shapes_prefit'
@@ -146,7 +159,7 @@ if __name__ == "__main__":
 
     h_data = fileCards.Get('taunu/data_obs')
     nbins = h_data.GetNbinsX()
-    histnames = ['fake','bkg_taunu','wtaunu']
+    histnames = ['fake','tau','lfakes','wtaunu']
     hists = {}
     histsFit = {}
     for histname in histnames:
@@ -165,4 +178,12 @@ if __name__ == "__main__":
         h_tot.SetBinContent(i,x)
         h_tot.SetBinError(i,e)
 
-    Plot(h_data,h_tot,hists['fake'],hists['bkg_taunu'],hists['wtaunu'],args.wp,args.era,args.variable,args.postfit)
+    hists['data'] = h_data
+    hists['total'] = h_tot
+    Plot(hists,
+         wp=args.wp,
+         wpVsMu=args.wpVsMu,
+         wpVsE=args.wpVsE,
+         era=args.era,
+         var=args.variable,
+         postfit=args.postfit)

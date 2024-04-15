@@ -17,7 +17,7 @@ from HighPT.Tau.FakeFactor import FakeFactorHighPt
 BkgSampleNames = { 
     'Run2' : ['DYJetsToLL_M-50','TTTo2L2Nu','TTToSemiLeptonic','TTToHadronic','ST_t-channel_antitop_4f_InclusiveDecays','ST_t-channel_top_4f_InclusiveDecays','ST_tW_antitop_5f_NoFullyHadronicDecays','ST_tW_top_5f_NoFullyHadronicDecays','WW','WZ','ZZ','ZJetsToNuNu_HT-100To200','ZJetsToNuNu_HT-200To400','ZJetsToNuNu_HT-400To600','ZJetsToNuNu_HT-600To800','ZJetsToNuNu_HT-800To1200','ZJetsToNuNu_HT-1200To2500'],
 
-    '2022' :  ['DYto2L-4Jets_MLL-50','TTTo2L2Nu','TTtoLNu2Q','TTto4Q','TBbarQ_t-channel','TbarBQ_t-channel','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','Zto2Nu-4Jets_HT-100to200','Zto2Nu-4Jets_HT-200to400','Zto2Nu-4Jets_HT-400to800','Zto2Nu-4Jets_HT-800to1500'],
+    '2022' :  ['DYto2L-4Jets_MLL-50','TTTo2L2Nu','TTtoLNu2Q','TTto4Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','Zto2Nu-4Jets_HT-100to200','Zto2Nu-4Jets_HT-200to400','Zto2Nu-4Jets_HT-400to800','Zto2Nu-4Jets_HT-800to1500'],
 
     '2023' : ['DYto2L-4Jets_MLL-50','TTto2L2Nu','TTtoLNu2Q','TTto4Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','Zto2Nu-4Jets_HT-100to200','Zto2Nu-4Jets_HT-200to400','Zto2Nu-4Jets_HT-400to800','Zto2Nu-4Jets_HT-800to1500']
 }
@@ -37,8 +37,9 @@ SigSampleNames = {
 }
 
 def FitRatio(x,par):
-    a = 0.01*(x[0]-100.)
-    return par[0]+par[1]*a+par[2]*a*a
+#    a = 0.01*(x[0]-100.)
+#    return par[0]+par[1]*a+par[2]*a*a
+    return par[0]
 
 def CorrectForNonClosure(hist,ratio,name):
     
@@ -61,7 +62,7 @@ def CorrectForNonClosure(hist,ratio,name):
 def ComputeFake(h_wjets,h_dijets,h_fraction,name):
     nbins = h_wjets.GetNbinsX()
     hist = h_wjets.Clone(name)
-    print
+    print('')
     print('Computing fake histogram ->',name)
     for i in range(1,nbins+1):
         x_wjets = h_wjets.GetBinContent(i)
@@ -79,7 +80,7 @@ def ComputeFake(h_wjets,h_dijets,h_fraction,name):
         hist.SetBinError(i,e_fakes)
         lowerEdge = hist.GetBinLowEdge(i)
         upperEdge = hist.GetBinLowEdge(i+1)
-        print("[%3d,%4d] = %6.1f +/- %4.1f (%4.2f rel)" %(lowerEdge,upperEdge,x_fakes,e_fakes,e_fakes/x_fakes))
+        print("[%3d,%4d] = %6.1f +/- %4.1f" %(lowerEdge,upperEdge,x_fakes,e_fakes))
 
     return hist
 
@@ -87,7 +88,7 @@ def ComputeFake(h_wjets,h_dijets,h_fraction,name):
 # compute EWK fraction histogram #
 # in FF application region       #
 ##################################
-def ComputeEWKFraction(h_data,h_mc):
+def ComputeEWKFraction(h_data,h_mc,var):
 
     print
     print('Computing EWK fraction')
@@ -113,7 +114,10 @@ def ComputeEWKFraction(h_data,h_mc):
         h_fraction.SetBinError(i,eratio)
         lowerEdge = h_fraction.GetBinLowEdge(i)
         upperEdge = h_fraction.GetBinLowEdge(i+1)
-        print("[%3d,%4d] = %4.2f +/- %4.2f (%4.2f rel) -> Data = %6.0f : MC = %6.0f" %(lowerEdge,upperEdge,ratio,eratio,eratio/ratio,xdata,xmc))
+        if var in ['eta_1','phi_1','metphi']:
+            print("[%5.2f,%5.2f] = %4.2f +/- %4.2f (%4.2f rel) -> Data = %6.0f : MC = %6.0f" %(lowerEdge,upperEdge,ratio,eratio,eratio/ratio,xdata,xmc))
+        else:
+            print("[%3d,%4d] = %4.2f +/- %4.2f (%4.2f rel) -> Data = %6.0f : MC = %6.0f" %(lowerEdge,upperEdge,ratio,eratio,eratio/ratio,xdata,xmc))
 
     return h_fraction
 
@@ -129,6 +133,7 @@ def PlotClosure(hists,**kwargs):
     uncs = kwargs.get('uncs',[''])
     wpVsMu = kwargs.get('wpVsMu') 
     wpVsE = kwargs.get('wpVsE')
+    suffix = kwargs.get('suffix','')
 
     print('')
     print('Plotting closure')
@@ -153,7 +158,10 @@ def PlotClosure(hists,**kwargs):
         error = math.sqrt(error2)
         lowerEdge = h_tot.GetBinLowEdge(i)
         upperEdge = h_tot.GetBinLowEdge(i+1)
-        print("[%3d,%4d] = %5.1f +/- %4.1f : %5.1f +/- %4.1f" %(lowerEdge,upperEdge,xdata,edata,xcen,error))
+        if var in['eta_1','phi_1','metphi']:
+            print("[%5.2f,%5.2f] = %5.1f +/- %4.1f : %5.1f +/- %4.1f" %(lowerEdge,upperEdge,xdata,edata,xcen,error))
+        else:
+            print("[%3d,%4d] = %5.1f +/- %4.1f : %5.1f +/- %4.1f" %(lowerEdge,upperEdge,xdata,edata,xcen,error))
         h_tot.SetBinError(i,error)
                 
     styles.InitTotalHist(h_tot)
@@ -184,10 +192,10 @@ def PlotClosure(hists,**kwargs):
     h_tot.Draw("e2same")
     h_data.Draw("e1same")
 
-    leg = ROOT.TLegend(0.5,0.5,0.8,0.8)
+    leg = ROOT.TLegend(0.53,0.25,0.78,0.5)
     styles.SetLegendStyle(leg)
-    leg.SetTextSize(0.04)
-    leg.SetHeader('%s,%sVs,%s'%(wp,wpVsMu,wpVsE))
+    leg.SetTextSize(0.043)
+    leg.SetHeader('%s,%s,%s'%(wp,wpVsMu,wpVsE))
     leg.AddEntry(h_data, 'selection','lp')
     leg.AddEntry(h_model,'model','l')
     leg.Draw()
@@ -208,10 +216,10 @@ def PlotClosure(hists,**kwargs):
 
     xmin = hist_ratio.GetXaxis().GetBinLowEdge(1)    
     xmax = hist_ratio.GetXaxis().GetBinLowEdge(nbins+1)
-    func = ROOT.TF1("func",FitRatio,xmin,xmax,3)
+    func = ROOT.TF1("func",FitRatio,xmin,xmax,1)
     func.SetParameter(0,1.0)
-    func.SetParameter(1,0.0)
-    func.SetParameter(2,0.0)
+    #    func.SetParameter(1,0.0)
+    #    func.SetParameter(2,0.0)
     func.SetLineColor(4)
 
     hist_ratio.GetXaxis().SetTitle(utils.XTitle[var])
@@ -236,7 +244,7 @@ def PlotClosure(hists,**kwargs):
     canvas.cd()
     canvas.SetSelected(canvas)
     canvas.Update()
-    canvas.Print(utils.figuresFolderWTauNu+"/closure_"+var+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+".png")
+    canvas.Print(utils.baseFolder+"/"+era+"/figures/WTauNu/closure_"+var+suffix+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+".png")
 
     return hist_ratio
 
@@ -251,7 +259,8 @@ def PlotWToTauNu(hists,**kwargs):
     plotLegend = kwargs.get('plotLegend',True)
     wpVsMu = kwargs.get('wpVsMu','Tight')
     wpVsE = kwargs.get('wpVsE','Tight')
-   
+    suffix = kwargs.get('suffix','')
+
     h_data = hists['hist_data'].Clone("data_plot")
     h_fake = hists['hist_fake'].Clone("fake_plot")
     h_bkg = hists['hist_bkg_lfakes'].Clone("bkg_plot")
@@ -268,8 +277,10 @@ def PlotWToTauNu(hists,**kwargs):
     e_fake_sys = 0.15
     e_bkg_sys = 0.50
     e_tau_sys = 0.20
-    print
+    print('')
     print('Plotting distribution of',var)
+    print('            - data :   mc')
+#    print('[ 200, 300] = 1993 : 1942')
     for i in range(1,nbins+1):
         x_sig = h_sig.GetBinContent(i)
         x_bkg = h_bkg.GetBinContent(i)
@@ -291,8 +302,10 @@ def PlotWToTauNu(hists,**kwargs):
         h_fake.SetBinError(i,e_fake)
         lowerEdge = h_data.GetBinLowEdge(i)
         upperEdge = h_data.GetBinLowEdge(i+1)
-        print("[%3d,%4d] = %4.0f : %4.0f" %(lowerEdge,upperEdge,x_model,x_data))
-
+        if var in ['eta_1','phi_1','metphi']:
+            print("[%5.2f,%5.2f] = %4.0f : %4.0f" %(lowerEdge,upperEdge,x_model,x_data))
+        else:
+            print("[%4i,%4i] = %4.0f : %4.0f" %(lowerEdge,upperEdge,x_model,x_data))
 
     styles.InitData(h_data)
     styles.InitHist(h_bkg,"","",ROOT.TColor.GetColor("#6F2D35"),1001)
@@ -311,7 +324,7 @@ def PlotWToTauNu(hists,**kwargs):
 
     styles.InitRatioHist(h_ratio)
 
-    h_ratio.GetYaxis().SetRangeUser(0.301,1.699)
+    h_ratio.GetYaxis().SetRangeUser(0.01,1.99)
     
     nbins = h_ratio.GetNbinsX()
 
@@ -345,10 +358,14 @@ def PlotWToTauNu(hists,**kwargs):
     h_data.Draw('e1same')
     h_tot.Draw('e2same')
 
-    leg = ROOT.TLegend(0.4,0.4,0.75,0.75)
+    h_dummy = ROOT.TH1D('dummy','',2,0,1)
+    h_dummy.SetMarkerSize(0)
+    h_dummy.SetMarkerColor(0)
+
+    leg = ROOT.TLegend(0.58,0.2,0.83,0.6)
     styles.SetLegendStyle(leg)
-    leg.SetTextSize(0.045)
-    leg.SetHeader('%sVsJet %sVsMu %sVsE'%(wp,wpVsMu,wpVsE))
+    leg.SetTextSize(0.042)
+    leg.SetHeader('%s,%s,%s'%(wp,wpVsMu,wpVsE))
     leg.AddEntry(h_data,'data','lp')
     leg.AddEntry(h_sig,'W#rightarrow #tau#nu','f')
     leg.AddEntry(h_fake,'j#rightarrow#tau misId','f')
@@ -392,11 +409,10 @@ def PlotWToTauNu(hists,**kwargs):
     canvas.cd()
     canvas.SetSelected(canvas)
     canvas.Update()
-    print
-    print('Creating control plot')
-    canvas.Print(utils.figuresFolderWTauNu+"/"+var+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+".png")
+    print('')
+    canvas.Print(utils.baseFolder+"/"+era+"/figures/WTauNu/wtaunu_"+var+suffix+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+".png")
 
-def CreateCardsWToTauNu(fileName,h_data,h_fake,h_tau,h_bkg,h_sig,uncs_fake,uncs_sig):
+def CreateCardsWToTauNu(fileName,h_data,h_fake,h_tau,h_bkg,h_sig,uncs_fake,uncs_sig,suffix):
 
     x_data = h_data.GetSumOfWeights()
     x_fake = h_fake.GetSumOfWeights()
@@ -407,18 +423,18 @@ def CreateCardsWToTauNu(fileName,h_data,h_fake,h_tau,h_bkg,h_sig,uncs_fake,uncs_
     cardsFileName = fileName + ".txt"
     rootFileName = fileName + ".root"
     f = open(cardsFileName,"w")
-    f.write("imax 1    number of channels\n")
-    f.write("jmax *    number of backgrounds\n")
-    f.write("kmax *    number of nuisance parameters\n")
+    f.write("imax 1  number of channels\n")
+    f.write("jmax *  number of backgrounds\n")
+    f.write("kmax *  number of nuisance parameters\n")
     f.write("---------------------------\n")
-    f.write("observation   %3.1f\n"%(x_data))
+    f.write("observation %3.1f\n"%(x_data))
     f.write("---------------------------\n")
-    f.write("shapes * *  "+rootFileName+"  taunu/$PROCESS taunu/$PROCESS_$SYSTEMATIC \n")
+    f.write("shapes * * "+rootFileName+"  taunu/$PROCESS taunu/$PROCESS_$SYSTEMATIC \n")
     f.write("---------------------------\n")
-    f.write("bin                  WtoTauNu      WtoTauNu      WtoTauNu      WtoTauNu\n")
-    f.write("process              tau           wtaunu        fake          lfakes\n")
-    f.write("process              -1            0             1             2\n")
-    f.write("rate                 %4.3f         %4.3f      %4.3f      %4.3f\n"%(x_tau,x_sig,x_fake,x_bkg))
+    f.write("bin       WtoTauNu%s  WtoTauNu%s  WtoTauNu%s  WtoTauNu%s\n"%(suffix,suffix,suffix,suffix))
+    f.write("process   tau%s       wtaunu%s    fake        lfakes\n"%(suffix,suffix))
+    f.write("process   -1          0           1           2\n")
+    f.write("rate      %4.3f       %4.3f       %4.3f       %4.3f\n"%(x_tau,x_sig,x_fake,x_bkg))
     f.write("---------------------------\n")
     f.write("extrapW        lnN   -             1.04          -             -\n")
     f.write("bkgNorm_taunu  lnN   1.2           -             -             -\n")
@@ -427,10 +443,15 @@ def CreateCardsWToTauNu(fileName,h_data,h_fake,h_tau,h_bkg,h_sig,uncs_fake,uncs_
         f.write(unc+"     shape   -             1.0           -             -\n")
     for unc in uncs_fake:
         f.write(unc+"     shape   -             -             1.0           -\n")
-    f.write("normW  rateParam  WtoTauNu wtaunu  1.0  [0.5,1.5]\n")
+    f.write("normW  rateParam  WtoTauNu%s wtaunu%s  1.0  [0.5,1.5]\n"%(suffix,suffix))
     f.write("* autoMCStats 0\n")
+    groups = "sysUnc group = normW extrapW bkgNorm_taunu lep_fakes"
+    for unc in uncs_sig:
+        groups = groups + " " + unc
+    for unc in uncs_fake:
+        groups = groups + " " + unc
+    f.write(groups+"\n")
     f.close()
-    
 
 ############
 ### MAIN ###
@@ -446,46 +467,93 @@ if __name__ == "__main__":
     parser.add_argument('-wp','--WP', dest='wp', default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
     parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight',choices=['VLoose','Tight'])
     parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='VVLoose',choices=['VVLoose','Tight'])
-    parser.add_argument('-var','--variable',dest='variable',default='mt_1',choices=['mt_1','met','pt_1','eta_1','phi_1'])
+    parser.add_argument('-var','--variable',dest='variable',default='mt_1',choices=['mt_1','met','pt_1','eta_1','phi_1','jpt_match_1','mt_jet_1','metphi'])
+    parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
+    parser.add_argument('-m','--meas',dest='meas',default='incl',choices=['incl','lowpt','highpt'])
 
     args = parser.parse_args()
  
-    xbins_mt = [200,300,400,500,600,800,1200]
-    xbins_pt = [100,150,200,250,300,400,500,700]
+    xbins_mt  = [200,300,400,500,600,800,1200]
+    xbins_pt  = [100,130,160,190,220,250,300,400,500,700]
+    xbins_jpt = [100,140,180,220,260,300,400,500,700]
     xbins_met = [100,150,200,250,300,400,500,700]
+    xbins_mt_lowpt = [200,250,300,350,400,1000]
+    xbins_mt_highpt = [200,400,500,600,700,900,1200]
 
-    xbins_phi = utils.createBins(20,-3.1415,3.1415)
-    xbins_eta = utils.createBins(20,-2.3,2.3)
+    xbins_phi = utils.createBins(14,-3.14,3.14)
+    xbins_metphi = utils.createBins(14,-3.14,3.14)
+    xbins_eta = utils.createBins(14,-2.3,2.3)
 
     xbins = xbins_mt
+    ptMin = 100.
+    ptMax = 2000.
+    suffix = '_'+args.era
+    if args.variable=='mt_1' or args.variable=='mt_jet_1':
+        if args.meas=='lowpt': 
+            xbins = xbins_mt_lowpt
+            ptMin = 100.
+            ptMax = 200.
+            suffix = '_'+args.meas+'_'+args.era
+        elif args.meas=='highpt':
+            xbins = xbins_mt_highpt
+            ptMin = 200.
+            ptMax = 2000.
+            suffix = '_'+args.meas+'_'+args.era
 
     plotLegend = True
     if args.variable=='pt_1': xbins = xbins_pt
     if args.variable=='met': xbins = xbins_met
+    if args.variable=='jpt_match_1':
+        xbins = xbins_jpt
     if args.variable=='eta_1': 
         xbins =  xbins_eta
         plotLegend = False
     if args.variable=='phi_1': 
         xbins = xbins_phi
         plotLegend = False
+    if args.variable=='metphi':
+        xbins = xbins_metphi
+        plotLegend = False
 
-    basefolder = utils.picoFolder
+    basefolder = utils.picoFolder+'/'+args.era
     var = args.variable    
 
-    # initializing instance of FF class    
-    fullpathFF = utils.baseFolder+'/FF/ff_'+args.wp+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+".root"
+    ff = args.ff
+
+    # initializing instance of FakeFactorHighPT class    
+    fullpathFF = utils.baseFolder+'/'+args.era+'/FF/ff_'+args.wp+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+".root"
+    samples = []
+    with_dijets = False
+    if ff=='wjets':
+        samples.append('wjets')
+    elif ff=='dijets':
+        samples.append('dijets')
+        with_dijets = True
+    else:
+        samples.append('wjets')
+        samples.append('dijets')
+        with_dijets = True
+    
     fakeFactor = FakeFactorHighPt(filename=fullpathFF,
-                                  variable1='ptjet',
-                                  variable2='ptratio')
+                                  variable1='pttau',
+                                  variable2='ptratio',
+                                  with_dijets=with_dijets)
 
     # initializing instance of TauNuCuts class
     antiMu = utils.tauVsMuIntWPs[args.wpVsMu]
     antiE  = utils.tauVsEleIntWPs[args.wpVsE]
-    wtaunuCuts = analysis.TauNuCuts(antiMu=antiMu,antiE=antiE)    
+    hotJetVeto = False
+    if args.era=='2023': hotJetVeto = True
+    wtaunuCuts = analysis.TauNuCuts(antiMu=antiMu,
+                                    antiE=antiE,
+                                    ptLowerCut=ptMin,
+                                    ptUpperCut=ptMax,
+                                    hotJetVeto=hotJetVeto)    
 
     # vector uncertainties
-    uncert_names = ["JES","Unclustered","taues_1pr","taues_1pr1pi0","taues_3pr","taues_3pr1pi0"]
+    uncert_names = utils.uncs
 
+    # eras
     eras = utils.periods[args.era]
 
     print('')
@@ -546,12 +614,18 @@ if __name__ == "__main__":
     # defining baseline cuts
     commonCut = "metfilter>0.5&&mettrigger>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&njets==0&&idDeepTau2018v2p5VSmu_1>="+utils.tauVsMuWPs[args.wpVsMu]+"&&idDeepTau2018v2p5VSe_1>="+utils.tauVsEleWPs[args.wpVsE]+"&&genmatch_1==5&&idDeepTau2018v2p5VSjet_1>=" + utils.tauWPs[args.wp]
 
+    vetoHotSpot = "!(eta_1>%5.3f&&eta_1<%5.3f&&phi_1>%5.3f&&phi_1<%5.3f)"%(wtaunuCuts.etaHotMin,wtaunuCuts.etaHotMax,wtaunuCuts.phiHotMin,wtaunuCuts.phiHotMax)
+    
+    if args.era=='2023':
+        commonCut += "&&hotjet_veto<0.5&&"+vetoHotSpot
+
     # running on signal samples (central template and unceertainties)
     print('')
     print('Running on signal samples >>>')
     hists_sig = {}
     lst = ['']
-    if var=='mt_1' : lst += uncert_names
+    if var in ['mt_1','mt_jet_1']: 
+        lst += uncert_names
     for name in lst:
 
         name_unc = ""
@@ -559,6 +633,13 @@ if __name__ == "__main__":
         if name!="": 
             name_unc = "_"+name+"Up"
             name_hist = "wtaunu_"+name
+
+        var_unc=var
+        if var in ['mt_jet_1']:
+            if name in ['JES','Unclustered']:
+                var_unc=var+name_unc
+        else:
+            var_unc=var+name_unc
         
         metUnc = "met"+name_unc
         ptUnc = "pt_1"
@@ -581,10 +662,9 @@ if __name__ == "__main__":
         uncertCut =metNoMuCut+"&&"+mhtNoMuCut+"&&"+metCut+"&&"+ptLowerCut+"&&"+ptUpperCut+"&&"+etaCut+"&&"+metdphiCut+"&&"+mtLowerCut+"&&"+mtUpperCut
         totalCut = commonCut+"&&"+uncertCut+"&&genmatch_1==5"
         
-        histo = analysis.RunSamples(sigSamples,var+name_unc,totalCut,xbins,name_hist)
-        print(name_hist,histo.GetSumOfWeights())
+        histo = analysis.RunSamples(sigSamples,var_unc,totalCut,xbins,name_hist)
+        print('Running for signal sample %s'%(name_hist))
         hists_sig[name_hist] = histo
-        
 
     # running selection ->
     print('')
@@ -609,18 +689,40 @@ if __name__ == "__main__":
                              var=var,
                              wpVsMu=args.wpVsMu,
                              wpVsE=args.wpVsE,
-                             uncs=fake_uncs)    
+                             uncs=fake_uncs,
+                             suffix=suffix)
     
     # compute EWK fraction histogram in the FF aplication region
     h_data_dr = hists_data["data_all_SB"]
     h_data_dr.Add(h_data_dr,hists_totbkg['totbkg_notFake_SB'],1.,-1.)
     h_ewk_dr  = hists_totbkg["totbkg_fake_SB"]
-    h_fraction = ComputeEWKFraction(h_data_dr,h_ewk_dr)
+    h_fraction = ComputeEWKFraction(h_data_dr,h_ewk_dr,var)
 
     # Create j->tau fake histograms
-    hist_fake_raw = hists_data['data_all_data_wjets']
-    hist_fake_raw.Add(hist_fake_raw,hists_totbkg['totbkg_notFake_data_wjets'],1.,-1.)
-    hist_fake = CorrectForNonClosure(hist_fake_raw,nonclosure,'fake')
+    hists_fake_sample_raw = {} 
+    hists_fake_sample = {}
+    print('')
+    for sample in samples:
+        hist_data_sample = hists_data['data_all_data_'+sample]
+        hist_totbkg_sample = hists_totbkg['totbkg_notFake_data_'+sample]
+        print('fake background %s : data = %4.0f   subtracted MC = %4.0f'%(sample,hist_data_sample.GetSumOfWeights(),hist_totbkg_sample.GetSumOfWeights()))
+        hist_data_sample.Add(hist_data_sample,hist_totbkg_sample,1.,-1.)
+        hists_fake_sample_raw[sample] = hist_data_sample 
+        hists_fake_sample[sample] = CorrectForNonClosure(hist_data_sample,nonclosure,'fake')
+
+    if ff=='comb': 
+        hist_fake = ComputeFake(hists_fake_sample['wjets'],
+                                hists_fake_sample['dijets'],
+                                h_fraction,
+                                'hist_fake')
+        hist_fake_raw = ComputeFake(hists_fake_sample_raw['wjets'],
+                                    hists_fake_sample_raw['dijets'],
+                                    h_fraction,
+                                    'hist_fake')
+    else:
+        hist_fake = hists_fake_sample[ff]
+        hist_fake_raw = hists_fake_sample_raw[ff]
+            
     
     # data histogram
     hist_data = hists_data["data_all_SR"]
@@ -665,31 +767,44 @@ if __name__ == "__main__":
                  var=var,
                  plotLegend=plotLegend,
                  wpVsMu=args.wpVsMu,
-                 wpVsE=args.wpVsE)
+                 wpVsE=args.wpVsE,
+                 suffix=suffix)
 
-    if var!='mt_1':
+    if not var in['mt_1','mt_jet_1']:
         exit()
 
     # creating shape templates for fake model systematics
     hists_fake_sys = {}
-    # nonclosure uncertainty
+
     hist_closure_up,hist_closure_down = utils.ComputeSystematics(hist_fake,hist_fake_raw,'fake_nonclosure')
     name_sys = 'nonclosure_%s'%(args.era)
     names_fake_sys = [name_sys]
     hists_fake_sys['%sUp'%(name_sys)] = hist_closure_up
     hists_fake_sys['%sDown'%(name_sys)] = hist_closure_down
     # statistical uncertainties
-    for unc in fake_uncs:
-        # ewk FF
-        name_sys = unc+'_'+args.era        
-        data_sys = hists_data['data_all_data_wjets_%s'%(unc)]
-        bkg_sys  = hists_totbkg['totbkg_notFake_data_wjets_%s'%(unc)]
-        data_sys.Add(data_sys,bkg_sys,1.,-1.)
-        hist_corr = CorrectForNonClosure(data_sys,nonclosure,name_sys)
-        hist_up,hist_down = utils.ComputeSystematics(hist_fake,data_sys,'fake_%s'%(unc))
-        names_fake_sys.append(name_sys)
-        hists_fake_sys['%sUp'%(name_sys)] = hist_up
-        hists_fake_sys['%sDown'%(name_sys)] = hist_down
+    for sample in samples: # wjets, dijets
+        for unc in fake_uncs:
+            name_sys = sample+'_'+unc+'_'+args.era        
+            data_sys = hists_data['data_all_data_%s_%s'%(sample,unc)]
+            bkg_sys  = hists_totbkg['totbkg_notFake_data_%s_%s'%(sample,unc)]
+            data_sys.Add(data_sys,bkg_sys,1.,-1.)
+            hist_corr_x = CorrectForNonClosure(data_sys,nonclosure,name_sys)
+            hist_corr = hist_corr_x 
+            if ff=='comb':
+                hist1 = hist_corr_x
+                hist2 = hists_fake_sample['dijets']
+                if sample=='dijets':
+                    hist1 = hists_fake_sample['wjets']
+                    hist2 = hist_corr_x
+                hist_corr = ComputeFake(hist1,
+                                        hist2,
+                                        h_fraction,
+                                        'hist_corr_%s_%s'%(sample,unc))
+            
+            hist_up,hist_down = utils.ComputeSystematics(hist_fake,hist_corr,'fake_%s_%s'%(sample,unc))
+            names_fake_sys.append(name_sys)
+            hists_fake_sys['%sUp'%(name_sys)] = hist_up
+            hists_fake_sys['%sDown'%(name_sys)] = hist_down
 
     # creating shape templates for signal systematics 
     hists_sig_sys = {}
@@ -704,26 +819,27 @@ if __name__ == "__main__":
         hists_sig_sys["%sDown"%(name_sys)] = hist_down
 
     # saving histograms to datacard file datacards
-    fileName = "/taunu_"+args.wp+"_"+args.wpVsMu+"_"+args.wpVsE+"_"+args.era
-    outputFileName = utils.datacardsFolder+"/"+fileName
+    fileName = "taunu_"+args.wp+"_"+args.wpVsMu+"_"+args.wpVsE+suffix
+    outputFileName = utils.baseFolder+'/'+args.era+"/datacards/"+fileName
     print("")
-    print("Saving histograms to RooT file",outputFileName+".root")
+    print("Saving histograms to RooT file %s.root"%(outputFileName))
     fileOutput = ROOT.TFile(outputFileName+".root","recreate")
     fileOutput.mkdir("taunu")
     fileOutput.cd("taunu")
     hist_data.Write("data_obs")
-    hist_sig.Write("wtaunu")
-    hist_bkg_tau.Write("tau")
+    hist_sig.Write("wtaunu%s"%(suffix))
+    hist_bkg_tau.Write("tau%s"%(suffix))
     hist_bkg_lfakes.Write("lfakes")
     hist_fake.Write("fake")
     # signal shape systematics
     for histName in hists_sig_sys:
-        hists_sig_sys[histName].Write('wtaunu_'+histName)
+        hists_sig_sys[histName].Write('wtaunu%s_%s'%(suffix,histName))
     # FF shape systematics
     for histName in hists_fake_sys:
-        hists_fake_sys[histName].Write('fake_'+histName)    
+        hists_fake_sys[histName].Write('fake_%s'%(histName))    
     fileOutput.Close()
 
+    print("Saving datacards to ascii file %s.txt"%(outputFileName))
     CreateCardsWToTauNu(outputFileName,
                         hist_data,
                         hist_fake,
@@ -731,5 +847,6 @@ if __name__ == "__main__":
                         hist_bkg_lfakes,
                         hist_sig,
                         names_fake_sys,
-                        names_sig_sys)
+                        names_sig_sys,
+                        suffix)
                 
