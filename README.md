@@ -51,7 +51,7 @@ The measurement is done by performing simultaneous fit in two regions. The fitte
 1. transverse mass of muon and missing pT in the `W*->mu+v` sideband, and
 2. transverse mass of tau and missing pT in the `W*->tau+v` region.
 
-The tuples for these samples are created with [PicoProducers]().
+The tuples for these samples are created with dedicated [PicoProducers](https://github.com/raspereza/TauFW/tree/master/PicoProducer/python/analysis/HighPT).
 
 The fit is performed with two unconstrained rate parameters. One of them accounts for cross section
 of highly virtual W production. The analysis probes specific phase space with mass of W* greater than about 200 GeV.
