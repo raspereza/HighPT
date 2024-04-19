@@ -16,7 +16,7 @@ picoFolder='/eos/user/r/rasp/output/HighPT'
 #######################
 #    base folder      #
 #######################
-baseFolder = '/afs/cern.ch/work/r/rasp/HighPT'
+baseFolder = '/eos/user/j/jmalvaso/HighPt'
 
 ###################
 # Cross sections  #
@@ -187,7 +187,7 @@ eraRun = {
     "UL2016_postVFP" : "Run2",
     "UL2017"         : "Run2",
     "UL2018"         : "Run2",
-    "2022"           : "2022",
+    "2022_preEE"     : "2022",
     "2022_postEE"    : "2022",
     "2023C"          : "2023",
     "2023D"          : "2023"
@@ -199,8 +199,8 @@ periods = {
     "UL2016" : ["UL2016_preVFP","UL2016_postVFP"],
     "UL2017" : ["UL2017"],
     "UL2018" : ["UL2018"],
-    "2022"   : ["2022","2022_postEE"],
-    "2022_preEE"   : ["2022"],
+    "2022"   : ["2022_preEE","2022_postEE"],
+    "2022_preEE"   : ["2022_preEE"],
     "2022_postEE"  : ["2022_postEE"],
     "2023C"  : ["2023C"],
     "2023D"  : ["2023D"],
@@ -212,7 +212,7 @@ eraSamples = {
     "UL2016_preVFP" : sampleXSec_2016,
     "UL2017" : sampleXSec_2017,
     "UL2018" : sampleXSec_2018,
-    "2022"   : sampleXSec_2022,
+    # "2022"   : sampleXSec_2022,
     "2022_preEE"  : sampleXSec_2022,
     "2022_postEE" : sampleXSec_2022,
     "2023C" : sampleXSec_2023,
@@ -225,7 +225,7 @@ eraLumi = {
     "UL2016_preVFP"  : 19500,
     "UL2017" : 41480,    
     "UL2018" : 59830,
-    "2022" : 8077,
+    "2022_preEE" : 8077,
     "2022_postEE" : 27007,
     "2023C" : 17650,
     "2023D" : 9451
@@ -238,7 +238,7 @@ eraLumi = {
 singlemu_2023D = ['Muon_Run2023D']
 singlemu_2023C = ['Muon_Run2023C']
 singlemu_2022_postEE = ['Muon_Run2022E','Muon_Run2022F','Muon_Run2022G']
-singlemu_2022 = ['SingleMuon_Run2022C','Muon_Run2022C','Muon_Run2022D']
+singlemu_2022_preEE = ['SingleMuon_Run2022C','Muon_Run2022C','Muon_Run2022D']
 singlemu_2018 = ['SingleMuon_Run2018A','SingleMuon_Run2018B','SingleMuon_Run2018C','SingleMuon_Run2018D']
 singlemu_2017 = ['SingleMuon_Run2017B','SingleMuon_Run2017C','SingleMuon_Run2017D','SingleMuon_Run2017E','SingleMuon_Run2017F']
 singlemu_2016_preVFP = ['SingleMuon_Run2016B','SingleMuon_Run2016C','SingleMuon_Run2016D','SingleMuon_Run2016E','SingleMuon_Run2016F']
@@ -248,7 +248,7 @@ singlemu_2016_postVFP = ['SingleMuon_Run2016F','SingleMuon_Run2016G','SingleMuon
 jetht_2023D = ['JetMet_Run2023D']
 jetht_2023C = ['JetMet_Run2023C']
 jetht_2022_postEE = ['JetMet_Run2022E','JetMet_Run2022F','JetMet_Run2022G']
-jetht_2022 = ['JetHT_Run2022C','JetMet_Run2022C','JetMet_Run2022D']
+jetht_2022_preEE = ['JetHT_Run2022C','JetMet_Run2022C','JetMet_Run2022D']
 jetht_2018 = ['JetHT_Run2018A','JetHT_Run2018B','JetHT_Run2018C','JetHT_Run2018D']
 jetht_2017 = ['JetHT_Run2017B','JetHT_Run2017C','JetHT_Run2017D','JetHT_Run2017E','JetHT_Run2017F']
 jetht_2016_preVFP = ['JetHT_Run2016B','JetHT_Run2016C','JetHT_Run2016D','JetHT_Run2016E','JetHT_Run2016F']
@@ -258,7 +258,7 @@ jetht_2016_postVFP = ['JetHT_Run2016F','JetHT_Run2016G','JetHT_Run2016H']
 met_2023D = ['JetMet_Run2023D']
 met_2023C = ['JetMet_Run2023C']
 met_2022_postEE = ['JetMet_Run2022E','JetMet_Run2022F','JetMet_Run2022G']
-met_2022 = ['MET_Run2022C','JetMet_Run2022C','JetMet_Run2022D']
+met_2022_preEE = ['MET_Run2022C','JetMet_Run2022C','JetMet_Run2022D']
 met_2018 = ['MET_Run2018A','MET_Run2018B','MET_Run2018C','MET_Run2018D']
 met_2017 = ['MET_Run2017B','MET_Run2017C','MET_Run2017D','MET_Run2017E','MET_Run2017F']
 met_2016_preVFP = ['MET_Run2016B','MET_Run2016C','MET_Run2016D','MET_Run2016E','MET_Run2016F']
@@ -269,7 +269,7 @@ singlemu = {
     "UL2016_postVFP": singlemu_2016_postVFP,
     "UL2017": singlemu_2017,
     "UL2018": singlemu_2018,
-    "2022" : singlemu_2022,
+    "2022_preEE" : singlemu_2022_preEE,
     "2022_postEE" : singlemu_2022_postEE,
     "2023C" : singlemu_2023C,
     "2023D" : singlemu_2023D
@@ -280,7 +280,7 @@ jetht = {
     "UL2016_postVFP": jetht_2016_postVFP,
     "UL2017": jetht_2017,
     "UL2018": jetht_2018,
-    "2022": jetht_2022,
+    "2022_preEE": jetht_2022_preEE,
     "2022_postEE": jetht_2022_postEE,
     "2023C" : jetht_2023C,
     "2023D" : jetht_2023D
@@ -291,7 +291,7 @@ met = {
     "UL2016_postVFP": met_2016_postVFP,
     "UL2017": met_2017,
     "UL2018": met_2018,
-    "2022"  : met_2022,
+    "2022_preEE"  : met_2022_preEE,
     "2022_postEE" : met_2022_postEE,
     "2023C" : met_2023C,
     "2023D" : met_2023D
