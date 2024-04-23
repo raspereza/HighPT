@@ -8,7 +8,7 @@ import HighPT.Tau.utilsHighPT as utils
 import HighPT.Tau.stylesHighPT as styles
 import HighPT.Tau.analysisHighPT as analysis
 from array import array
-
+from HighPT.Tau.FakeFactor import FakeFactorHighPt
 import os
 
 #################################
@@ -194,6 +194,9 @@ def CreateCardsWToMuNu(fileName,h_data,h_bkg,h_sig,uncs,era):
     f.write(groups+"\n")
     f.close()
 
+############
+#   MAIN   #
+############
 
 if __name__ == "__main__":
 
@@ -204,10 +207,76 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
     parser.add_argument('-var','--variable',dest='variable',default='mt_1',choices=['mt_1','pt_1','met','phi_1','eta_1','metphi'])
+    parser.add_argument('-wp','--WP', dest='wp',  default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
+    parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu',  default='Tight',choices=['VLoose','Tight'])
+    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE',  default='VVLoose',choices=['VVLoose','Tight'])
+    parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
 
     args = parser.parse_args() 
     period = args.era
+    
+    def confirm_arguments(parsed_args):
+        print("Parsed arguments:")
+        print("Era:", parsed_args.era)
+        print("Variable:", parsed_args.variable)
+        print("WP:", parsed_args.wp)
+        print("WPvsMu:", parsed_args.wpVsMu)
+        print("WPvsE:", parsed_args.wpVsE)
+        print("Fake_factors:", parsed_args.ff)
+        
+        
+        confirmation = input("Are these arguments correct? (yes/no): ").strip().lower()
+        return confirmation == "yes"
 
+    def adjust_arguments():
+        parser = ArgumentParser()
+        parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
+        parser.add_argument('-var','--variable',dest='variable',default='mt_1',choices=['mt_1','pt_1','met','phi_1','eta_1','metphi'])
+        parser.add_argument('-wp','--WP', dest='wp',  default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
+        parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu',  default='Tight',choices=['VLoose','Tight'])
+        parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE',  default='VVLoose',choices=['VVLoose','Tight'])
+        parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
+        
+        
+        args = parser.parse_args()
+
+        print("Options to adjust arguments:")
+        print("1. Change era")
+        print("2. Change variable to plot")
+        print("3. Change WP")
+        print("4. Change WPvsMu")
+        print("5. Change WPvsE")
+        print("6. Change fake_factors")
+        print("7. Confirm and proceed")
+
+        while True:
+            choice = input("Enter your choice (1-7): ").strip()
+            if choice == "1":
+                args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023): ").strip()
+            elif choice == "2":
+                args.wp = input("Enter the variable to plot (mt_1, pt_1, met, phi_1, eta_1, metphi): ").strip()                
+            elif choice == "3":
+                args.wp = input("Enter the WP (Loose, Medium, Tight, VTight, VVTight): ").strip()
+            elif choice == "4":
+                args.wpVsMu = input("Enter the WPvsMu (VLoose, Tight): ").strip()
+            elif choice == "5":
+                args.wpVsE = input("Enter the WPvsE (VVLoose, Tight): ").strip()
+            elif choice == "6":
+                args.wpVsE = input("Enter the fake_factors (comb, wjets, dijets): ").strip()
+            elif choice == "7":
+                break
+            else:
+                print("Invalid choice. Please enter a number between 1 and 7.")
+
+        return args
+
+    if __name__ == "__main__":
+        while True:
+            args = adjust_arguments()
+            if confirm_arguments(args):
+                break
+    
+    
     xbins_phi = utils.createBins(20,-3.14,3.14)
     xbins_eta = utils.createBins(20,-2.4,2.4)
     xbins_var = {
@@ -301,8 +370,18 @@ if __name__ == "__main__":
             hists_unc[name_hist+"_"+args.era+"Down"] = hist_down
 
 
+    # # saving histograms to file
+    # outputFileName = utils.baseFolder + "/" + args.era + "/datacards/munu_" + args.era
+    
     # saving histograms to file
-    outputFileName = utils.baseFolder + "/" + args.era + "/datacards/munu_" + args.era
+    FF = args.ff+"_"+args.wp+"_"+args.wpVsMu+"_"+args.wpVsE
+    outputFileName = utils.baseFolder + "/" + args.era + "/datacards_"+ FF +"/munu_" + FF + "_"+ args.era
+
+    # Create the output directory if it doesn't exist
+    if not os.path.exists(os.path.dirname(outputFileName)):
+        print("The directory for datacards storage doesn't exist, it will be created here:", utils.baseFolder + "/" + args.era + "/datacards_"+ FF)
+        os.makedirs(os.path.dirname(outputFileName))   
+        
     print('')
     print("Saving shapes to file %s.root"%(outputFileName))
     fileOutput = ROOT.TFile(outputFileName+".root","recreate")

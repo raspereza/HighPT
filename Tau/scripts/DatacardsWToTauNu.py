@@ -462,16 +462,70 @@ if __name__ == "__main__":
     styles.SetStyle()
 
     from argparse import ArgumentParser
-    parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
-    parser.add_argument('-wp','--WP', dest='wp', default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
-    parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight',choices=['VLoose','Tight'])
-    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='VVLoose',choices=['VVLoose','Tight'])
-    parser.add_argument('-var','--variable',dest='variable',default='mt_1',choices=['mt_1','met','pt_1','eta_1','phi_1','jpt_match_1','mt_jet_1','metphi'])
-    parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
-    parser.add_argument('-m','--meas',dest='meas',default='incl',choices=['incl','lowpt','highpt'])
 
-    args = parser.parse_args()
+    def confirm_arguments(parsed_args):
+        print("Parsed arguments:")
+        print("Era:", parsed_args.era)
+        print("WPvsJet:", parsed_args.wp)
+        print("WPvsMu:", parsed_args.wpVsMu)
+        print("WPvsE:", parsed_args.wpVsE)
+        print("Variable:", parsed_args.variable)
+        print("Fake factors:", parsed_args.ff)
+        print("Measurement:", parsed_args.meas)
+        
+        confirmation = input("Are these arguments correct? (yes/no): ").strip().lower()
+        return confirmation == "yes"
+
+    def adjust_arguments():
+        parser = ArgumentParser()
+        parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
+        parser.add_argument('-wp','--WP', dest='wp', default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
+        parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight',choices=['VLoose','Tight'])
+        parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='VVLoose',choices=['VVLoose','Tight'])
+        parser.add_argument('-var','--variable',dest='variable',default='mt_1',choices=['mt_1','met','pt_1','eta_1','phi_1','jpt_match_1','mt_jet_1','metphi'])
+        parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
+        parser.add_argument('-m','--meas',dest='meas',default='incl',choices=['incl','lowpt','highpt'])
+
+        args = parser.parse_args()
+
+        print("Options to adjust arguments:")
+        print("1. Change era")
+        print("2. Change WPvsJet")
+        print("3. Change WPvsMu")
+        print("4. Change WPvsE")
+        print("5. Change variable to plot")
+        print("6. Change fake factors to use")
+        print("7. Change measurement to perform")                        
+        print("8. Confirm and proceed")
+
+        while True:
+            choice = input("Enter your choice (1-8): ").strip()
+            if choice == "1":
+                args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023): ").strip()
+            elif choice == "2":
+                args.wp = input("Enter the WPvsJet (Loose, Medium, Tight, VTight, VVTight): ").strip()
+            elif choice == "3":
+                args.wpVsMu = input("Enter the WPvsMu (VLoose, Tight): ").strip()
+            elif choice == "4":
+                args.wpVsE = input("Enter the WPvsE (VVLoose, Tight): ").strip()
+            elif choice == "5":
+                args.variable = input("Enter the variable to plot (mt_1, pt_1, met, phi_1, eta_1, metphi): ").strip()               
+            elif choice == "6":
+                args.ff = input("Enter the fake factors to use (comb, wjets, dijets): ").strip()
+            elif choice == "7":
+                args.meas = input("Enter the measurement to perform (incl, lowpt, highpt): ").strip()                         
+            elif choice == "8":
+                break
+            else:
+                print("Invalid choice. Please enter a number between 1 and 8.")
+        return args
+
+    if __name__ == "__main__":
+        while True:
+            args = adjust_arguments()
+            if confirm_arguments(args):
+                break
+
  
     xbins_mt  = [200,300,400,500,600,800,1200]
     xbins_pt  = [100,130,160,190,220,250,300,400,500,700]
@@ -818,9 +872,20 @@ if __name__ == "__main__":
         hists_sig_sys["%sUp"%(name_sys)] = hist_up
         hists_sig_sys["%sDown"%(name_sys)] = hist_down
 
+    # # saving histograms to datacard file datacards
+    # fileName = "taunu_"+args.wp+"_"+args.wpVsMu+"_"+args.wpVsE+suffix
+    # outputFileName = utils.baseFolder+'/'+args.era+"/datacards/"+fileName
+    
     # saving histograms to datacard file datacards
-    fileName = "taunu_"+args.wp+"_"+args.wpVsMu+"_"+args.wpVsE+suffix
-    outputFileName = utils.baseFolder+'/'+args.era+"/datacards/"+fileName
+    FF = args.ff+"_"+args.wp+"_"+args.wpVsMu+"_"+args.wpVsE
+    fileName = "taunu_"+FF+suffix
+    outputFileName = utils.baseFolder + "/" + args.era + "/datacards_"+ FF + "/" + fileName
+    # from IPython import embed 
+    # embed()
+    # Create the output directory if it doesn't exist
+    if not os.path.exists(os.path.dirname(outputFileName)):
+        print("The directory for datacards storage doesn't exist, it will be created here:", utils.baseFolder + "/" + args.era + "/datacards_"+ FF)
+        os.makedirs(os.path.dirname(outputFileName))
     print("")
     print("Saving histograms to RooT file %s.root"%(outputFileName))
     fileOutput = ROOT.TFile(outputFileName+".root","recreate")

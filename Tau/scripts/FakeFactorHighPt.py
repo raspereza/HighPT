@@ -506,6 +506,54 @@ if __name__ == "__main__":
     basefolder = utils.picoFolder+'/'+args.era
 
     eras = utils.periods[args.era]
+    def confirm_arguments(parsed_args):
+        print("Parsed arguments:")
+        print("Era:", parsed_args.era)
+        print("WP:", parsed_args.wp)
+        print("WPvsMu:", parsed_args.wpVsMu)
+        print("WPvsE:", parsed_args.wpVsE)
+        
+        confirmation = input("Are these arguments correct? (yes/no): ").strip().lower()
+        return confirmation == "yes"
+
+    def adjust_arguments():
+        parser = ArgumentParser()
+        parser.add_argument('-e', '--era', dest='era', default='2023', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023'])
+        parser.add_argument('-wp', '--WP', dest='wp', default='Medium', choices=['Loose', 'Medium', 'Tight', 'VTight', 'VVTight'])
+        parser.add_argument('-wpVsMu', '--WPvsMu', dest='wpVsMu', default='Tight', choices=['VLoose', 'Tight'])
+        parser.add_argument('-wpVsE', '--WPvsE', dest='wpVsE', default='VVLoose', choices=['VVLoose', 'Tight'])
+        args = parser.parse_args()
+
+        print("Options to adjust arguments:")
+        print("1. Change era")
+        print("2. Change WP")
+        print("3. Change WPvsMu")
+        print("4. Change WPvsE")
+        print("5. Confirm and proceed")
+
+        while True:
+            choice = input("Enter your choice (1-5): ").strip()
+            if choice == "1":
+                args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023): ").strip()
+            elif choice == "2":
+                args.wp = input("Enter the WP (Loose, Medium, Tight, VTight, VVTight): ").strip()
+            elif choice == "3":
+                args.wpVsMu = input("Enter the WPvsMu (VLoose, Tight): ").strip()
+            elif choice == "4":
+                args.wpVsE = input("Enter the WPvsE (VVLoose, Tight): ").strip()
+            elif choice == "5":
+                break
+            else:
+                print("Invalid choice. Please enter a number between 1 and 5.")
+
+        return args
+
+    if __name__ == "__main__":
+        while True:
+            args = adjust_arguments()
+            if confirm_arguments(args):
+                break
+
 
     print('initializing SingleMuon samples >>>')
     singlemuSamples = {} # data samples disctionary
