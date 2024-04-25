@@ -509,7 +509,7 @@ if __name__ == "__main__":
     def confirm_arguments(parsed_args):
         print("Parsed arguments:")
         print("Era:", parsed_args.era)
-        print("WP:", parsed_args.wp)
+        print("WPvsJet:", parsed_args.wp)
         print("WPvsMu:", parsed_args.wpVsMu)
         print("WPvsE:", parsed_args.wpVsE)
         
@@ -526,7 +526,7 @@ if __name__ == "__main__":
 
         print("Options to adjust arguments:")
         print("1. Change era")
-        print("2. Change WP")
+        print("2. Change WPvsJet")
         print("3. Change WPvsMu")
         print("4. Change WPvsE")
         print("5. Confirm and proceed")
