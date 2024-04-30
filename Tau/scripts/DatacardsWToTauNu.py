@@ -10,6 +10,7 @@ import HighPT.Tau.utilsHighPT as utils
 import HighPT.Tau.stylesHighPT as styles
 import HighPT.Tau.analysisHighPT as analysis
 from HighPT.Tau.FakeFactor import FakeFactorHighPt
+import CombineHarvester.CombineTools.ch as ch
 
 #################################
 #     definition of samples     #
@@ -133,6 +134,7 @@ def PlotClosure(hists,**kwargs):
     uncs = kwargs.get('uncs',[''])
     wpVsMu = kwargs.get('wpVsMu') 
     wpVsE = kwargs.get('wpVsE')
+    fake_factors = kwargs.get('fake_factors')
     suffix = kwargs.get('suffix','')
 
     print('')
@@ -244,7 +246,7 @@ def PlotClosure(hists,**kwargs):
     canvas.cd()
     canvas.SetSelected(canvas)
     canvas.Update()
-    canvas.Print(utils.baseFolder+"/"+era+"/figures/WTauNu/closure_"+var+suffix+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+".png")
+    canvas.Print(utils.baseFolder+"/"+era+"/figures/WTauNu/closure_"+fake_factors+"_"+var+suffix+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+".png")
 
     return hist_ratio
 
@@ -259,6 +261,7 @@ def PlotWToTauNu(hists,**kwargs):
     plotLegend = kwargs.get('plotLegend',True)
     wpVsMu = kwargs.get('wpVsMu','Tight')
     wpVsE = kwargs.get('wpVsE','Tight')
+    fake_factors = kwargs.get('fake_factors')
     suffix = kwargs.get('suffix','')
 
     h_data = hists['hist_data'].Clone("data_plot")
@@ -410,49 +413,154 @@ def PlotWToTauNu(hists,**kwargs):
     canvas.SetSelected(canvas)
     canvas.Update()
     print('')
-    canvas.Print(utils.baseFolder+"/"+era+"/figures/WTauNu/wtaunu_"+var+suffix+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+".png")
+    canvas.Print(utils.baseFolder+"/"+era+"/figures/WTauNu/wtaunu_"+fake_factors+"_"+var+suffix+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+".png")
 
-def CreateCardsWToTauNu(fileName,h_data,h_fake,h_tau,h_bkg,h_sig,uncs_fake,uncs_sig,suffix):
-
-    x_data = h_data.GetSumOfWeights()
-    x_fake = h_fake.GetSumOfWeights()
-    x_tau  = h_tau.GetSumOfWeights()
-    x_bkg  = h_bkg.GetSumOfWeights()    
-    x_sig  = h_sig.GetSumOfWeights() 
-
-    cardsFileName = fileName + ".txt"
+def CreateCardsWToTauNu(era,ff_par,fileName,datacards_folder,uncs_fake,uncs_sig,suffix):
+    
     rootFileName = fileName + ".root"
-    f = open(cardsFileName,"w")
-    f.write("imax 1  number of channels\n")
-    f.write("jmax *  number of backgrounds\n")
-    f.write("kmax *  number of nuisance parameters\n")
-    f.write("---------------------------\n")
-    f.write("observation %3.1f\n"%(x_data))
-    f.write("---------------------------\n")
-    f.write("shapes * * "+rootFileName+"  taunu/$PROCESS taunu/$PROCESS_$SYSTEMATIC \n")
-    f.write("---------------------------\n")
-    f.write("bin       WtoTauNu%s  WtoTauNu%s  WtoTauNu%s  WtoTauNu%s\n"%(suffix,suffix,suffix,suffix))
-    f.write("process   tau%s       wtaunu%s    fake        lfakes\n"%(suffix,suffix))
-    f.write("process   -1          0           1           2\n")
-    f.write("rate      %4.3f       %4.3f       %4.3f       %4.3f\n"%(x_tau,x_sig,x_fake,x_bkg))
-    f.write("---------------------------\n")
-    f.write("extrapW        lnN   -             1.04          -             -\n")
-    f.write("bkgNorm_taunu  lnN   1.2           -             -             -\n")
-    f.write("lep_fakes      lnN   -             -             -           1.5\n")
-    for unc in uncs_sig:
-        f.write(unc+"     shape   -             1.0           -             -\n")
-    for unc in uncs_fake:
-        f.write(unc+"     shape   -             -             1.0           -\n")
-    f.write("normW  rateParam  WtoTauNu%s wtaunu%s  1.0  [0.5,1.5]\n"%(suffix,suffix))
-    f.write("* autoMCStats 0\n")
-    groups = "sysUnc group = normW extrapW bkgNorm_taunu lep_fakes"
-    for unc in uncs_sig:
-        groups = groups + " " + unc
-    for unc in uncs_fake:
-        groups = groups + " " + unc
-    f.write(groups+"\n")
-    f.close()
 
+    cb = ch.CombineHarvester()
+    cats = [(1,'taunu'),]    
+    cb.AddObservations(['*'],['taunu'],[era],['tau_ID'],cats)
+    
+    for cat in cats:
+        cb.AddProcesses(['*'],['taunu'],[era],['tau_ID'],['tau_'+era, 'wtaunu_'+era],[cat],True)
+        cb.AddProcesses(['*'],['taunu'],[era],['tau_ID'],['fake','lfakes'],[cat],False)
+        
+    cb.cp().process(['wtaunu_'+era]).AddSyst(cb,'extrapW','lnN',ch.SystMap()(1.04))
+    cb.cp().process(['tau_'+era]).AddSyst(cb,'bkgNorm_taunu','lnN',ch.SystMap()(1.20))
+    cb.cp().process(['lfakes']).AddSyst(cb,'lep_fakes','lnN',ch.SystMap()(1.5))
+    
+    cb.cp().process(['wtaunu_'+era]).AddSyst(cb,'JES_'+ era,'shape',ch.SystMap()(1.0))
+    cb.cp().process(['wtaunu_'+era]).AddSyst(cb,'Unclustered_'+ era,'shape',ch.SystMap()(1.0))
+    cb.cp().process(['fake']).AddSyst(cb,'nonclosure_'+ era,'shape',ch.SystMap()(1.0))
+    for unc in uncs_sig:
+        cb.cp().process(['wtaunu_'+era]).AddSyst(cb, unc,'shape',ch.SystMap()(1.0))
+    for unc in uncs_fake:
+        cb.cp().process(['fake']).AddSyst(cb, unc,'shape',ch.SystMap()(1.0))
+    
+    cb.AddDatacardLineAtEnd("normW  rateParam  taunu wtaunu_" +era+ " 1.0  [0.5,1.5]")
+    cb.AddDatacardLineAtEnd("* autoMCStats 0")
+    
+    cb.AddDatacardLineAtEnd(
+    "sysUnc group = normW extrapW bkgNorm_taunu lep_fakes JES_" + era + 
+    " Unclustered_" + era + " taues_1pr_" + era + " taues_1pr1pi0_" + era + 
+    " taues_3pr_" + era + " taues_3pr1pi0_" + era + " nonclosure_" + era + 
+    " wjets_ptratioLow_"+ff_par+"Low_" + era + " wjets_ptratioLow_"+ff_par+"High_" + era + 
+    " wjets_ptratioHigh_"+ff_par+"Low_" + era + " wjets_ptratioHigh_"+ff_par+"High_" + era + 
+    " dijets_ptratioLow_"+ff_par+"Low_" + era + " dijets_ptratioLow_"+ff_par+"High_" + era + 
+    " dijets_ptratioHigh_"+ff_par+"Low_" + era + " dijets_ptratioHigh_"+ff_par+"High_" + era)
+
+    cb.cp().signals().ExtractShapes( datacards_folder+"/"+rootFileName, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+    cb.cp().backgrounds().ExtractShapes( datacards_folder+"/"+rootFileName, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+    writer = ch.CardWriter(
+        datacards_folder +"/"+ fileName +".txt",
+        datacards_folder +"/"+ fileName +".root")
+    writer.SetWildcardMasses([])
+    writer.SetVerbosity(0);
+    writer.WriteCards('%s'%(datacards_folder),cb)
+    print
+    print
+    print('Datacards for W*->taunu process for year %s created'%(era))
+    print
+    
+def CreateCardsWToTauNu_lowpt(era,ff_par,fileName,datacards_folder,uncs_fake,uncs_sig,suffix):
+    
+    rootFileName = fileName + ".root"
+
+    cb = ch.CombineHarvester()
+    cats = [(1,'taunu'),]    
+    cb.AddObservations(['*'],['taunu'],[era],['tau_ID'],cats)
+    
+    for cat in cats:
+        cb.AddProcesses(['*'],['taunu'],[era],['tau_ID'],['tau_lowpt_'+era, 'wtaunu_lowpt_'+era],[cat],True)
+        cb.AddProcesses(['*'],['taunu'],[era],['tau_ID'],['fake','lfakes'],[cat],False)
+        
+    cb.cp().process(['wtaunu_lowpt_'+era]).AddSyst(cb,'extrapW','lnN',ch.SystMap()(1.04))
+    cb.cp().process(['tau_lowpt_'+era]).AddSyst(cb,'bkgNorm_taunu','lnN',ch.SystMap()(1.20))
+    cb.cp().process(['lfakes']).AddSyst(cb,'lep_fakes','lnN',ch.SystMap()(1.5))
+    
+    cb.cp().process(['wtaunu_lowpt_'+era]).AddSyst(cb,'JES_'+ era,'shape',ch.SystMap()(1.0))
+    cb.cp().process(['wtaunu_lowpt_'+era]).AddSyst(cb,'Unclustered_'+ era,'shape',ch.SystMap()(1.0))
+    cb.cp().process(['fake']).AddSyst(cb,'nonclosure_'+ era,'shape',ch.SystMap()(1.0))
+    for unc in uncs_sig:
+        cb.cp().process(['wtaunu_lowpt_'+era]).AddSyst(cb, unc,'shape',ch.SystMap()(1.0))
+    for unc in uncs_fake:
+        cb.cp().process(['fake']).AddSyst(cb, unc,'shape',ch.SystMap()(1.0))
+    
+    cb.AddDatacardLineAtEnd("normW  rateParam  taunu wtaunu_lowpt_"+era+" 1.0  [0.5,1.5]")
+    cb.AddDatacardLineAtEnd("* autoMCStats 0")
+    
+    cb.AddDatacardLineAtEnd(
+    "sysUnc group = normW extrapW bkgNorm_taunu lep_fakes JES_" + era + 
+    " Unclustered_" + era + " taues_1pr_" + era + " taues_1pr1pi0_" + era + 
+    " taues_3pr_" + era + " taues_3pr1pi0_" + era + " nonclosure_" + era + 
+    " wjets_ptratioLow_"+ff_par+"Low_" + era + " wjets_ptratioLow_"+ff_par+"High_" + era + 
+    " wjets_ptratioHigh_"+ff_par+"Low_" + era + " wjets_ptratioHigh_"+ff_par+"High_" + era + 
+    " dijets_ptratioLow_"+ff_par+"Low_" + era + " dijets_ptratioLow_"+ff_par+"High_" + era + 
+    " dijets_ptratioHigh_"+ff_par+"Low_" + era + " dijets_ptratioHigh_"+ff_par+"High_" + era)
+
+    cb.cp().signals().ExtractShapes( datacards_folder+"/"+rootFileName, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+    cb.cp().backgrounds().ExtractShapes( datacards_folder+"/"+rootFileName, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+    writer = ch.CardWriter(
+        datacards_folder +"/"+ fileName +".txt",
+        datacards_folder +"/"+ fileName +".root")
+    writer.SetWildcardMasses([])
+    writer.SetVerbosity(0);
+    writer.WriteCards('%s'%(datacards_folder),cb)
+    print
+    print
+    print('Datacards for W*->taunu process for year %s created'%(era))
+    print
+    
+def CreateCardsWToTauNu_highpt(era,ff_par,fileName,datacards_folder,uncs_fake,uncs_sig,suffix):
+    
+    rootFileName = fileName + ".root"
+
+    cb = ch.CombineHarvester()
+    cats = [(1,'taunu'),]    
+    cb.AddObservations(['*'],['taunu'],[era],['tau_ID'],cats)
+    
+    for cat in cats:
+        cb.AddProcesses(['*'],['taunu'],[era],['tau_ID'],['tau_highpt_'+era, 'wtaunu_highpt_'+era],[cat],True)
+        cb.AddProcesses(['*'],['taunu'],[era],['tau_ID'],['fake','lfakes'],[cat],False)
+        
+    cb.cp().process(['wtaunu_highpt_'+era]).AddSyst(cb,'extrapW','lnN',ch.SystMap()(1.04))
+    cb.cp().process(['tau_highpt_'+era]).AddSyst(cb,'bkgNorm_taunu','lnN',ch.SystMap()(1.20))
+    cb.cp().process(['lfakes']).AddSyst(cb,'lep_fakes','lnN',ch.SystMap()(1.5))
+    
+    cb.cp().process(['wtaunu_highpt_'+era]).AddSyst(cb,'JES_'+ era,'shape',ch.SystMap()(1.0))
+    cb.cp().process(['wtaunu_highpt_'+era]).AddSyst(cb,'Unclustered_'+ era,'shape',ch.SystMap()(1.0))
+    cb.cp().process(['fake']).AddSyst(cb,'nonclosure_'+ era,'shape',ch.SystMap()(1.0))
+    for unc in uncs_sig:
+        cb.cp().process(['wtaunu_highpt_'+era]).AddSyst(cb, unc,'shape',ch.SystMap()(1.0))
+    for unc in uncs_fake:
+        cb.cp().process(['fake']).AddSyst(cb, unc,'shape',ch.SystMap()(1.0))
+    
+    cb.AddDatacardLineAtEnd("normW  rateParam  taunu  wtaunu_highpt_"+era+" 1.0  [0.5,1.5]")
+    cb.AddDatacardLineAtEnd("* autoMCStats 0")
+    
+    cb.AddDatacardLineAtEnd(
+    "sysUnc group = normW extrapW bkgNorm_taunu lep_fakes JES_" + era + 
+    " Unclustered_" + era + " taues_1pr_" + era + " taues_1pr1pi0_" + era + 
+    " taues_3pr_" + era + " taues_3pr1pi0_" + era + " nonclosure_" + era + 
+    " wjets_ptratioLow_"+ff_par+"Low_" + era + " wjets_ptratioLow_"+ff_par+"High_" + era + 
+    " wjets_ptratioHigh_"+ff_par+"Low_" + era + " wjets_ptratioHigh_"+ff_par+"High_" + era + 
+    " dijets_ptratioLow_"+ff_par+"Low_" + era + " dijets_ptratioLow_"+ff_par+"High_" + era + 
+    " dijets_ptratioHigh_"+ff_par+"Low_" + era + " dijets_ptratioHigh_"+ff_par+"High_" + era)
+
+    cb.cp().signals().ExtractShapes( datacards_folder+"/"+rootFileName, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+    cb.cp().backgrounds().ExtractShapes( datacards_folder+"/"+rootFileName, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+    writer = ch.CardWriter(
+        datacards_folder +"/"+ fileName +".txt",
+        datacards_folder +"/"+ fileName +".root")
+    writer.SetWildcardMasses([])
+    writer.SetVerbosity(0);
+    writer.WriteCards('%s'%(datacards_folder),cb)
+    print
+    print
+    print('Datacards for W*->taunu process for year %s created'%(era))
+    print
 ############
 ### MAIN ###
 ############
@@ -466,12 +574,13 @@ if __name__ == "__main__":
     def confirm_arguments(parsed_args):
         print("Parsed arguments:")
         print("Era:", parsed_args.era)
-        print("WPvsJet:", parsed_args.wp)
+        print("WPvsJet:", parsed_args.wpVsJet)
         print("WPvsMu:", parsed_args.wpVsMu)
         print("WPvsE:", parsed_args.wpVsE)
         print("Variable:", parsed_args.variable)
         print("Fake factors:", parsed_args.ff)
         print("Measurement:", parsed_args.meas)
+        print("Fake facotrs parametrization:", parsed_args.ff_par)
         
         confirmation = input("Are these arguments correct? (yes/no): ").strip().lower()
         return confirmation == "yes"
@@ -479,12 +588,13 @@ if __name__ == "__main__":
     def adjust_arguments():
         parser = ArgumentParser()
         parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
-        parser.add_argument('-wp','--WP', dest='wp', default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
+        parser.add_argument('-wp','--WPvsJet', dest='wpVsJet', default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
         parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight',choices=['VLoose','Tight'])
         parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='VVLoose',choices=['VVLoose','Tight'])
         parser.add_argument('-var','--variable',dest='variable',default='mt_1',choices=['mt_1','met','pt_1','eta_1','phi_1','jpt_match_1','mt_jet_1','metphi'])
         parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
         parser.add_argument('-m','--meas',dest='meas',default='incl',choices=['incl','lowpt','highpt'])
+        parser.add_argument('-ff_par','--ff_par',dest='ff_par',default='pttau',choices=['pttau','ptjet'])
 
         args = parser.parse_args()
 
@@ -495,15 +605,16 @@ if __name__ == "__main__":
         print("4. Change WPvsE")
         print("5. Change variable to plot")
         print("6. Change fake factors to use")
-        print("7. Change measurement to perform")                        
-        print("8. Confirm and proceed")
+        print("7. Change measurement to perform")
+        print("8. Change the fake factor parametrization")                          
+        print("9. Confirm and proceed")
 
         while True:
-            choice = input("Enter your choice (1-8): ").strip()
+            choice = input("Enter your choice (1-9): ").strip()
             if choice == "1":
                 args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023): ").strip()
             elif choice == "2":
-                args.wp = input("Enter the WPvsJet (Loose, Medium, Tight, VTight, VVTight): ").strip()
+                args.wpVsJet = input("Enter the WPvsJet (Loose, Medium, Tight, VTight, VVTight): ").strip()
             elif choice == "3":
                 args.wpVsMu = input("Enter the WPvsMu (VLoose, Tight): ").strip()
             elif choice == "4":
@@ -513,11 +624,13 @@ if __name__ == "__main__":
             elif choice == "6":
                 args.ff = input("Enter the fake factors to use (comb, wjets, dijets): ").strip()
             elif choice == "7":
-                args.meas = input("Enter the measurement to perform (incl, lowpt, highpt): ").strip()                         
+                args.meas = input("Enter the measurement to perform (incl, lowpt, highpt): ").strip()     
             elif choice == "8":
+                args.ff_par = input("Enter the fake factor parametrizatin to use (pttau, ptjet): ").strip()                         
+            elif choice == "9":
                 break
             else:
-                print("Invalid choice. Please enter a number between 1 and 8.")
+                print("Invalid choice. Please enter a number between 1 and 9.")
         return args
 
     if __name__ == "__main__":
@@ -575,7 +688,7 @@ if __name__ == "__main__":
     ff = args.ff
 
     # initializing instance of FakeFactorHighPT class    
-    fullpathFF = utils.baseFolder+'/'+args.era+'/FF/ff_'+args.wp+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+".root"
+    fullpathFF = utils.baseFolder+'/'+args.era+'/FF/ff_'+args.wpVsJet+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+".root"
     samples = []
     with_dijets = False
     if ff=='wjets':
@@ -589,7 +702,7 @@ if __name__ == "__main__":
         with_dijets = True
     
     fakeFactor = FakeFactorHighPt(filename=fullpathFF,
-                                  variable1='pttau',
+                                  variable1= args.ff_par,
                                   variable2='ptratio',
                                   with_dijets=with_dijets)
 
@@ -619,7 +732,7 @@ if __name__ == "__main__":
             name = metName
             metSamples[name] = analysis.sampleHighPt(basefolder,era,
                                                       "taunu",metName,True)
-            metSamples[name].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+            metSamples[name].SetTauNuConfig(fakeFactor,args.wpVsJet,wtaunuCuts)
 
     print('')
     print('initializing W background samples >>>')
@@ -638,7 +751,7 @@ if __name__ == "__main__":
                 wbkgSamples[name] = analysis.sampleHighPt(basefolder,era,
                                                           "taunu",wbkgSampleName,
                                                           False)
-            wbkgSamples[name].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+            wbkgSamples[name].SetTauNuConfig(fakeFactor,args.wpVsJet,wtaunuCuts)
 
     print('')
     print('initializing background samples >>>')
@@ -651,7 +764,7 @@ if __name__ == "__main__":
             bkgSamples[name] = analysis.sampleHighPt(basefolder,era,
                                                      "taunu",bkgSampleName,
                                                      False)
-            bkgSamples[name].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+            bkgSamples[name].SetTauNuConfig(fakeFactor,args.wpVsJet,wtaunuCuts)
 
     print('')
     print('initializing signal samples >>>')
@@ -663,10 +776,10 @@ if __name__ == "__main__":
             name = sigSampleName + '_' + era
             sigSamples[name] = analysis.sampleHighPt(basefolder,era,
                                                      "taunu",sigSampleName,False)
-            sigSamples[name].SetTauNuConfig(fakeFactor,args.wp,wtaunuCuts)
+            sigSamples[name].SetTauNuConfig(fakeFactor,args.wpVsJet,wtaunuCuts)
 
     # defining baseline cuts
-    commonCut = "metfilter>0.5&&mettrigger>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&njets==0&&idDeepTau2018v2p5VSmu_1>="+utils.tauVsMuWPs[args.wpVsMu]+"&&idDeepTau2018v2p5VSe_1>="+utils.tauVsEleWPs[args.wpVsE]+"&&genmatch_1==5&&idDeepTau2018v2p5VSjet_1>=" + utils.tauWPs[args.wp]
+    commonCut = "metfilter>0.5&&mettrigger>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&njets==0&&idDeepTau2018v2p5VSmu_1>="+utils.tauVsMuWPs[args.wpVsMu]+"&&idDeepTau2018v2p5VSe_1>="+utils.tauVsEleWPs[args.wpVsE]+"&&genmatch_1==5&&idDeepTau2018v2p5VSjet_1>=" + utils.tauWPs[args.wpVsJet]
 
     vetoHotSpot = "!(eta_1>%5.3f&&eta_1<%5.3f&&phi_1>%5.3f&&phi_1<%5.3f)"%(wtaunuCuts.etaHotMin,wtaunuCuts.etaHotMax,wtaunuCuts.phiHotMin,wtaunuCuts.phiHotMax)
     
@@ -738,11 +851,12 @@ if __name__ == "__main__":
     fake_uncs = fakeFactor.getUncertaintyList()
     nonclosure = PlotClosure(hists_totbkg,
                              basename='totbkg',
-                             wp=args.wp,
+                             wp=args.wpVsJet,
                              era=args.era,
                              var=var,
                              wpVsMu=args.wpVsMu,
                              wpVsE=args.wpVsE,
+                             fake_factors=args.ff,
                              uncs=fake_uncs,
                              suffix=suffix)
     
@@ -816,12 +930,13 @@ if __name__ == "__main__":
     histsToPlot['hist_bkg_lfakes'] = hist_bkg_lfakes
     histsToPlot['hist_sig'] = hist_sig    
     PlotWToTauNu(histsToPlot,
-                 wp=args.wp,
+                 wp=args.wpVsJet,
                  era=args.era,
                  var=var,
                  plotLegend=plotLegend,
                  wpVsMu=args.wpVsMu,
                  wpVsE=args.wpVsE,
+                 fake_factors=args.ff,
                  suffix=suffix)
 
     if not var in['mt_1','mt_jet_1']:
@@ -872,16 +987,11 @@ if __name__ == "__main__":
         hists_sig_sys["%sUp"%(name_sys)] = hist_up
         hists_sig_sys["%sDown"%(name_sys)] = hist_down
 
-    # # saving histograms to datacard file datacards
-    # fileName = "taunu_"+args.wp+"_"+args.wpVsMu+"_"+args.wpVsE+suffix
-    # outputFileName = utils.baseFolder+'/'+args.era+"/datacards/"+fileName
-    
     # saving histograms to datacard file datacards
-    FF = args.ff+"_"+args.wp+"_"+args.wpVsMu+"_"+args.wpVsE
-    fileName = "taunu_"+FF+suffix
+    FF = args.ff+"_"+args.wpVsJet+"_"+args.wpVsMu+"_"+args.wpVsE
+    fileName = "taunu_"+args.ff_par+"_"+FF+suffix
     outputFileName = utils.baseFolder + "/" + args.era + "/datacards_"+ FF + "/" + fileName
-    # from IPython import embed 
-    # embed()
+  
     # Create the output directory if it doesn't exist
     if not os.path.exists(os.path.dirname(outputFileName)):
         print("The directory for datacards storage doesn't exist, it will be created here:", utils.baseFolder + "/" + args.era + "/datacards_"+ FF)
@@ -905,13 +1015,30 @@ if __name__ == "__main__":
     fileOutput.Close()
 
     print("Saving datacards to ascii file %s.txt"%(outputFileName))
-    CreateCardsWToTauNu(outputFileName,
-                        hist_data,
-                        hist_fake,
-                        hist_bkg_tau,
-                        hist_bkg_lfakes,
-                        hist_sig,
+    
+    datacards_folder = utils.baseFolder + "/" + args.era + "/datacards_"+ FF 
+    if args.meas == 'incl':
+        CreateCardsWToTauNu(args.era,
+                        args.ff_par,
+                        fileName,
+                        datacards_folder,
                         names_fake_sys,
                         names_sig_sys,
                         suffix)
-                
+    elif args.meas == 'lowpt':
+        CreateCardsWToTauNu_lowpt(args.era,
+                        args.ff_par,
+                        fileName,
+                        datacards_folder,
+                        names_fake_sys,
+                        names_sig_sys,
+                        suffix)
+    elif args.meas == 'highpt':
+        CreateCardsWToTauNu_highpt(args.era,
+                        args.ff_par,
+                        fileName,
+                        datacards_folder,
+                        names_fake_sys,
+                        names_sig_sys,
+                        suffix)
+        

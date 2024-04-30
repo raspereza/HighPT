@@ -108,7 +108,7 @@ def DrawFF(hist,**kwargs):
     variable2 = kwargs.get('variable2','ptratio')
     label = kwargs.get('label','ptratioLow')
     channel = kwargs.get('channel','channel')
-    wp = kwargs.get('wp','Medium')
+    wpVsJet = kwargs.get('wpVsJet','Medium')
     wpVsE  = kwargs.get('wpVsE','TightVsE')
     wpVsMu = kwargs.get('wpVsMu','TightVsMu')
     trigger = kwargs.get('trigger','incl')
@@ -224,7 +224,7 @@ def DrawFF(hist,**kwargs):
                                            variable1,
                                            label,
                                            trigger,
-                                           wp,
+                                           wpVsJet,
                                            wpVsMu,
                                            wpVsE);
     canv.Print('%s/%s/figures/FF/%s.png'%(utils.baseFolder,era,png_file))
@@ -234,7 +234,7 @@ def DrawFF(hist,**kwargs):
 def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
 
     era = kwargs.get("era","2023")
-    wp = kwargs.get("wp","Medium")
+    wpVsJet = kwargs.get("wpVsJet","Medium")
     channel = kwargs.get("channel","wjets")
     wpVsE = kwargs.get("wpVsE","Loose")
     wpVsMu = kwargs.get("wpVsMu","Loose")
@@ -245,13 +245,13 @@ def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
     print("+++++++++++++++++++++++++++++++++++++++++++")
     print('')
     print('Computing FF as a function of %s in bins of %s for era %s'%(variable1,variable2,era))
-    print('%sVsJet  %sVsMu  %sVsE'%(wp,wpVsMu,wpVsE))
+    print('%sVsJet  %sVsMu  %sVsE'%(wpVsJet,wpVsMu,wpVsE))
     
     cutTrigger = "(tautrigger1>0.5||tautrigger2>0.5)"
     cutNotTrigger = "(!" + cutTrigger +")"
         
     cutTauDen = "idDeepTau2018v2p5VSjet_2<4"
-    cutTauNum = "idDeepTau2018v2p5VSjet_2>=" + utils.tauWPs[wp]
+    cutTauNum = "idDeepTau2018v2p5VSjet_2>=" + utils.tauWPs[wpVsJet]
 
     cutTauDen += "&&idDeepTau2018v2p5VSmu_2>=" + utils.tauVsMuWPs[wpVsMu]
     cutTauDen += "&&idDeepTau2018v2p5VSe_2>="  + utils.tauVsEleWPs[wpVsE]
@@ -426,7 +426,7 @@ def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
                                      era=era,
                                      channel=channel,
                                      label=label,
-                                     wp=wp,
+                                     wpVsJet=wpVsJet,
                                      variable1=variable1,
                                      variable2=variable2,
                                      isdata=True,
@@ -471,7 +471,7 @@ def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
                                         era=era,
                                         channel=channel,
                                         label=label,
-                                        wp=wp,
+                                        wpVsJet=wpVsJet,
                                         variable1=variable1,
                                         variable2=variable2,
                                         isdata=False,
@@ -498,7 +498,7 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
-    parser.add_argument('-wp','--WP', dest='wp',  default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
+    parser.add_argument('-wpVsJet','--WP', dest='wpVsJet',  default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
     parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu',  default='Tight',choices=['VLoose','Tight'])
     parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE',  default='VVLoose',choices=['VVLoose','Tight'])
     args = parser.parse_args() 
@@ -509,7 +509,7 @@ if __name__ == "__main__":
     def confirm_arguments(parsed_args):
         print("Parsed arguments:")
         print("Era:", parsed_args.era)
-        print("WPvsJet:", parsed_args.wp)
+        print("WPvsJet:", parsed_args.wpVsJet)
         print("WPvsMu:", parsed_args.wpVsMu)
         print("WPvsE:", parsed_args.wpVsE)
         
@@ -519,7 +519,7 @@ if __name__ == "__main__":
     def adjust_arguments():
         parser = ArgumentParser()
         parser.add_argument('-e', '--era', dest='era', default='2023', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023'])
-        parser.add_argument('-wp', '--WP', dest='wp', default='Medium', choices=['Loose', 'Medium', 'Tight', 'VTight', 'VVTight'])
+        parser.add_argument('-wpVsJet', '--WP', dest='wpVsJet', default='Medium', choices=['Loose', 'Medium', 'Tight', 'VTight', 'VVTight'])
         parser.add_argument('-wpVsMu', '--WPvsMu', dest='wpVsMu', default='Tight', choices=['VLoose', 'Tight'])
         parser.add_argument('-wpVsE', '--WPvsE', dest='wpVsE', default='VVLoose', choices=['VVLoose', 'Tight'])
         args = parser.parse_args()
@@ -536,7 +536,7 @@ if __name__ == "__main__":
             if choice == "1":
                 args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023): ").strip()
             elif choice == "2":
-                args.wp = input("Enter the WP (Loose, Medium, Tight, VTight, VVTight): ").strip()
+                args.wpVsJet = input("Enter the WP (Loose, Medium, Tight, VTight, VVTight): ").strip()
             elif choice == "3":
                 args.wpVsMu = input("Enter the WPvsMu (VLoose, Tight): ").strip()
             elif choice == "4":
@@ -611,7 +611,7 @@ if __name__ == "__main__":
         print('create folder for fake factors : %s'%(FFfolder))
         exit()
 
-    FFfilename='ff_'+args.wp+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+".root"
+    FFfilename='ff_'+args.wpVsJet+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+".root"
     fullpathout=FFfolder+'/'+FFfilename
     outputfile = TFile(fullpathout,'recreate')
     #   measurements ->
@@ -626,7 +626,7 @@ if __name__ == "__main__":
                  dataSamples[channel],
                  mcSamples,
                  sigSamples,
-                 wp=args.wp,
+                 wpVsJet=args.wpVsJet,
                  wpVsE=args.wpVsE,
                  wpVsMu=args.wpVsMu,
                  era=args.era,
@@ -639,7 +639,7 @@ if __name__ == "__main__":
                  dataSamples[channel],
                  mcSamples,
                  sigSamples,
-                 wp=args.wp,
+                 wpVsJet=args.wpVsJet,
                  wpVsE=args.wpVsE,
                  wpVsMu=args.wpVsMu,
                  era=args.era,

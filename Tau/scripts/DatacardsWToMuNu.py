@@ -10,6 +10,7 @@ import HighPT.Tau.analysisHighPT as analysis
 from array import array
 from HighPT.Tau.FakeFactor import FakeFactorHighPt
 import os
+import CombineHarvester.CombineTools.ch as ch
 
 #################################
 #     definition of cuts        #
@@ -160,40 +161,36 @@ def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,**kwargs):
     print('Creating control plot')
     canvas.Print(utils.baseFolder+"/"+era+"/figures/WMuNu/wmunu_"+var+"_"+era+".png")
 
-def CreateCardsWToMuNu(fileName,h_data,h_bkg,h_sig,uncs,era):
+def CreateCardsWToMuNu(file_name,datacards_folder,uncs,era):
+    
+    rootFileName = file_name + ".root"
 
-    x_data = h_data.GetSumOfWeights()
-    x_bkg  = h_bkg.GetSumOfWeights()
-    x_sig  = h_sig.GetSumOfWeights() 
-
-    cardsFileName = fileName + ".txt"
-    rootFileName = fileName + ".root"
-    f = open(cardsFileName,"w")
-    f.write("imax 1    number of channels\n")
-    f.write("jmax *    number of backgrounds\n")
-    f.write("kmax *    number of nuisance parameters\n")
-    f.write("---------------------------\n")
-    f.write("observation   %3.1f\n"%(x_data))
-    f.write("---------------------------\n")
-    f.write("shapes * *  "+rootFileName+"  munu/$PROCESS munu/$PROCESS_$SYSTEMATIC \n")
-    f.write("---------------------------\n")
-    f.write("bin                 WtoMuNu     WtoMuNu\n")
-    f.write("process             wmunu       bkg_munu\n")
-    f.write("process             1           2\n")
-    f.write("rate                %4.3f   %4.3f\n"%(x_sig,x_bkg))
-    f.write("-----------------------------------\n")
-    f.write("muEff         lnN   1.04        -\n")
-    f.write("bkgNorm_munu  lnN   -           1.2\n")
-    for unc in uncs:
-        f.write(unc+"_"+era+"    shape  1.0          -\n")
-    f.write("normW  rateParam  WtoMuNu wmunu  1.0  [0.5,1.5]\n")
-    f.write("* autoMCStats 0\n")
-    groups = "sysUnc group = normW muEff bkgNorm_munu"
-    for unc in uncs:
-        groups = groups + " " + unc + "_" + era
-    f.write(groups+"\n")
-    f.close()
-
+    cb = ch.CombineHarvester()
+    cats = [(1,'munu'),]    
+    cb.AddObservations(['*'],['munu'],[era],['tau_ID'],cats)
+    
+    for cat in cats:
+        cb.AddProcesses(['*'],['munu'],[era],['tau_ID'],['wmunu','bkg_munu'],[cat],False)
+    
+    cb.cp().process(['wmunu', 'bkg_munu']).AddSyst(cb,'muEff','lnN',ch.SystMap()(1.04))
+    cb.cp().process(['bkg_munu']).AddSyst(cb,'bkgNorm_munu','lnN',ch.SystMap()(1.20))
+    
+    cb.cp().process(['wmunu']).AddSyst(cb,'JES_'+ era,'shape',ch.SystMap()(1.0))
+    cb.cp().process(['wmunu']).AddSyst(cb,'Unclustered_'+ era,'shape',ch.SystMap()(1.0))
+    cb.AddDatacardLineAtEnd("normW  rateParam  munu wmunu  1.0  [0.5,1.5]")
+    cb.AddDatacardLineAtEnd("* autoMCStats 0")
+    cb.AddDatacardLineAtEnd("sysUnc group = normW muEff bkgNorm_munu JES_"+era+" Unclustered_"+era)
+    cb.cp().backgrounds().ExtractShapes( datacards_folder+"/"+rootFileName, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+    writer = ch.CardWriter(
+        datacards_folder +"/"+ file_name +".txt",
+        datacards_folder +"/"+ file_name +".root")
+    writer.SetWildcardMasses([])
+    writer.SetVerbosity(0);
+    writer.WriteCards('%s'%(datacards_folder),cb)
+    print
+    print
+    print('Datacards for W*->munu process for year %s created'%(era))
+    print
 ############
 #   MAIN   #
 ############
@@ -207,11 +204,6 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
     parser.add_argument('-var','--variable',dest='variable',default='mt_1',choices=['mt_1','pt_1','met','phi_1','eta_1','metphi'])
-    parser.add_argument('-wp','--WP', dest='wp',  default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
-    parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu',  default='Tight',choices=['VLoose','Tight'])
-    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE',  default='VVLoose',choices=['VVLoose','Tight'])
-    parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
-
     args = parser.parse_args() 
     period = args.era
     
@@ -219,11 +211,6 @@ if __name__ == "__main__":
         print("Parsed arguments:")
         print("Era:", parsed_args.era)
         print("Variable:", parsed_args.variable)
-        print("WP:", parsed_args.wp)
-        print("WPvsMu:", parsed_args.wpVsMu)
-        print("WPvsE:", parsed_args.wpVsE)
-        print("Fake_factors:", parsed_args.ff)
-        
         
         confirmation = input("Are these arguments correct? (yes/no): ").strip().lower()
         return confirmation == "yes"
@@ -232,41 +219,23 @@ if __name__ == "__main__":
         parser = ArgumentParser()
         parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
         parser.add_argument('-var','--variable',dest='variable',default='mt_1',choices=['mt_1','pt_1','met','phi_1','eta_1','metphi'])
-        parser.add_argument('-wp','--WP', dest='wp',  default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
-        parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu',  default='Tight',choices=['VLoose','Tight'])
-        parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE',  default='VVLoose',choices=['VVLoose','Tight'])
-        parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
-        
-        
         args = parser.parse_args()
 
         print("Options to adjust arguments:")
         print("1. Change era")
         print("2. Change variable to plot")
-        print("3. Change WP")
-        print("4. Change WPvsMu")
-        print("5. Change WPvsE")
-        print("6. Change fake_factors")
-        print("7. Confirm and proceed")
+        print("3. Confirm and proceed")
 
         while True:
-            choice = input("Enter your choice (1-7): ").strip()
+            choice = input("Enter your choice (1-3): ").strip()
             if choice == "1":
                 args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023): ").strip()
             elif choice == "2":
                 args.wp = input("Enter the variable to plot (mt_1, pt_1, met, phi_1, eta_1, metphi): ").strip()                
             elif choice == "3":
-                args.wp = input("Enter the WP (Loose, Medium, Tight, VTight, VVTight): ").strip()
-            elif choice == "4":
-                args.wpVsMu = input("Enter the WPvsMu (VLoose, Tight): ").strip()
-            elif choice == "5":
-                args.wpVsE = input("Enter the WPvsE (VVLoose, Tight): ").strip()
-            elif choice == "6":
-                args.wpVsE = input("Enter the fake_factors (comb, wjets, dijets): ").strip()
-            elif choice == "7":
                 break
             else:
-                print("Invalid choice. Please enter a number between 1 and 7.")
+                print("Invalid choice. Please enter a number between 1 and 3.")
 
         return args
 
@@ -374,12 +343,12 @@ if __name__ == "__main__":
     # outputFileName = utils.baseFolder + "/" + args.era + "/datacards/munu_" + args.era
     
     # saving histograms to file
-    FF = args.ff+"_"+args.wp+"_"+args.wpVsMu+"_"+args.wpVsE
-    outputFileName = utils.baseFolder + "/" + args.era + "/datacards_"+ FF +"/munu_" + FF + "_"+ args.era
+    # FF = args.ff+"_"+args.wp+"_"+args.wpVsMu+"_"+args.wpVsE
+    outputFileName = utils.baseFolder + "/" + args.era + "/datacards_munu/munu_"+ args.era
 
     # Create the output directory if it doesn't exist
     if not os.path.exists(os.path.dirname(outputFileName)):
-        print("The directory for datacards storage doesn't exist, it will be created here:", utils.baseFolder + "/" + args.era + "/datacards_"+ FF)
+        print("The directory for datacards storage doesn't exist, it will be created here:", utils.baseFolder + "/" + args.era + "/datacards_munu")
         os.makedirs(os.path.dirname(outputFileName))   
         
     print('')
@@ -394,6 +363,7 @@ if __name__ == "__main__":
         hists_unc[uncName].Write(uncName)
         
     fileOutput.Close()
-    
-    CreateCardsWToMuNu(outputFileName,hist_data,hist_bkg,hist_sig,utils.unc_jme,args.era)
+    rootfile_name = "munu_"+ args.era
+    datacards_folder = utils.baseFolder + "/" + args.era + "/datacards_munu"
+    CreateCardsWToMuNu(rootfile_name, datacards_folder, utils.unc_jme,args.era)
     print("Saving cards to file %s.txt"%(outputFileName))
