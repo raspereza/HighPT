@@ -18,7 +18,7 @@ do
     combineTool.py -M Impacts -d tauID_${name}.root --robustFit 1 --redefineSignalPOIs ${poi} --cminDefaultMinimizerTolerance 0.1 --X-rtd MINIMIZER_analytic --X-rtd FITTER_NEW_CROSSING_ALGO --cminDefaultMinimizerStrategy 1 --doInitialFit -m 200
     combineTool.py -M Impacts -d tauID_${name}.root --robustFit 1 --redefineSignalPOIs ${poi} --cminDefaultMinimizerTolerance 0.1 --X-rtd MINIMIZER_analytic --X-rtd FITTER_NEW_CROSSING_ALGO --cminDefaultMinimizerStrategy 1  --doFits -m 200
     combineTool.py -M Impacts -d tauID_${name}.root -o impacts_${name}_${poi}.json -m 200
-plotImpacts.py -i impacts_${name}.json -o impacts_${name}_${poi}
+    plotImpacts.py -i impacts_${name}.json -o impacts_${name}_${poi}
 done
 
 cd -
