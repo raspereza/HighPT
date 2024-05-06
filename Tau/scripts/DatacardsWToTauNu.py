@@ -620,7 +620,7 @@ if __name__ == "__main__":
             elif choice == "4":
                 args.wpVsE = input("Enter the WPvsE (VVLoose, Tight): ").strip()
             elif choice == "5":
-                args.variable = input("Enter the variable to plot (mt_1, pt_1, met, phi_1, eta_1, metphi): ").strip()               
+                args.variable = input("Enter the variable to plot (mt_1, met, pt_1, eta_1, phi_1, jpt_match_1, mt_jet_1, metphi): ").strip()               
             elif choice == "6":
                 args.ff = input("Enter the fake factors to use (comb, wjets, dijets): ").strip()
             elif choice == "7":
@@ -654,18 +654,20 @@ if __name__ == "__main__":
     xbins = xbins_mt
     ptMin = 100.
     ptMax = 2000.
-    suffix = '_'+args.era
+    suffix = '_'+args.meas+'_'+args.era
+
+    # suffix = '_'+args.era
     if args.variable=='mt_1' or args.variable=='mt_jet_1':
         if args.meas=='lowpt': 
             xbins = xbins_mt_lowpt
             ptMin = 100.
             ptMax = 200.
-            suffix = '_'+args.meas+'_'+args.era
+            # suffix = '_'+args.meas+'_'+args.era
         elif args.meas=='highpt':
             xbins = xbins_mt_highpt
             ptMin = 200.
             ptMax = 2000.
-            suffix = '_'+args.meas+'_'+args.era
+            # suffix = '_'+args.meas+'_'+args.era
 
     plotLegend = True
     if args.variable=='pt_1': xbins = xbins_pt

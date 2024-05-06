@@ -202,28 +202,28 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
-    parser.add_argument('-var','--variable',dest='variable',default='mt_1',choices=['mt_1','pt_1','met','phi_1','eta_1','metphi'])
-    args = parser.parse_args() 
+    parser.add_argument('-e', '--era', dest='era', default='2023', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023'])
+    parser.add_argument('-var', '--variable', dest='variable', nargs='+', default=['mt_1'], choices=['mt_1', 'pt_1', 'met', 'phi_1', 'eta_1', 'metphi'])
+    args = parser.parse_args()
     period = args.era
-    
+
     def confirm_arguments(parsed_args):
         print("Parsed arguments:")
         print("Era:", parsed_args.era)
-        print("Variable:", parsed_args.variable)
-        
+        print("Variable(s):", parsed_args.variable)
+
         confirmation = input("Are these arguments correct? (yes/no): ").strip().lower()
         return confirmation == "yes"
 
     def adjust_arguments():
         parser = ArgumentParser()
-        parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
-        parser.add_argument('-var','--variable',dest='variable',default='mt_1',choices=['mt_1','pt_1','met','phi_1','eta_1','metphi'])
+        parser.add_argument('-e', '--era', dest='era', default='2023', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023'])
+        parser.add_argument('-var', '--variable', dest='variable', nargs='+', default=['mt_1'], choices=['mt_1', 'pt_1', 'met', 'phi_1', 'eta_1', 'metphi'])
         args = parser.parse_args()
 
         print("Options to adjust arguments:")
         print("1. Change era")
-        print("2. Change variable to plot")
+        print("2. Change variable(s) to plot")
         print("3. Confirm and proceed")
 
         while True:
@@ -231,7 +231,8 @@ if __name__ == "__main__":
             if choice == "1":
                 args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023): ").strip()
             elif choice == "2":
-                args.wp = input("Enter the variable to plot (mt_1, pt_1, met, phi_1, eta_1, metphi): ").strip()                
+                new_variables = input("Enter the variable(s) to plot separated by space (mt_1 pt_1 met phi_1 eta_1 metphi): ").strip().split()
+                args.variable = [v for v in new_variables if v in ['mt_1', 'pt_1', 'met', 'phi_1', 'eta_1', 'metphi']]
             elif choice == "3":
                 break
             else:
@@ -244,6 +245,7 @@ if __name__ == "__main__":
             args = adjust_arguments()
             if confirm_arguments(args):
                 break
+
     
     
     xbins_phi = utils.createBins(20,-3.14,3.14)
@@ -259,84 +261,85 @@ if __name__ == "__main__":
 
 
     basefolder = utils.picoFolder+'/'+args.era
-    var = args.variable    
-    xbins = xbins_var[var]
-    
-    eras = utils.periods[args.era]
+    for var in args.variable:
+        
+        xbins = xbins_var[var]
+        
+        eras = utils.periods[args.era]
 
-    print('')
-    print('initializing SingleMuon samples >>>')
-    singlemuSamples = {} # data samples dictionary
-    for era in eras:
-        singlemuNames = utils.singlemu[era]
-        for singlemuName in singlemuNames:
-            name = singlemuName + "_" + era
-            singlemuSamples[name] = analysis.sampleHighPt(basefolder,era,
-                                                       "munu",singlemuName,True)
+        print('')
+        print('initializing SingleMuon samples >>>')
+        singlemuSamples = {} # data samples dictionary
+        for era in eras:
+            singlemuNames = utils.singlemu[era]
+            for singlemuName in singlemuNames:
+                name = singlemuName + "_" + era
+                singlemuSamples[name] = analysis.sampleHighPt(basefolder,era,
+                                                        "munu",singlemuName,True)
 
-    print('')
-    print('initializing background samples >>>')
-    bkgSamples = {} # MC bkg samples dictionary 
-    for era in eras:
-        run = utils.eraRun[era]
-        bkgSampleNames = RunBkgSampleNames[run]
-        for bkgSampleName in bkgSampleNames:
-            name = bkgSampleName + "_" + era
-            bkgSamples[name] = analysis.sampleHighPt(basefolder,era,
-                                                  "munu",bkgSampleName,False)
+        print('')
+        print('initializing background samples >>>')
+        bkgSamples = {} # MC bkg samples dictionary 
+        for era in eras:
+            run = utils.eraRun[era]
+            bkgSampleNames = RunBkgSampleNames[run]
+            for bkgSampleName in bkgSampleNames:
+                name = bkgSampleName + "_" + era
+                bkgSamples[name] = analysis.sampleHighPt(basefolder,era,
+                                                    "munu",bkgSampleName,False)
 
-    print('')
-    print('initializing signal samples >>>')
-    sigSamples = {} # MC signal samples dictionary 
-    for era in eras:
-        run = utils.eraRun[era]
-        sigSampleNames = RunSigSampleNames[run]
-        for sigSampleName in sigSampleNames:
-            name = sigSampleName + "_" + era
-            sigSamples[name] = analysis.sampleHighPt(basefolder,era,
-                                                  "munu",sigSampleName,False)
-
-
-    # apply hot jet veto in 2023 dataset
-    if args.era=='2023':
-        basecut += "&&hotjet_veto<0.5"
-
-    jmetcut = 'met>'+metCut+'&&metdphi_1>'+dphiCut+'&&mt_1>'+mtCut # additional cuts (MET related variables)
-
-    cut_data = basecut + "&&" + jmetcut
-    cut = basecut + "&&" + jmetcut
-    hist_data = analysis.RunSamples(singlemuSamples,var,cut_data,xbins,"data_obs")
-    hist_bkg  = analysis.RunSamples(bkgSamples,var,cut,xbins,"bkgd")
-    hist_sig  = analysis.RunSamples(sigSamples,var,cut,xbins,"wmunu")
-
-    # making control plot
-    plotlLegend = True
-    if var=='phi_1' or var=='eta_1':
-        plotlLegend = False
+        print('')
+        print('initializing signal samples >>>')
+        sigSamples = {} # MC signal samples dictionary 
+        for era in eras:
+            run = utils.eraRun[era]
+            sigSampleNames = RunSigSampleNames[run]
+            for sigSampleName in sigSampleNames:
+                name = sigSampleName + "_" + era
+                sigSamples[name] = analysis.sampleHighPt(basefolder,era,
+                                                    "munu",sigSampleName,False)
 
 
-    PlotWToMuNu(hist_data,hist_bkg,hist_sig,
-                era=args.era,var=var,plotLegend=plotlLegend)
+        # apply hot jet veto in 2023 dataset
+        if args.era=='2023':
+            basecut += "&&hotjet_veto<0.5"
 
-    if var not in ['mt_1']:
-        exit()
+        jmetcut = 'met>'+metCut+'&&metdphi_1>'+dphiCut+'&&mt_1>'+mtCut # additional cuts (MET related variables)
 
-    hists_unc = {} # uncertainty histograms  
-    for unc in utils.unc_jme:
-        for variation in ["Up"]:
-            name_unc = unc + variation
-            var_unc = var + "_" + name_unc            
-            met_cut = "met_" + name_unc + ">" + metCut 
-            mt_1_cut = "mt_1_" + name_unc + ">" + mtCut
-            metdphi_1_cut = "metdphi_1_" + name_unc + ">" + dphiCut
-            jmetcut_unc = met_cut + "&&" + mt_1_cut + "&&" + metdphi_1_cut
-            cut_unc = basecut + "&&" + jmetcut_unc
-            name = "wmunu_" + name_unc
-            hist_sys = analysis.RunSamples(sigSamples,var_unc,cut_unc,xbins,name)
-            name_hist = "wmunu_" + unc
-            hist_up,hist_down = utils.ComputeSystematics(hist_sig,hist_sys,name_hist)
-            hists_unc[name_hist+"_"+args.era+"Up"] = hist_up
-            hists_unc[name_hist+"_"+args.era+"Down"] = hist_down
+        cut_data = basecut + "&&" + jmetcut
+        cut = basecut + "&&" + jmetcut
+        hist_data = analysis.RunSamples(singlemuSamples,var,cut_data,xbins,"data_obs")
+        hist_bkg  = analysis.RunSamples(bkgSamples,var,cut,xbins,"bkgd")
+        hist_sig  = analysis.RunSamples(sigSamples,var,cut,xbins,"wmunu")
+
+        # making control plot
+        plotlLegend = True
+        if var=='phi_1' or var=='eta_1':
+            plotlLegend = False
+            
+        for var in args.variable:
+            PlotWToMuNu(hist_data,hist_bkg,hist_sig,
+                    era=args.era,var=var,plotLegend=plotlLegend)
+
+        if var not in ['mt_1']:
+            exit()
+
+        hists_unc = {} # uncertainty histograms  
+        for unc in utils.unc_jme:
+            for variation in ["Up"]:
+                name_unc = unc + variation
+                var_unc = var + "_" + name_unc            
+                met_cut = "met_" + name_unc + ">" + metCut 
+                mt_1_cut = "mt_1_" + name_unc + ">" + mtCut
+                metdphi_1_cut = "metdphi_1_" + name_unc + ">" + dphiCut
+                jmetcut_unc = met_cut + "&&" + mt_1_cut + "&&" + metdphi_1_cut
+                cut_unc = basecut + "&&" + jmetcut_unc
+                name = "wmunu_" + name_unc
+                hist_sys = analysis.RunSamples(sigSamples,var_unc,cut_unc,xbins,name)
+                name_hist = "wmunu_" + unc
+                hist_up,hist_down = utils.ComputeSystematics(hist_sig,hist_sys,name_hist)
+                hists_unc[name_hist+"_"+args.era+"Up"] = hist_up
+                hists_unc[name_hist+"_"+args.era+"Down"] = hist_down
 
 
     # # saving histograms to file

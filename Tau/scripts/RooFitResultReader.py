@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-
+#!/usr/bin/env python3
+import ROOT
 import os
 import subprocess
 from argparse import ArgumentParser
@@ -24,7 +24,7 @@ def confirm_arguments(parsed_args):
     print("Fake_factors:", parsed_args.ff)
     print("Fake factors parametrization:", parsed_args.ff_par)
     
-    confirmation = raw_input("Are these arguments correct? (yes/no): ").strip().lower()
+    confirmation = input("Are these arguments correct? (yes/no): ").strip().lower()
     return confirmation == "yes"
 
 def adjust_arguments(args):
@@ -38,19 +38,19 @@ def adjust_arguments(args):
     print("7. Confirm and proceed")
 
     while True:
-        choice = raw_input("Enter your choice (1-7): ").strip()
+        choice = input("Enter your choice (1-7): ").strip()
         if choice == "1":
-            args.era = raw_input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023): ").strip()
+            args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023): ").strip()
         elif choice == "2":
-            args.WPvsJet = raw_input("Enter the WPvsJet (Loose, Medium, Tight, VTight, VVTight): ").strip()
+            args.WPvsJet = input("Enter the WPvsJet (Loose, Medium, Tight, VTight, VVTight): ").strip()
         elif choice == "3":
-            args.WPvsMu = raw_input("Enter the WPvsMu (VLoose, Tight): ").strip()
+            args.WPvsMu = input("Enter the WPvsMu (VLoose, Tight): ").strip()
         elif choice == "4":
-            args.WPvsE = raw_input("Enter the WPvsE (VVLoose, Tight): ").strip()
+            args.WPvsE = input("Enter the WPvsE (VVLoose, Tight): ").strip()
         elif choice == "5":
-            args.ff = raw_input("Enter the fake_factors (comb, wjets, dijets): ").strip()
+            args.ff = input("Enter the fake_factors (comb, wjets, dijets): ").strip()
         elif choice == "6":
-            args.ff_par = raw_input("Enter the fake factor parametrizatin to use (pttau, ptjet): ").strip()  
+            args.ff_par = input("Enter the fake factor parametrizatin to use (pttau, ptjet): ").strip()  
         elif choice == "7":
             break
         else:
@@ -77,32 +77,30 @@ if __name__ == "__main__":
     name = "{}_{}_{}_{}".format(args.ff, args.WPvsJet, args.WPvsMu, args.WPvsE)
     
     # Check existence of required files
-    
-    folder_munu = "/eos/user/j/jmalvaso/HighPt/{}/datacards_munu".format(args.era)
     folder_taunu = "/eos/user/j/jmalvaso/HighPt/{}/datacards_{}".format(args.era, name)
+
+
+    full_filename = folder_taunu +"/tauID_{}_{}_ptbinned_fit.root".format(args.ff_par,name)
+    the_file = ROOT.TFile(full_filename,"R")
+    # print(full_filename)
+    # fit = the_file.Get('fit_s')
+    # r_lowpt = fit.floatParsFinal().find('r_lowpt')
+    # r_highpt = fit.floatParsFinal().find('r_highpt')
+    # print(r_lowpt,r_highpt)
     
-    os.chdir(folder_munu)
-    check_file_existence("munu_{}.txt".format(args.era))
-    
-    os.chdir(folder_taunu)
-    check_file_existence("taunu_{}_{}_lowpt_{}.txt".format(args.ff_par,name,args.era))
-    check_file_existence("taunu_{}_{}_highpt_{}.txt".format(args.ff_par,name,args.era))
-
-    # Combine W*->mu+v and W*->tau+v cards
-    subprocess.call(["combineCards.py", folder_munu+"/munu_{}.txt".format(args.era), "taunu_{}_{}_lowpt_{}.txt".format(args.ff_par,name, args.era), "taunu_{}_{}_highpt_{}.txt".format(args.ff_par, name, args.era)], stdout=open("tauID_{}_{}_ptbinned.txt".format(args.ff_par,name), 'w'))
-
-    # Creating workspace
-    subprocess.call(["combineTool.py", "-M", "T2W", "-P", "HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel", "--PO", '"map=^.*/*_highpt_{}:r_highpt[1,0,2]"'.format(args.era), "--PO", '"map=^.*/*_lowpt_{}:r_lowpt[1,0,2]"'.format(args.era), "-o", "tauID_{}_{}_ptbinned.root".format(args.ff_par,name), "-i", "tauID_{}_{}_ptbinned.txt".format(args.ff_par,name)])
-
-    # Doing fit
-    subprocess.call(["combineTool.py", "-M", "FitDiagnostics", "--saveNormalizations", "--saveShapes", "--saveWithUncertainties", "--saveNLL", "--redefineSignalPOIs", "r_lowpt,r_highpt", "--robustFit", "1", "-m", "200", "-d", "tauID_{}_{}_ptbinned.root".format(args.ff_par,name), "--cminDefaultMinimizerTolerance", "0.1", "--cminDefaultMinimizerStrategy", "1", "-v", "2"])
-
-    # Renaming output
-    os.rename("fitDiagnostics.Test.root", "tauID_{}_{}_ptbinned_fit.root".format(args.ff_par,name))
-
-    # Remove intermediate files
-    for f in os.listdir('.'):
-        if f.startswith('higgsCombine'):
-            os.remove(f)
-
-    print("Leaving folder {}".format(folder_taunu))
+    fitResult = the_file.Get('fit_s')
+    pars = fitResult.floatParsFinal()
+    tauId = {}
+    tauId_central = 1.0
+    tauId_error = 0.2
+    print(name)
+    for par in pars:
+        parname =  par.GetName()
+        if parname=='r_lowpt':
+            tauId_central = par.getVal()
+            tauId_error = par.getError()
+            print(parname, tauId_central, tauId_error)
+        elif parname=='r_highpt':
+            tauId_central = par.getVal()
+            tauId_error = par.getError()
+            print(parname, tauId_central, tauId_error)
