@@ -65,7 +65,7 @@ if __name__ == "__main__":
     parser.add_argument('-wpVsMu', '--WPvsMu', dest='WPvsMu', default='Tight', choices=['VLoose', 'Tight'])
     parser.add_argument('-wpVsE', '--WPvsE', dest='WPvsE', default='VVLoose', choices=['VVLoose', 'Tight'])
     parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
-    parser.add_argument('-ff_par','--ff_par',dest='ff_par',default='pttau',choices=['pttau','ptjet'])
+    parser.add_argument('-ff_par','--ff_par',dest='ff_par',default='ptjet',choices=['pttau','ptjet'])
     
     args = parser.parse_args()
 
@@ -87,10 +87,10 @@ if __name__ == "__main__":
 
     folder = "/eos/user/j/jmalvaso/HighPt/{}/datacards_{}".format(args.era, name)
     os.chdir(folder_taunu)
-    check_file_existence("taunu_{}_{}_{}.txt".format(args.ff_par,name, args.era))
+    check_file_existence("taunu_{}_{}_{}_{}.txt".format(args.ff_par,name,'incl',args.era,))
 
     # Combine W*->mu+v and W*->tau+v cards
-    subprocess.call(["combineCards.py", folder_munu+"/munu_{}.txt".format(args.era), "taunu_{}_{}_{}.txt".format(args.ff_par,name, args.era)], stdout=open("tauID_{}_{}.txt".format(args.ff_par,name), 'w'))
+    subprocess.call(["combineCards.py", folder_munu+"/munu_{}.txt".format(args.era), "taunu_{}_{}_{}_{}.txt".format(args.ff_par,name,'incl',args.era,)], stdout=open("tauID_{}_{}.txt".format(args.ff_par,name), 'w'))
 
     # Creating workspace
     subprocess.call(["combineTool.py", "-M", "T2W", "-o", "tauID_{}_{}.root".format(args.ff_par,name), "-i", "tauID_{}_{}.txt".format(args.ff_par,name)])

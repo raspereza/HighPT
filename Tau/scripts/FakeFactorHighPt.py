@@ -119,10 +119,12 @@ def DrawFF(hist,**kwargs):
     if isdata: 
         color = 1
         labelSample = "data"
-
+    
+    from IPython import embed
+    
     print
     print('fitting FF histo >>>',era,channel,label,labelSample)
-    
+    embed()
 
     styles.InitData(hist)
 
@@ -497,10 +499,10 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
-    parser.add_argument('-wpVsJet','--WP', dest='wpVsJet',  default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
-    parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu',  default='Tight',choices=['VLoose','Tight'])
-    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE',  default='VVLoose',choices=['VVLoose','Tight'])
+    parser.add_argument('-e', '--era', dest='era', default='2023', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023'])
+    parser.add_argument('-WPvsJet', '--WPvsJet', dest='WPvsJet', default='Medium', choices=['Loose', 'Medium', 'Tight', 'VTight', 'VVTight'])
+    parser.add_argument('-WPvsMu', '--WPvsMu', dest='WPvsMu', default='Tight', choices=['VLoose', 'Tight'])
+    parser.add_argument('-WPvsE', '--WPvsE', dest='WPvsE', default='VVLoose', choices=['VVLoose', 'Tight'])
     args = parser.parse_args() 
 
     basefolder = utils.picoFolder+'/'+args.era
@@ -509,9 +511,9 @@ if __name__ == "__main__":
     def confirm_arguments(parsed_args):
         print("Parsed arguments:")
         print("Era:", parsed_args.era)
-        print("WPvsJet:", parsed_args.wpVsJet)
-        print("WPvsMu:", parsed_args.wpVsMu)
-        print("WPvsE:", parsed_args.wpVsE)
+        print("WPvsJet:", parsed_args.WPvsJet)
+        print("WPvsMu:", parsed_args.WPvsMu)
+        print("WPvsE:", parsed_args.WPvsE)
         
         confirmation = input("Are these arguments correct? (yes/no): ").strip().lower()
         return confirmation == "yes"
@@ -519,9 +521,9 @@ if __name__ == "__main__":
     def adjust_arguments():
         parser = ArgumentParser()
         parser.add_argument('-e', '--era', dest='era', default='2023', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023'])
-        parser.add_argument('-wpVsJet', '--WP', dest='wpVsJet', default='Medium', choices=['Loose', 'Medium', 'Tight', 'VTight', 'VVTight'])
-        parser.add_argument('-wpVsMu', '--WPvsMu', dest='wpVsMu', default='Tight', choices=['VLoose', 'Tight'])
-        parser.add_argument('-wpVsE', '--WPvsE', dest='wpVsE', default='VVLoose', choices=['VVLoose', 'Tight'])
+        parser.add_argument('-WPvsJet', '--WPvsJet', dest='WPvsJet', default='Medium', choices=['Loose', 'Medium', 'Tight', 'VTight', 'VVTight'])
+        parser.add_argument('-WPvsMu', '--WPvsMu', dest='WPvsMu', default='Tight', choices=['VLoose', 'Tight'])
+        parser.add_argument('-WPvsE', '--WPvsE', dest='WPvsE', default='VVLoose', choices=['VVLoose', 'Tight'])
         args = parser.parse_args()
 
         print("Options to adjust arguments:")
@@ -611,7 +613,7 @@ if __name__ == "__main__":
         print('create folder for fake factors : %s'%(FFfolder))
         exit()
 
-    FFfilename='ff_'+args.wpVsJet+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+".root"
+    FFfilename='ff_'+args.WPvsJet+"VSjet_"+args.WPvsMu+"VSmu_"+args.WPvsE+"VSe_"+args.era+".root"
     fullpathout=FFfolder+'/'+FFfilename
     outputfile = TFile(fullpathout,'recreate')
     #   measurements ->
@@ -626,9 +628,9 @@ if __name__ == "__main__":
                  dataSamples[channel],
                  mcSamples,
                  sigSamples,
-                 wpVsJet=args.wpVsJet,
-                 wpVsE=args.wpVsE,
-                 wpVsMu=args.wpVsMu,
+                 wpVsJet=args.WPvsJet,
+                 wpVsE=args.WPvsE,
+                 wpVsMu=args.WPvsMu,
                  era=args.era,
                  channel=channel,
                  variable1=var1,
@@ -639,9 +641,9 @@ if __name__ == "__main__":
                  dataSamples[channel],
                  mcSamples,
                  sigSamples,
-                 wpVsJet=args.wpVsJet,
-                 wpVsE=args.wpVsE,
-                 wpVsMu=args.wpVsMu,
+                 wpVsJet=args.WPvsJet,
+                 wpVsE=args.WPvsE,
+                 wpVsMu=args.WPvsMu,
                  era=args.era,
                  channel=channel,
                  variable1=var1,
