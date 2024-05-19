@@ -418,28 +418,27 @@ def PlotWToTauNu(hists,**kwargs):
 def CreateCardsWToTauNu(era,ff_par,fileName,datacards_folder,uncs_fake,uncs_sig,suffix):
     
     rootFileName = fileName + ".root"
-
     cb = ch.CombineHarvester()
     cats = [(1,'taunu'),]    
     cb.AddObservations(['*'],['taunu'],[era],['tau_ID'],cats)
     
     for cat in cats:
-        cb.AddProcesses(['*'],['taunu'],[era],['tau_ID'],['tau_'+era, 'wtaunu_'+era],[cat],True)
+        cb.AddProcesses(['*'],['taunu'],[era],['tau_ID'],['tau_incl_'+era, 'wtaunu_incl_'+era],[cat],True)
         cb.AddProcesses(['*'],['taunu'],[era],['tau_ID'],['fake','lfakes'],[cat],False)
         
-    cb.cp().process(['wtaunu_'+era]).AddSyst(cb,'extrapW','lnN',ch.SystMap()(1.04))
-    cb.cp().process(['tau_'+era]).AddSyst(cb,'bkgNorm_taunu','lnN',ch.SystMap()(1.20))
+    cb.cp().process(['wtaunu_incl_'+era]).AddSyst(cb,'extrapW','lnN',ch.SystMap()(1.04))
+    cb.cp().process(['tau_incl_'+era]).AddSyst(cb,'bkgNorm_taunu','lnN',ch.SystMap()(1.20))
     cb.cp().process(['lfakes']).AddSyst(cb,'lep_fakes','lnN',ch.SystMap()(1.5))
     
-    cb.cp().process(['wtaunu_'+era]).AddSyst(cb,'JES_'+ era,'shape',ch.SystMap()(1.0))
-    cb.cp().process(['wtaunu_'+era]).AddSyst(cb,'Unclustered_'+ era,'shape',ch.SystMap()(1.0))
+    cb.cp().process(['wtaunu_incl_'+era]).AddSyst(cb,'JES_'+ era,'shape',ch.SystMap()(1.0))
+    cb.cp().process(['wtaunu_incl_'+era]).AddSyst(cb,'Unclustered_'+ era,'shape',ch.SystMap()(1.0))
     cb.cp().process(['fake']).AddSyst(cb,'nonclosure_'+ era,'shape',ch.SystMap()(1.0))
     for unc in uncs_sig:
-        cb.cp().process(['wtaunu_'+era]).AddSyst(cb, unc,'shape',ch.SystMap()(1.0))
+        cb.cp().process(['wtaunu_incl_'+era]).AddSyst(cb, unc,'shape',ch.SystMap()(1.0))
     for unc in uncs_fake:
         cb.cp().process(['fake']).AddSyst(cb, unc,'shape',ch.SystMap()(1.0))
     
-    cb.AddDatacardLineAtEnd("normW  rateParam  taunu wtaunu_" +era+ " 1.0  [0.5,1.5]")
+    cb.AddDatacardLineAtEnd("normW  rateParam  taunu wtaunu_incl_" +era+ " 1.0  [0.5,1.5]")
     cb.AddDatacardLineAtEnd("* autoMCStats 0")
     
     cb.AddDatacardLineAtEnd(
@@ -591,10 +590,10 @@ if __name__ == "__main__":
         parser.add_argument('-wp','--WPvsJet', dest='wpVsJet', default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
         parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight',choices=['VLoose','Tight'])
         parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='VVLoose',choices=['VVLoose','Tight'])
-        parser.add_argument('-var','--variable',dest='variable',default='mt_1',choices=['mt_1','met','pt_1','eta_1','phi_1','jpt_match_1','mt_jet_1','metphi'])
+        parser.add_argument('-var','--variable',dest='variable',default='mt_jet_1',choices=['mt_1','met','pt_1','eta_1','phi_1','jpt_match_1','mt_jet_1','metphi'])
         parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
         parser.add_argument('-m','--meas',dest='meas',default='incl',choices=['incl','lowpt','highpt'])
-        parser.add_argument('-ff_par','--ff_par',dest='ff_par',default='pttau',choices=['pttau','ptjet'])
+        parser.add_argument('-ff_par','--ff_par',dest='ff_par',default='ptjet',choices=['pttau','ptjet'])
 
         args = parser.parse_args()
 
