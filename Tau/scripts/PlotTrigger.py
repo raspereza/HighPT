@@ -1,9 +1,9 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 import ROOT 
-import TauFW.Plotter.HighPT.utilsHighPT as utils
+import HighPT.Tau.utilsHighPT as utils
 from array import array
-import TauFW.Plotter.HighPT.stylesHighPT as styles
+import HighPT.Tau.stylesHighPT as styles
 import os
 
 def FitFuncConst(x,par):
@@ -34,8 +34,7 @@ def PlotEff(h_data_eff,h_mc_eff,**kwargs):
     #    if isdata and channel=='wjets' and era=='UL2017' and label=='ptratioHigh':
     #        hist.SetBinContent(2,2*hist.GetBinContent(2))
 
-    print
-    print('plotting eff histo >>>',era,wp)
+    print('')
 
     styles.InitData(h_data_eff)
     styles.InitData(h_mc_eff)
@@ -75,6 +74,9 @@ def PlotEff(h_data_eff,h_mc_eff,**kwargs):
     f_data.SetLineColor(2)
     f_mc.SetLineColor(4)
 
+    h_data_eff.GetXaxis().SetMoreLogLabels()
+    h_data_eff.GetXaxis().SetNoExponent()
+
     canv = styles.MakeCanvas("canv","",700,600)
     #h_data_eff.Fit('f_data',"R")
     #h_mc_eff.Fit('f_mc','R')
@@ -92,7 +94,7 @@ def PlotEff(h_data_eff,h_mc_eff,**kwargs):
     canv.SetLogx(True)
     canv.RedrawAxis()
     canv.Update()
-    canv.Print(utils.figuresFolderWTauNu+'/TrigEff_'+wp+"VsJet_"+wpVsMu+'VsMu_'+wpVsE+'VsE_'+era+'_'+plot+'.png')
+    canv.Print(utils.baseFolder+'/'+era+'/figures/TauTrigger/TrigEff_'+wp+"VsJet_"+wpVsMu+'VsMu_'+wpVsE+'VsE_'+plot+'.png')
 
 def PlotSF(h_data_eff,h_mc_eff,**kwargs):
     wp = kwargs.get('wp','Medium')
@@ -101,14 +103,14 @@ def PlotSF(h_data_eff,h_mc_eff,**kwargs):
     era = kwargs.get('era','era')
     plot = kwargs.get('plot','cards')
 
-    print
-    print('fitting trigger eff SF >>>',era,wp,wpVsMu,)
+    print('')
+    print('fitting trigger eff SF >>> %s - %sVsJet - %sVsMu - %sVsE'%(era,wp,wpVsMu,wpVsE))
     
     hist = utils.divideHistos(h_data_eff,h_mc_eff,'h_eff')
 
     styles.InitData(hist)
 
-    print
+    print('')
     histToPlot = hist.Clone('temp')
     
     nbins = hist.GetNbinsX()
@@ -151,11 +153,11 @@ def PlotSF(h_data_eff,h_mc_eff,**kwargs):
 
     x = hfitLinear.GetBinContent(hfitLinear.FindBin(200.))
     a = hfitLinear.GetBinError(hfitLinear.FindBin(199.))
-    b = hfitLinear.GetBinError(hfitLinear.FindBin(1999.))
+    b = hfitLinear.GetBinError(hfitLinear.FindBin(999.))
     k = (b-a)/2.
 
     print('')
-    print('SF = ',x,' +/- ',a,' + ',k,'*pT[GeV]','max = ',b) 
+    print('SF = %5.3f +/- %5.3f + %5.3f*pT[GeV] max = %5.3f'%(x,a,k,b)) 
 
     styles.InitModel(hfit,4)
     hfit.SetFillColor(ROOT.kCyan)
@@ -167,6 +169,9 @@ def PlotSF(h_data_eff,h_mc_eff,**kwargs):
     hfit.GetYaxis().SetRangeUser(0.,2.)
     hfit.GetXaxis().SetTitle("#tau p_{T} [GeV]")
     hfit.GetYaxis().SetTitle("Trigger eff SF")
+
+    hfit.GetXaxis().SetMoreLogLabels()
+    hfit.GetXaxis().SetNoExponent()
 
     hfit.Draw("e2")
     hfitline.Draw("hsame")
@@ -184,24 +189,24 @@ def PlotSF(h_data_eff,h_mc_eff,**kwargs):
     canv.SetLogx(True)
     canv.RedrawAxis()
     canv.Update()
-    canv.Print(utils.figuresFolderWTauNu+'/TrigSF_'+wp+'VsJet_'+wpVsMu+'wpVsMu_'+wpVsE+'wpVsE_'+era+'_'+plot+'.png')
+    canv.Print(utils.baseFolder+'/'+era+'/figures/TauTrigger/TrigSF_'+wp+'VsJet_'+wpVsMu+'VsMu_'+wpVsE+'VsE_'+plot+'.png')
 
 def ComputeEff(hists):
 
     h_data_p = hists['h_data_trig'].Clone('h_data_p')
-    h_data_f = hists['h_data_nottrig'].Clone('h_data_f')
+    h_data_f = hists['h_data_notrig'].Clone('h_data_f')
 
     h_mc_p = hists['h_sig_trig'].Clone('h_data_p')
-    h_mc_f = hists['h_sig_nottrig'].Clone('h_data_f')
+    h_mc_f = hists['h_sig_notrig'].Clone('h_data_f')
 
     
     h_data_p.Add(h_data_p,hists['h_fake_trig'],1.,-1.)
     h_data_p.Add(h_data_p,hists['h_bkg_trig'],1.,-1.)
-    h_data_f.Add(h_data_f,hists['h_fake_nottrig'],1.,-1.)
-    h_data_f.Add(h_data_f,hists['h_bkg_nottrig'],1.,-1.)
+    h_data_f.Add(h_data_f,hists['h_fake_notrig'],1.,-1.)
+    h_data_f.Add(h_data_f,hists['h_bkg_notrig'],1.,-1.)
 
     h_mc_p.Add(h_mc_p,hists['h_tau_trig'],1.,1.)
-    h_mc_f.Add(h_mc_f,hists['h_tau_nottrig'],1.,1.)
+    h_mc_f.Add(h_mc_f,hists['h_tau_notrig'],1.,1.)
 
     h_data_eff = utils.dividePassProbe(h_data_p,h_data_f,'h_data_eff')
     h_mc_eff   = utils.dividePassProbe(h_mc_p,h_mc_f,'h_mc_eff')
@@ -215,9 +220,9 @@ def PlotWToTauNu(hists,**kwargs):
 
     wp = kwargs.get("wp","Medium")
     wpVsMu = kwargs.get("wpVsMu","Tight")
-    wpVsE = kwargs.get("wpVsE","VLoose")
-    era = kwargs.get("era","UL2018")
-    trigger = kwargs.get("trigger","trig")
+    wpVsE = kwargs.get("wpVsE","Tight")
+    era = kwargs.get("era","2022")
+    trigger = kwargs.get("trigger","_trig")
     plot = kwargs.get("plot","postfit")
     var = 'pt_1'
 
@@ -264,6 +269,9 @@ def PlotWToTauNu(hists,**kwargs):
     h_data.GetYaxis().SetTitle("events / bin")
     h_ratio.GetYaxis().SetTitle("obs/exp")
     h_ratio.GetXaxis().SetTitle(utils.XTitle[var])
+
+    h_data.GetXaxis().SetMoreLogLabels()
+    h_data.GetXaxis().SetNoExponent()
     
     # canvas 
     canvas = styles.MakeCanvas("canv","",600,700)
@@ -286,9 +294,9 @@ def PlotWToTauNu(hists,**kwargs):
     styles.SetLegendStyle(leg)
     leg.SetTextSize(0.047)
     if trigger=='_trig':
-        leg.SetHeader(wp+" (passed)")
+        leg.SetHeader("passed")
     else:
-        leg.SetHeader(wp+" (failed)")
+        leg.SetHeader("failed")
     leg.AddEntry(h_data,'data','lp')
     leg.AddEntry(h_sig,'W#rightarrow #tau#nu','f')
     leg.AddEntry(h_fake,'j#rightarrow#tau misId','f')
@@ -311,6 +319,9 @@ def PlotWToTauNu(hists,**kwargs):
     lower.Draw()
     lower.cd()
     styles.InitLowerPad(lower)
+
+    h_ratio.GetXaxis().SetMoreLogLabels()
+    h_ratio.GetXaxis().SetNoExponent()
 
     h_ratio.Draw('e1')
     h_tot_ratio.Draw('e2same')
@@ -335,9 +346,8 @@ def PlotWToTauNu(hists,**kwargs):
     canvas.cd()
     canvas.SetSelected(canvas)
     canvas.Update()
-    print
-    print('Creating control plot')
-    canvas.Print(utils.figuresFolderWTauNu+"/"+wpVsMu+"VsMu_"+wpVsE+"VsE/wtaunu_"+wp+trigger+"_"+era+"_"+plot+".png")
+    print('')
+    canvas.Print(utils.baseFolder+"/"+era+"/figures/TauTrigger/tauTrigger_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+trigger+"_"+plot+".png")
 
 
 ############
@@ -350,19 +360,16 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='UL2018', help="""Era : UL2016_preVFP, UL2016_postVFP, UL2017, UL2018""")
-    parser.add_argument('-wp','--WP', dest='wp', default='Medium', help=""" tau ID WP : Loose, Medium, Tight, VTight, VVTight""")
-    parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight', help=""" WP vs. mu : VLoose, Loose, Medium, Tight""")
-    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='VLoose', help=""" WP vs. e : VLoose, Loose, Medium, Tight, VTight, VVTight""")
-    parser.add_argument('-plot','--Plot', dest='plot', default="postfit", help=""" cards, prefit, postfit""")
+    parser.add_argument('-e','--era', dest='era', default='2022', choices=['UL2016','UL2017','UL2018','2022','2023'])
+    parser.add_argument('-wp','--WP', dest='wp', default='Tight', choices=['Loose','Medium','Tight']) 
+    parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight', choices=['Loose','Tight'])
+    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='Tight', choices=['VVLoose','Tight'])
+    parser.add_argument('-plot','--Plot', dest='plot', default="postfit", choices=['cards','prefit','postfit'])
     args = parser.parse_args()
     
-    if args.plot not in ['cards', 'prefit', 'postfit']:
-        print('Unknow option specified for plotting',args.plot)
-
-    fileNameTrig    = utils.datacardsFolder+'/'+args.wpVsMu+'VsMu_'+args.wpVsE+'VsE/taunu_'+args.wp+'_trig_'+args.era+'.root'
-    fileNameNotTrig = utils.datacardsFolder+'/'+args.wpVsMu+'VsMu_'+args.wpVsE+'VsE/taunu_'+args.wp+'_nottrig_'+args.era+'.root'
-    fileNameFit     = utils.datacardsFolder+'/'+args.wpVsMu+'VsMu_'+args.wpVsE+'VsE/tauTrigger_'+args.wp+"_"+args.era+'_fit.root'
+    fileNameTrig    = utils.baseFolder+'/'+args.era+'/datacards/taunu_'+args.wp+'_'+args.wpVsMu+'_'+args.wpVsE+'_trig.root'
+    fileNameNotTrig = utils.baseFolder+'/'+args.era+'/datacards/taunu_'+args.wp+'_'+args.wpVsMu+'_'+args.wpVsE+'_notrig.root'
+    fileNameFit     = utils.baseFolder+'/'+args.era+'/datacards/tauTrigger_'+args.wp+"_"+args.wpVsMu+'_'+args.wpVsE+'_fit.root'
     fileCardsTrig    = ROOT.TFile(fileNameTrig)
     fileCardsNotTrig = ROOT.TFile(fileNameNotTrig)
     fileFit          = ROOT.TFile(fileNameFit)
@@ -370,31 +377,59 @@ if __name__ == "__main__":
     h_data_fail = fileCardsNotTrig.Get('taunu/data_obs')
 
     plot = {'prefit':'shapes_prefit','postfit':'shapes_fit_s'}
-    files = {'_trig':fileCardsTrig,'_nottrig':fileCardsNotTrig}
-    filedirs = {'_trig':'ch2','_nottrig':'ch3'}
-    names = {'h_data':'data_obs','h_sig':'wtaunu','h_tau':'tau','h_fake':'fake','h_bkg':'lfakes'}
+    files = {'_trig':fileCardsTrig,'_notrig':fileCardsNotTrig}
+    filedirs = {'_trig':'ch1','_notrig':'ch2'}
+    names = {'h_data' : 'data_obs',
+             'h_sig'  : 'wtaunu',
+             'h_tau'  : 'tau',
+             'h_fake' : 'fake',
+             'h_bkg'  : 'lfakes'}
     hists = {}
 
-    for trigLabel in utils.trigLabels:
+    for trigLabel in ['_trig','_notrig']:
         for name in names:
-            nameHist = name+trigLabel
-            hists[nameHist] = files[trigLabel].Get('taunu'+trigLabel+'/'+names[name])
+            nameHist = names[name]
+            if nameHist=='wtaunu' or nameHist=='tau':
+                nameHist = names[name] + trigLabel + '_' + args.era
+            hists[name+trigLabel] = files[trigLabel].Get('taunu/'+nameHist)
             
     if args.plot in ['prefit', 'postfit']:
-        for trigLabel in utils.trigLabels:
+        for trigLabel in ['_trig','_notrig']:
             for name in names:
-                nameHist = name+trigLabel
+                nameHist = names[name]
+                if nameHist=='wtaunu' or nameHist=='tau':
+                    nameHist = names[name] + trigLabel + '_' + args.era
                 if name=='h_data': continue
-                histo = fileFit.Get(plot[args.plot]+'/'+filedirs[trigLabel]+'/'+names[name])
+                fullPathHist = plot[args.plot]+'/'+filedirs[trigLabel]+'/'+nameHist
+                histo = fileFit.Get(plot[args.plot]+'/'+filedirs[trigLabel]+'/'+nameHist)
                 nbins = histo.GetNbinsX()
                 for ib in range(1,nbins+1):
-                    hists[nameHist].SetBinContent(ib,histo.GetBinContent(ib))
-                    hists[nameHist].SetBinError(ib,histo.GetBinError(ib))
+                    hists[name+trigLabel].SetBinContent(ib,histo.GetBinContent(ib))
+                    hists[name+trigLabel].SetBinError(ib,histo.GetBinError(ib))
     
-    for trigLabel in utils.trigLabels:
-        PlotWToTauNu(hists,trigger=trigLabel,wp=args.wp,wpVsMu=args.wpVsMu,wpVsE=args.wpVsE,plot=args.plot,era=args.era)
+    for trigLabel in ['_trig','_notrig']:
+        PlotWToTauNu(hists,
+                     trigger=trigLabel,
+                     wp=args.wp,
+                     wpVsMu=args.wpVsMu,
+                     wpVsE=args.wpVsE,
+                     plot=args.plot,
+                     era=args.era)
 
     h_data_eff,h_mc_eff = ComputeEff(hists)
-    PlotEff(h_data_eff,h_mc_eff,wp=args.wp,wpVsMu=args.wpVsMu,wpVsE=args.wpVsE,era=args.era,plot=args.plot)
-    PlotSF(h_data_eff,h_mc_eff,wp=args.wp,wpVsMu=args.wpVsMu,wpVsE=args.wpVsE,era=args.era,plot=args.plot)
+    PlotEff(h_data_eff,
+            h_mc_eff,
+            wp=args.wp,
+            wpVsMu=args.
+            wpVsMu,
+            wpVsE=args.wpVsE,
+            era=args.era,
+            plot=args.plot)
+    PlotSF(h_data_eff,
+           h_mc_eff,
+           wp=args.wp,
+           wpVsMu=args.wpVsMu,
+           wpVsE=args.wpVsE,
+           era=args.era,
+           plot=args.plot)
     

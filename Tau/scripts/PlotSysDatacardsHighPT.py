@@ -7,7 +7,18 @@ from array import array
 import HighPT.Tau.stylesHighPT as styles
 import os
 
-def PlotSystematics(h_central,h_up,h_down,era,sampleName,sysName,ratioLower,ratioUpper):
+def PlotSystematics(hists,**kwargs):
+
+    h_central = hists['central']
+    h_up = hists['up']
+    h_down = hists['down']
+    era = kwargs.get('era','2022')
+    sampleName = kwargs.get('sample','wtaunu')
+    sysName = kwargs.get('sysName','JES')
+    ratioLower = kwargs.get('ratioLower',0.5) 
+    ratioUpper = kwargs.get('ratioUpper',1.5)
+    logx = kwargs.get('logx',True)
+    suffix = kwargs.get('suffix','')
 
     styles.InitData(h_central)
     styles.InitData(h_up)
@@ -79,6 +90,8 @@ def PlotSystematics(h_central,h_up,h_down,era,sampleName,sysName,ratioLower,rati
     leg.Draw()
 
     upper.Draw("SAME")
+    if logx: 
+        upper.SetLogx(True)
     upper.RedrawAxis()
     upper.Modified()
     upper.Update()
@@ -99,6 +112,9 @@ def PlotSystematics(h_central,h_up,h_down,era,sampleName,sysName,ratioLower,rati
     xmax = h_ratio.GetXaxis().GetBinLowEdge(nbins+1)
     line = ROOT.TLine(xmin,1.,xmax,1.)
     line.Draw()
+    if logx:
+        lower.SetLogx(True)
+
     lower.Modified()
     lower.RedrawAxis()
 
@@ -107,7 +123,7 @@ def PlotSystematics(h_central,h_up,h_down,era,sampleName,sysName,ratioLower,rati
     canvas.cd()
     canvas.SetSelected(canvas)
     canvas.Update()
-    canvas.Print(utils.baseFolder+"/"era+"sigures/Sys/sys_cards_"+era+"_"+sampleName+"_"+sysName+".png")
+    canvas.Print(utils.baseFolder+"/"era+"/figures/Sys/sys_cards_"+sampleName+"_"+sysName+suffix".png")
 
 if __name__ == "__main__":
 
@@ -116,7 +132,7 @@ if __name__ == "__main__":
 
 #####################################################################
 #   Systematics :
-#   jmet    = JES, Unclustered
+#   jme     = JES, Unclustered
 #   taues   = taues, taues_1pr taues_1pr1pi0 taues_3pr taues_3pr1pi0    
 #   fakes   = sample_variable1_variable2 nonclosure
 #   ------
@@ -124,24 +140,30 @@ if __name__ == "__main__":
 #   ------
 #   samples = [wtaunu,fake]
 # 
+#   other possible wtaunu_[era]
 #####################################################################
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era',dest='era',default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
+    parser.add_argument('-e','--era',dest='era',default='2022',choices=['UL2016','UL2017','UL2018','2022','2023'])
     parser.add_argument('-c','--channel',dest='channel', default='taunu',)
-    parser.add_argument('-s','--sample',dest='sample',default='fake')
-    parser.add_argument('-wp','--WP',dest='wp',default='Medium')
+    parser.add_argument('-s','--sample',dest='sample',default='wtaunu_notrig_2022')
+    parser.add_argument('-wp','--WP',dest='wp',default='Tight')
     parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight')
-    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='VVLoose')
-    parser.add_argument('-sys','--sysname',dest='sysname', default='wjets_ptratioLow_ptjetLow')
+    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='Tight')
+    parser.add_argument('-sys','--sysname',dest='sysname', default='taues_1pr_2022')
     parser.add_argument('-ymin','--ymin',dest='ymin',default=0.5)
     parser.add_argument('-ymax','--ymax',dest='ymax',default=1.5)
+    parser.add_argument('--suffix','-suffix',dest='suffix',default='trig')
+    parser.add_argument('--logx','-logx',dest='logx',action='store_true')
     args = parser.parse_args() 
 
     basefolder = utils.baseFolder+"/"+args.era+"/datacards"
     filename = "%s_%s.root"%(args.channel,args.era)
+    suffix = args.suffix
+    if suffix!='':
+        suffix = '_'+suffix 
     if args.channel=='taunu':
-        filename = "%s_%s_%s_%s_%s.root"%(args.channel,args.wp,args.wpVsMu,args.wpVsE,args.era)
+        filename = "%s_%s_%s_%s%s.root"%(args.channel,args.wp,args.wpVsMu,args.wpVsE,suffix)
     fullpath = basefolder+'/'+filename
     print('')
     if os.path.isfile(fullpath):
@@ -174,10 +196,16 @@ if __name__ == "__main__":
 
     print('Plotting histograms : %s  %s  %s'%(name_central,name_up,name_down))
 
-    PlotSystematics(hist_central,
-                    hist_up,
-                    hist_down,
-                    args.era,
-                    args.sample,
-                    args.sysname,
-                    args.ymin,args.ymax)
+    hists = {}
+    hists['central'] = hist_central
+    hists['up'] = hist_up
+    hists['down'] = hist_down
+
+    PlotSystematics(hists,
+                    era=args.era,
+                    sample=args.sample,
+                    sysName=args.sysname,
+                    ratioLower=args.ymin,
+                    ratioUpper=args.ymax,
+                    logx=args.logx,
+                    suffix=suffix)
