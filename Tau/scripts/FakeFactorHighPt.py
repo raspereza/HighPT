@@ -120,11 +120,11 @@ def DrawFF(hist,**kwargs):
         color = 1
         labelSample = "data"
     
-    from IPython import embed
+    #    from IPython import embed
     
-    print
+    print('')
     print('fitting FF histo >>>',era,channel,label,labelSample)
-    embed()
+    #    embed()
 
     styles.InitData(hist)
 
@@ -143,8 +143,8 @@ def DrawFF(hist,**kwargs):
         if xe>maximum:
             maximum = xe
         #        print(i,hist.GetBinContent(i),hist.GetBinError(i))
-        if x<1e-4 or x>0.9:     
-            xcorr = 0.5*hist.GetBinContent(i-1)
+        if x<1e-5 or x>0.9:     
+            xcorr = 0.5*hist.GetBinError(i)
             hist.SetBinContent(i,xcorr)
             hist.SetBinError(i,0.75*xcorr)
             
