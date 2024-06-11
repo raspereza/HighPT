@@ -108,9 +108,9 @@ def DrawFF(hist,**kwargs):
     variable2 = kwargs.get('variable2','ptratio')
     label = kwargs.get('label','ptratioLow')
     channel = kwargs.get('channel','channel')
-    wpVsJet = kwargs.get('wpVsJet','Medium')
-    wpVsE  = kwargs.get('wpVsE','TightVsE')
-    wpVsMu = kwargs.get('wpVsMu','TightVsMu')
+    WPvsJet= kwargs.get('WPvsJet','Medium')
+    WPvsE  = kwargs.get('WPvsE','TightVsE')
+    WPvsMu = kwargs.get('WPvsMu','TightVsMu')
     trigger = kwargs.get('trigger','incl')
     era = kwargs.get('era','2023')
 
@@ -226,9 +226,9 @@ def DrawFF(hist,**kwargs):
                                            variable1,
                                            label,
                                            trigger,
-                                           wpVsJet,
-                                           wpVsMu,
-                                           wpVsE);
+                                           WPvsJet,
+                                           WPvsMu,
+                                           WPvsE);
     canv.Print('%s/%s/figures/FF/%s.png'%(utils.baseFolder,era,png_file))
     
     return hfit
@@ -236,10 +236,10 @@ def DrawFF(hist,**kwargs):
 def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
 
     era = kwargs.get("era","2023")
-    wpVsJet = kwargs.get("wpVsJet","Medium")
+    WPvsJet= kwargs.get("WPvsJet","Medium")
     channel = kwargs.get("channel","wjets")
-    wpVsE = kwargs.get("wpVsE","Loose")
-    wpVsMu = kwargs.get("wpVsMu","Loose")
+    WPvsE = kwargs.get("WPvsE","Loose")
+    WPvsMu = kwargs.get("WPvsMu","Loose")
     variable1 = kwargs.get("variable1","pttau")
     variable2 = kwargs.get("variable2","ptratio")
 
@@ -247,19 +247,19 @@ def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
     print("+++++++++++++++++++++++++++++++++++++++++++")
     print('')
     print('Computing FF as a function of %s in bins of %s for era %s'%(variable1,variable2,era))
-    print('%sVsJet  %sVsMu  %sVsE'%(wpVsJet,wpVsMu,wpVsE))
+    print('%sVsJet  %sVsMu  %sVsE'%(WPvsJet,WPvsMu,WPvsE))
     
     cutTrigger = "(tautrigger1>0.5||tautrigger2>0.5)"
     cutNotTrigger = "(!" + cutTrigger +")"
         
     cutTauDen = "idDeepTau2018v2p5VSjet_2<4"
-    cutTauNum = "idDeepTau2018v2p5VSjet_2>=" + utils.tauWPs[wpVsJet]
+    cutTauNum = "idDeepTau2018v2p5VSjet_2>=" + utils.tauWPs[WPvsJet]
 
-    cutTauDen += "&&idDeepTau2018v2p5VSmu_2>=" + utils.tauVsMuWPs[wpVsMu]
-    cutTauDen += "&&idDeepTau2018v2p5VSe_2>="  + utils.tauVsEleWPs[wpVsE]
+    cutTauDen += "&&idDeepTau2018v2p5VSmu_2>=" + utils.tauVsMuWPs[WPvsMu]
+    cutTauDen += "&&idDeepTau2018v2p5VSe_2>="  + utils.tauVsEleWPs[WPvsE]
 
-    cutTauNum += "&&idDeepTau2018v2p5VSmu_2>=" + utils.tauVsMuWPs[wpVsMu]
-    cutTauNum += "&&idDeepTau2018v2p5VSe_2>="  + utils.tauVsEleWPs[wpVsE]
+    cutTauNum += "&&idDeepTau2018v2p5VSmu_2>=" + utils.tauVsMuWPs[WPvsMu]
+    cutTauNum += "&&idDeepTau2018v2p5VSe_2>="  + utils.tauVsEleWPs[WPvsE]
 
     ######################
     ## labels of cuts ####
@@ -428,12 +428,12 @@ def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
                                      era=era,
                                      channel=channel,
                                      label=label,
-                                     wpVsJet=wpVsJet,
+                                     WPvsJet=WPvsJet,
                                      variable1=variable1,
                                      variable2=variable2,
                                      isdata=True,
-                                     wpVsMu=wpVsMu,
-                                     wpVsE=wpVsE,
+                                     WPvsMu=WPvsMu,
+                                     WPvsE=WPvsE,
                                      trigger=trigLabel)
 
         if channel=="wjets":
@@ -473,12 +473,12 @@ def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
                                         era=era,
                                         channel=channel,
                                         label=label,
-                                        wpVsJet=wpVsJet,
+                                        WPvsJet=WPvsJet,
                                         variable1=variable1,
                                         variable2=variable2,
                                         isdata=False,
-                                        wpVsMu=wpVsMu,
-                                        wpVsE=wpVsE,
+                                        WPvsMu=WPvsMu,
+                                        WPvsE=WPvsE,
                                         trigger=trigLabel)
 
     outputfile.cd('')
@@ -538,11 +538,11 @@ if __name__ == "__main__":
             if choice == "1":
                 args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023): ").strip()
             elif choice == "2":
-                args.wpVsJet = input("Enter the WP (Loose, Medium, Tight, VTight, VVTight): ").strip()
+                args.WPvsJet= input("Enter the WPvsJet (Loose, Medium, Tight, VTight, VVTight): ").strip()
             elif choice == "3":
-                args.wpVsMu = input("Enter the WPvsMu (VLoose, Tight): ").strip()
+                args.WPvsMu = input("Enter the WPvsMu (VLoose, Tight): ").strip()
             elif choice == "4":
-                args.wpVsE = input("Enter the WPvsE (VVLoose, Tight): ").strip()
+                args.WPvsE = input("Enter the WPvsE (VVLoose, Tight): ").strip()
             elif choice == "5":
                 break
             else:
@@ -628,9 +628,9 @@ if __name__ == "__main__":
                  dataSamples[channel],
                  mcSamples,
                  sigSamples,
-                 wpVsJet=args.WPvsJet,
-                 wpVsE=args.WPvsE,
-                 wpVsMu=args.WPvsMu,
+                 WPvsJet=args.WPvsJet,
+                 WPvsE=args.WPvsE,
+                 WPvsMu=args.WPvsMu,
                  era=args.era,
                  channel=channel,
                  variable1=var1,
@@ -641,9 +641,9 @@ if __name__ == "__main__":
                  dataSamples[channel],
                  mcSamples,
                  sigSamples,
-                 wpVsJet=args.WPvsJet,
-                 wpVsE=args.WPvsE,
-                 wpVsMu=args.WPvsMu,
+                 WPvsJet=args.WPvsJet,
+                 WPvsE=args.WPvsE,
+                 WPvsMu=args.WPvsMu,
                  era=args.era,
                  channel=channel,
                  variable1=var1,

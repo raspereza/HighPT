@@ -24,7 +24,7 @@ def confirm_arguments(parsed_args):
     print("Fake_factors:", parsed_args.ff)
     print("Fake factors parametrization:", parsed_args.ff_par)
     
-    confirmation = raw_input("Are these arguments correct? (yes/no): ").strip().lower()
+    confirmation = input("Are these arguments correct? (yes/no): ").strip().lower()
     return confirmation == "yes"
 
 def adjust_arguments(args):
@@ -38,19 +38,19 @@ def adjust_arguments(args):
     print("7. Confirm and proceed")
 
     while True:
-        choice = raw_input("Enter your choice (1-7): ").strip()
+        choice = input("Enter your choice (1-7): ").strip()
         if choice == "1":
-            args.era = raw_input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023): ").strip()
+            args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023): ").strip()
         elif choice == "2":
-            args.WPvsJet = raw_input("Enter the WPvsJet (Loose, Medium, Tight, VTight, VVTight): ").strip()
+            args.WPvsJet = input("Enter the WPvsJet (Loose, Medium, Tight, VTight, VVTight): ").strip()
         elif choice == "3":
-            args.WPvsMu = raw_input("Enter the WPvsMu (VLoose, Tight): ").strip()
+            args.WPvsMu = input("Enter the WPvsMu (VLoose, Tight): ").strip()
         elif choice == "4":
-            args.WPvsE = raw_input("Enter the WPvsE (VVLoose, Tight): ").strip()
+            args.WPvsE = input("Enter the WPvsE (VVLoose, Tight): ").strip()
         elif choice == "5":
-            args.ff = raw_input("Enter the fake_factors (comb, wjets, dijets): ").strip()
+            args.ff = input("Enter the fake_factors (comb, wjets, dijets): ").strip()
         elif choice == "6":
-            args.ff_par = raw_input("Enter the fake factor parametrizatin to use (pttau, ptjet): ").strip()  
+            args.ff_par = input("Enter the fake factor parametrizatin to use (pttau, ptjet): ").strip()  
         elif choice == "7":
             break
         else:
@@ -60,7 +60,7 @@ def adjust_arguments(args):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument('-e', '--era', dest='era', default='2023', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023'])
+    parser.add_argument('-e', '--era', dest='era', default='2022', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023'])
     parser.add_argument('-wpVsJet', '--WPvsJet', dest='WPvsJet', default='Medium', choices=['Loose', 'Medium', 'Tight', 'VTight', 'VVTight'])
     parser.add_argument('-wpVsMu', '--WPvsMu', dest='WPvsMu', default='Tight', choices=['VLoose', 'Tight'])
     parser.add_argument('-wpVsE', '--WPvsE', dest='WPvsE', default='VVLoose', choices=['VVLoose', 'Tight'])
