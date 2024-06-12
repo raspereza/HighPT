@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
 import os
 
-# Definisci i due set di script
+# Define the two sets of scripts
 scripts = [
     'FakeFactorHighPt.py',
     'DatacardsWToMuNu.py',
     'DatacardsWToTauNu.py',
-    '/afs/cern.ch/user/j/jmalvaso/HighPT_EPRs/CMSSW_12_4_8/src/HighPT/Tau/combine/RunCombineHighPT.py'
+    '../combine/RunCombineHighPT.py'
 ]
 
 scripts_pt_binned = [
     'FakeFactorHighPt.py',
     'DatacardsWToMuNu.py',
     'DatacardsWToTauNu.py',
-    '/afs/cern.ch/user/j/jmalvaso/HighPT_EPRs/CMSSW_12_4_8/src/HighPT/Tau/combine/RunCombineMultiDim.py'
+    '../combine/RunCombineMultiDim.py'
 ]
 
-# Chiedi all'utente quale set di script vuole utilizzare
+# Ask the user which set of scripts they want to use
 user_choice = input("Which set of scripts do you want to use? Enter 1 for scripts or 2 for scripts_pt_binned: ")
 
-# Seleziona il set di script in base alla scelta dell'utente
+# Select the set of scripts based on the user's choice
 if user_choice == "1":
     selected_scripts = scripts
 elif user_choice == "2":
@@ -28,7 +28,7 @@ else:
     print("Invalid choice. Exiting.")
     exit()
 
-# Esegui gli script selezionati
+# Execute the selected scripts
 for script in selected_scripts:
     print(f"Running {script}...")
     user_input = input(f"Do you want to execute {script}? (y/n): ").lower()
@@ -41,4 +41,3 @@ for script in selected_scripts:
         exec(code)
     
     print(f"Finished running {script}\n")
-
