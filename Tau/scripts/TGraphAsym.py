@@ -28,6 +28,10 @@ def convert_TH1_to_TGraphAsymmErrors(root_file_path, histogram_name, era):
         # Create a TGraphAsymmErrors from the histogram
         graph = ROOT.TGraphAsymmErrors(hist)
         graph.SetName(new_name)
+        # Copy the axis labels from the histogram to the graph
+        graph.GetXaxis().SetTitle(hist.GetXaxis().GetTitle())
+        graph.GetYaxis().SetTitle(hist.GetYaxis().GetTitle())
+        
         graph.Write()
         print(f"TGraphAsymmErrors saved as {new_name} in {root_file_path}")
 
