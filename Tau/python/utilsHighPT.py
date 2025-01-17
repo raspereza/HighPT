@@ -16,7 +16,7 @@ picoFolder='/eos/user/r/rasp/output/HighPT'
 #######################
 #    base folder      #
 #######################
-baseFolder = '/eos/user/j/jmalvaso/HighPt'
+baseFolder = '/afs/cern.ch/work/r/rasp/HighPT'
 
 ###################
 # Cross sections  #
