@@ -6,9 +6,9 @@ The measurement will require [Higgs combination package](https://github.com/cms-
 
 Login to lxplus7 machine and execute the following commands
 ```
-export SCRAM_ARCH=CMSSW_12_4_8
-cmsrel CMSSW_12_4_8
-cd CMSSW_12_4_8/src
+export SCRAM_ARCH=CMSSW_14_1_0_pre4
+cmsrel CMSSW_14_1_0_pre4
+cd CMSSW_14_1_0_pre4/src
 cmsenv
 https://github.com/raspereza/TauFW TauFW
 scramv1 b -j 4
@@ -37,7 +37,6 @@ mkdir /afs/cern.ch/work/u/username/HighPT
 NB : several subfolders should be created manually. Automated script is being developed for that.
 
 All scripts at every step of the measurement will be run from the directory [`$CMSSW_BASE/src/HighPT/Tau`](https://github.com/raspereza/HighPT/tree/main/Tau)
-
 
 ## Measurement strategy
 
