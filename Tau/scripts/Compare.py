@@ -1,7 +1,6 @@
-#! /usr/bin/env python
-# Author: Alexei Raspereza (December 2022)
-# High pT tau ID SF measurements 
-# comparison between 
+#! /usr/bin/env python3
+# Author: Alexei Raspereza (December 2023)
+# High pT tau ID SF: DeepTauV2p1 vs DeepTauV2p5
 import ROOT
 import TauFW.Plotter.HighPT.utilsHighPT as utils
 from array import array

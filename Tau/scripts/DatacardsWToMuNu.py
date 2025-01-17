@@ -15,7 +15,7 @@ import CombineHarvester.CombineTools.ch as ch
 #################################
 #     definition of cuts        #
 #################################
-basecut = 'pt_1>100&&fabs(eta_1)<2.1&&metfilter>0.5&&njets==0&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&idMedium_1>0.5&&njets==0&&iso_1<0.15'
+basecut = 'pt_1>120&&fabs(eta_1)<2.1&&metfilter>0.5&&njets==0&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&idMedium_1>0.5&&njets==0&&iso_1<0.15'
 
 metCut = "130"
 mtCut  = "200"
