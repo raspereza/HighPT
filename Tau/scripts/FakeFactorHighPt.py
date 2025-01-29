@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-# Author: Alexei Raspereza (November 2022)
+# Author: Alexei Raspereza (November 2024)
 # Description: computes fake factors 
 #              for high pT jet->tau fakes
 

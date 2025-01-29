@@ -31,9 +31,6 @@ def PlotEff(h_data_eff,h_mc_eff,**kwargs):
     era    = kwargs.get('era','UL2016')
     plot    = kwargs.get('plot','cards')
 
-    #    if isdata and channel=='wjets' and era=='UL2017' and label=='ptratioHigh':
-    #        hist.SetBinContent(2,2*hist.GetBinContent(2))
-
     print('')
 
     styles.InitData(h_data_eff)
@@ -85,13 +82,16 @@ def PlotEff(h_data_eff,h_mc_eff,**kwargs):
     h_mc_eff.Draw("e1same")
 
     leg = ROOT.TLegend(0.7,0.2,0.9,0.4)
-    styles.SetLegendStyle(leg)
+#    styles.SetLegendStyle(leg)
     leg.SetTextSize(0.06)
+    leg.SetBorderSize(1)
     leg.AddEntry(h_data_eff,"Data",'e1lp')
     leg.AddEntry(h_mc_eff,"MC",'e1lp')
     leg.Draw()
     styles.CMS_label(canv,era=era)
     canv.SetLogx(True)
+    canv.SetGridx(True)
+    canv.SetGridy(True)
     canv.RedrawAxis()
     canv.Update()
     canv.Print(utils.baseFolder+'/'+era+'/figures/TauTrigger/TrigEff_'+wp+"VsJet_"+wpVsMu+'VsMu_'+wpVsE+'VsE_'+plot+'.png')
@@ -117,7 +117,7 @@ def PlotSF(h_data_eff,h_mc_eff,**kwargs):
     xmin = hist.GetBinLowEdge(1)
     xmax = hist.GetBinLowEdge(nbins+1)
     f1 = ROOT.TF1("f1",FitFuncConst,xmin,xmax,1)
-    f2 = ROOT.TF1('f2',FitFunc,xmin,xmax,4)
+    f2 = ROOT.TF1('f2',FitFunc,xmin,xmax,3)
     f1.SetParameter(0,1.0)
 #    f1.SetParameter(1,0.0)
     f2.SetParameter(0,1.0)
@@ -128,6 +128,17 @@ def PlotSF(h_data_eff,h_mc_eff,**kwargs):
     histToPlot.SetLineColor(1)
     histToPlot.SetMarkerSize(1.7)
 
+    print('')
+    print('Scale factors ->')
+    nbins = histToPlot.GetNbinsX()
+    for ib in range(1,nbins+1):
+        xlow = histToPlot.GetBinLowEdge(ib)
+        xhigh = histToPlot.GetBinLowEdge(ib+1) - 1.0
+        x = histToPlot.GetBinContent(ib)
+        e = histToPlot.GetBinError(ib)
+        print('[%2i,%2i] : %5.3f +/- %5.3f'%(int(xlow),int(xhigh),x,e))
+    print('')
+    
     canv = styles.MakeCanvas("canv","",700,600)
     hist.Fit('f1',"R")
 
@@ -152,12 +163,12 @@ def PlotSF(h_data_eff,h_mc_eff,**kwargs):
         hfit.SetBinError(i,error)
 
     x = hfitLinear.GetBinContent(hfitLinear.FindBin(200.))
-    a = hfitLinear.GetBinError(hfitLinear.FindBin(199.))
+    a = hfitLinear.GetBinError(hfitLinear.FindBin(200.))
     b = hfitLinear.GetBinError(hfitLinear.FindBin(999.))
-    k = (b-a)/2.
+    k = (b-a)
 
     print('')
-    print('SF = %5.3f +/- %5.3f + %5.3f*pT[GeV] max = %5.3f'%(x,a,k,b)) 
+    print('SF = %5.3f +/- %5.3f + %5.3f*pT[GeV]   max = %5.3f'%(x,a,k,b)) 
 
     styles.InitModel(hfit,4)
     hfit.SetFillColor(ROOT.kCyan)
@@ -242,8 +253,9 @@ def PlotWToTauNu(hists,**kwargs):
     styles.InitHist(h_fake,"","",ROOT.TColor.GetColor("#FFCCFF"),1001)
     styles.InitHist(h_tau,"","",ROOT.TColor.GetColor("#c6f74a"),1001)
 
-    h_tau.Add(h_tau,h_bkg,1.,1.)
-    h_fake.Add(h_fake,h_tau,1.,1.)
+#    h_tau.Add(h_tau,h_bkg,1.,1.)
+    h_fake.Add(h_fake,h_bkg,1.,1.)
+    h_sig.Add(h_sig,h_tau,1.,1.)
     h_sig.Add(h_sig,h_fake,1.,1.)
     h_tot = h_sig.Clone("total")
     styles.InitTotalHist(h_tot)
@@ -264,7 +276,7 @@ def PlotWToTauNu(hists,**kwargs):
 
     ymax = h_data.GetMaximum()
     if h_tot.GetMaximum()>ymax: ymax = h_tot.GetMaximum()
-    h_data.GetYaxis().SetRangeUser(1.,100*ymax)
+    h_data.GetYaxis().SetRangeUser(0.1,100*ymax)
     h_data.GetXaxis().SetLabelSize(0)
     h_data.GetYaxis().SetTitle("events / bin")
     h_ratio.GetYaxis().SetTitle("obs/exp")
@@ -285,26 +297,28 @@ def PlotWToTauNu(hists,**kwargs):
     h_data.Draw('e1')
     h_sig.Draw('hsame')
     h_fake.Draw('hsame')
-    h_tau.Draw('hsame')
-    h_bkg.Draw('hsame')
+#    h_tau.Draw('hsame')
+#    h_bkg.Draw('hsame')
     h_data.Draw('e1same')
     h_tot.Draw('e2same')
 
     leg = ROOT.TLegend(0.65,0.4,0.90,0.75)
     styles.SetLegendStyle(leg)
-    leg.SetTextSize(0.047)
+    leg.SetTextSize(0.05)
     if trigger=='_trig':
-        leg.SetHeader("passed")
+        leg.SetHeader("passing probes")
     else:
-        leg.SetHeader("failed")
+        leg.SetHeader("failing probes")
     leg.AddEntry(h_data,'data','lp')
-    leg.AddEntry(h_sig,'W#rightarrow #tau#nu','f')
-    leg.AddEntry(h_fake,'j#rightarrow#tau misId','f')
-    leg.AddEntry(h_tau,'true #tau','f')
-    leg.AddEntry(h_bkg,'e/#mu#rightarrow#tau misId','f')
+    leg.AddEntry(h_sig,'genuine #tau','f')
+    leg.AddEntry(h_fake,'misID #tau','f')
+#    leg.AddEntry(h_sig,'W#rightarrow #tau#nu','f')
+#    leg.AddEntry(h_fake,'j#rightarrow#tau misId','f')
+#    leg.AddEntry(h_tau,'true #tau','f')
+#    leg.AddEntry(h_bkg,'e/#mu#rightarrow#tau misId','f')
     leg.Draw()
 
-    styles.CMS_label(upper,era=era)
+    styles.CMS_label(upper,era=era,PosX=33)
 
     upper.Draw("SAME")
     upper.RedrawAxis()
@@ -360,9 +374,9 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='2022', choices=['UL2016','UL2017','UL2018','2022','2023'])
+    parser.add_argument('-e','--era', dest='era', default='2023', choices=['UL2016','UL2017','UL2018','2022','2023'])
     parser.add_argument('-wp','--WP', dest='wp', default='Tight', choices=['Loose','Medium','Tight']) 
-    parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight', choices=['Loose','Tight'])
+    parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight', choices=['VLoose','Tight'])
     parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='Tight', choices=['VVLoose','Tight'])
     parser.add_argument('-plot','--Plot', dest='plot', default="postfit", choices=['cards','prefit','postfit'])
     args = parser.parse_args()
