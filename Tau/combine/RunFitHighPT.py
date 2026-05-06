@@ -3,6 +3,7 @@
 import os
 import subprocess
 from argparse import ArgumentParser
+import HighPT.Tau.utilsHighPT as utils
 
 def check_file_existence(filename):
     if os.path.isfile(filename):
@@ -40,7 +41,7 @@ def adjust_arguments(args):
     while True:
         choice = input("Enter your choice (1-7): ").strip()
         if choice == "1":
-            args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023): ").strip()
+            args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023, 2024, 2025): ").strip()
         elif choice == "2":
             args.WPvsJet = input("Enter the WPvsJet (Loose, Medium, Tight, VTight, VVTight): ").strip()
         elif choice == "3":
@@ -76,15 +77,15 @@ else:
 if __name__ == "__main__":
     parser = ArgumentParser()
     if pt_binned == False:
-        parser.add_argument('-e', '--era', dest='era', default='2023', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023'])
-        parser.add_argument('-wpVsJet', '--WPvsJet', dest='WPvsJet', default='Medium', choices=['Loose', 'Medium', 'Tight', 'VTight', 'VVTight'])
+        parser.add_argument('-e', '--era', dest='era', default='2024', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023','2024','2025'])
+        parser.add_argument('-wpVsJet', '--WPvsJet', dest='WPvsJet', default='Tight', choices=['Loose', 'Medium', 'Tight', 'VTight', 'VVTight'])
         parser.add_argument('-wpVsMu', '--WPvsMu', dest='WPvsMu', default='Tight', choices=['VLoose', 'Tight'])
         parser.add_argument('-wpVsE', '--WPvsE', dest='WPvsE', default='VVLoose', choices=['VVLoose', 'Tight'])
         parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
-        parser.add_argument('-ff_par','--ff_par',dest='ff_par',default='ptjet',choices=['pttau','ptjet'])
+        parser.add_argument('-ff_par','--ff_par',dest='ff_par',default='pttau',choices=['pttau','ptjet'])
     elif pt_binned == True:
-        parser.add_argument('-e', '--era', dest='era', default='2022', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023'])
-        parser.add_argument('-wpVsJet', '--WPvsJet', dest='WPvsJet', default='Medium', choices=['Loose', 'Medium', 'Tight', 'VTight', 'VVTight'])
+        parser.add_argument('-e', '--era', dest='era', default='2024', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023','2024','2025'])
+        parser.add_argument('-wpVsJet', '--WPvsJet', dest='WPvsJet', default='Tight', choices=['Loose', 'Medium', 'Tight', 'VTight', 'VVTight'])
         parser.add_argument('-wpVsMu', '--WPvsMu', dest='WPvsMu', default='Tight', choices=['VLoose', 'Tight'])
         parser.add_argument('-wpVsE', '--WPvsE', dest='WPvsE', default='VVLoose', choices=['VVLoose', 'Tight'])
         parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
@@ -122,22 +123,23 @@ if __name__ == "__main__":
         subprocess.call(["combineTool.py", "-M", "T2W", "-o", "tauID_{}_{}.root".format(args.ff_par,name), "-i", "tauID_{}_{}.txt".format(args.ff_par,name)])
 
         # Doing fit
-        subprocess.call(["combineTool.py", "-M", "FitDiagnostics", "--saveNormalizations", "--saveShapes", "--saveWithUncertainties", "--saveNLL", "--robustFit", "1", "--rMin", "0", "--rMax", "3", "-m", "200", "-d", "tauID_{}_{}.root".format(args.ff_par,name), "--cminDefaultMinimizerTolerance", "0.1", "--cminDefaultMinimizerStrategy", "1", "-v", "2"])
+        subprocess.call(["combineTool.py", "-M", "FitDiagnostics", "--saveNormalizations", "--saveShapes", "--saveWithUncertainties", "--saveNLL", "--robustHesse", "1", "--rMin", "0", "--rMax", "3", "-m", "200", "-d", "tauID_{}_{}.root".format(args.ff_par,name), "--cminDefaultMinimizerTolerance", "0.1", "--cminDefaultMinimizerStrategy", "0", "-v", "2"])
 
         # Renaming output
         os.rename("fitDiagnostics.Test.root", "tauID_{}_fit.root".format(name))
    
     elif pt_binned == True: 
         check_file_existence("taunu_{}_{}_lowpt_{}.txt".format(args.ff_par,name,args.era))
+        check_file_existence("taunu_{}_{}_mediumpt_{}.txt".format(args.ff_par,name,args.era))
         check_file_existence("taunu_{}_{}_highpt_{}.txt".format(args.ff_par,name,args.era))
         # Combine W*->mu+v and W*->tau+v cards
-        subprocess.call(["combineCards.py", folder_munu+"/munu_{}.txt".format(args.era), "taunu_{}_{}_lowpt_{}.txt".format(args.ff_par,name, args.era), "taunu_{}_{}_highpt_{}.txt".format(args.ff_par, name, args.era)], stdout=open("tauID_{}_{}_ptbinned.txt".format(args.ff_par,name), 'w'))
+        subprocess.call(["combineCards.py", folder_munu+"/munu_{}.txt".format(args.era), "taunu_{}_{}_lowpt_{}.txt".format(args.ff_par,name, args.era), "taunu_{}_{}_mediumpt_{}.txt".format(args.ff_par, name, args.era), "taunu_{}_{}_highpt_{}.txt".format(args.ff_par, name, args.era)], stdout=open("tauID_{}_{}_ptbinned.txt".format(args.ff_par,name), 'w'))
 
         # Creating workspace
-        subprocess.call(["combineTool.py", "-M", "T2W", "-P", "HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel", "--PO", '"map=^.*/*_highpt_{}:r_highpt[1,0,2]"'.format(args.era), "--PO", '"map=^.*/*_lowpt_{}:r_lowpt[1,0,2]"'.format(args.era), "-o", "tauID_{}_{}_ptbinned.root".format(args.ff_par,name), "-i", "tauID_{}_{}_ptbinned.txt".format(args.ff_par,name)])
+        subprocess.call(["combineTool.py", "-M", "T2W", "-P", "HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel", "--PO", '"map=^.*/*_highpt_{}:r_highpt[1,0,2]"'.format(args.era), "--PO", '"map=^.*/*_mediumpt_{}:r_mediumpt[1,0,2]"'.format(args.era), "--PO", '"map=^.*/*_lowpt_{}:r_lowpt[1,0,2]"'.format(args.era), "-o", "tauID_{}_{}_ptbinned.root".format(args.ff_par,name), "-i", "tauID_{}_{}_ptbinned.txt".format(args.ff_par,name)])
 
         # Doing fit
-        subprocess.call(["combineTool.py", "-M", "FitDiagnostics", "--saveNormalizations", "--saveShapes", "--saveWithUncertainties", "--saveNLL", "--redefineSignalPOIs", "r_lowpt,r_highpt", "--robustFit", "1", "-m", "200", "-d", "tauID_{}_{}_ptbinned.root".format(args.ff_par,name), "--cminDefaultMinimizerTolerance", "0.1", "--cminDefaultMinimizerStrategy", "1", "-v", "2"])
+        subprocess.call(["combineTool.py", "-M", "FitDiagnostics", "--saveNormalizations", "--saveShapes", "--saveWithUncertainties", "--saveNLL", "--redefineSignalPOIs", "r_lowpt,r_mediumpt,r_highpt", "--robustHesse", "1", "-m", "200", "-d", "tauID_{}_{}_ptbinned.root".format(args.ff_par,name), "--cminDefaultMinimizerTolerance", "0.1", "--cminDefaultMinimizerStrategy", "0", "-v", "2"])
 
         # Renaming output
         os.rename("fitDiagnostics.Test.root", "tauID_{}_{}_ptbinned_fit.root".format(args.ff_par,name))
