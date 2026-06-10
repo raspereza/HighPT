@@ -24,6 +24,7 @@ def confirm_arguments(parsed_args):
     print("WPvsE:", parsed_args.WPvsE)
     print("Fake_factors:", parsed_args.ff)
     print("Fake factors parametrization:", parsed_args.ff_par)
+    print("Tau Tagger:",parsed_args.tagger)
     
     confirmation = input("Are these arguments correct? (yes/no): ").strip().lower()
     return confirmation == "yes"
@@ -36,14 +37,15 @@ def adjust_arguments(args):
     print("4. Change WPvsE")
     print("5. Change fake_factors")
     print("6. Change fake factors parametrization")
-    print("7. Confirm and proceed")
+    print("7. Tau Tagger")
+    print("8. Confirm and proceed")
 
     while True:
-        choice = input("Enter your choice (1-7): ").strip()
+        choice = input("Enter your choice (1-8): ").strip()
         if choice == "1":
             args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023, 2024, 2025): ").strip()
         elif choice == "2":
-            args.WPvsJet = input("Enter the WPvsJet (Loose, Medium, Tight, VTight, VVTight): ").strip()
+            args.WPvsJet = input("Enter the WPvsJet (VLoose, Loose, Medium, Tight, VTight, VVTight, SuperTight, KiloTight, MegaTight): ").strip()
         elif choice == "3":
             args.WPvsMu = input("Enter the WPvsMu (VLoose, Tight): ").strip()
         elif choice == "4":
@@ -53,6 +55,8 @@ def adjust_arguments(args):
         elif choice == "6":
             args.ff_par = input("Enter the fake factor parametrizatin to use (pttau, ptjet): ").strip()  
         elif choice == "7":
+            args.tagger = input("Enter the tau tagger to use (deeptau, pnet, upart): ").strip()  
+        elif choice == "8":
             break
         else:
             print("Invalid choice. Please enter a number between 1 and 7.")
@@ -78,18 +82,20 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     if pt_binned == False:
         parser.add_argument('-e', '--era', dest='era', default='2024', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023','2024','2025'])
-        parser.add_argument('-wpVsJet', '--WPvsJet', dest='WPvsJet', default='Tight', choices=['Loose', 'Medium', 'Tight', 'VTight', 'VVTight'])
+        parser.add_argument('-wpVsJet', '--WPvsJet', dest='WPvsJet', default='Medium', choices=['VLoose','Loose', 'Medium', 'Tight', 'VTight', 'VVTight','SuperTight','KiloTight','MegaTight'])
         parser.add_argument('-wpVsMu', '--WPvsMu', dest='WPvsMu', default='Tight', choices=['VLoose', 'Tight'])
         parser.add_argument('-wpVsE', '--WPvsE', dest='WPvsE', default='VVLoose', choices=['VVLoose', 'Tight'])
         parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
         parser.add_argument('-ff_par','--ff_par',dest='ff_par',default='pttau',choices=['pttau','ptjet'])
+        parser.add_argument('-tagger','--tagger',dest='tagger',default='deeptau',choices=['deeptau','pnet','upart'])
     elif pt_binned == True:
         parser.add_argument('-e', '--era', dest='era', default='2024', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023','2024','2025'])
-        parser.add_argument('-wpVsJet', '--WPvsJet', dest='WPvsJet', default='Tight', choices=['Loose', 'Medium', 'Tight', 'VTight', 'VVTight'])
+        parser.add_argument('-wpVsJet', '--WPvsJet', dest='WPvsJet', default='Medium', choices=['VLoose','Loose', 'Medium', 'Tight', 'VTight', 'VVTight','SuperTight','KiloTight','MegaTight'])
         parser.add_argument('-wpVsMu', '--WPvsMu', dest='WPvsMu', default='Tight', choices=['VLoose', 'Tight'])
         parser.add_argument('-wpVsE', '--WPvsE', dest='WPvsE', default='VVLoose', choices=['VVLoose', 'Tight'])
         parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
         parser.add_argument('-ff_par','--ff_par',dest='ff_par',default='pttau',choices=['pttau','ptjet'])
+        parser.add_argument('-tagger','--tagger',dest='tagger',default='deeptau',choices=['deeptau','pnet','upart'])
     
     args = parser.parse_args()
 
@@ -98,51 +104,52 @@ if __name__ == "__main__":
         if confirm_arguments(args):
             break
 
-    name = "{}_{}_{}_{}".format(args.ff, args.WPvsJet, args.WPvsMu, args.WPvsE)
+    name = "{}_{}_{}_{}_{}_incl_{}_{}".format(args.ff_par, args.ff, args.WPvsJet, args.WPvsMu, args.WPvsE, args.era, args.tagger)
+    datacard_subfolder = "datacards_{}_{}_{}_{}".format(args.ff, args.WPvsJet, args.WPvsMu, args.WPvsE)
     
     # Check existence of required files
     
     folder_munu = utils.baseFolder+"/{}/datacards_munu".format(args.era)
-    folder_taunu = utils.baseFolder+"/{}/datacards_{}".format(args.era, name)
+    folder_taunu = utils.baseFolder+"/{}/{}".format(args.era, datacard_subfolder)
     
     os.chdir(folder_munu)
     check_file_existence("munu_{}.txt".format(args.era))
-    
 
-    folder = utils.baseFolder+"/{}/datacards_{}".format(args.era, name)
+    folder = utils.baseFolder+"/{}/{}".format(args.era, datacard_subfolder)
     os.chdir(folder_taunu)    
     
     if pt_binned == False:
-        check_file_existence("taunu_{}_{}_{}_{}.txt".format(args.ff_par,name,'incl',args.era,))
+        check_file_existence("taunu_{}.txt".format(name))
 
 
         # Combine W*->mu+v and W*->tau+v cards
-        subprocess.call(["combineCards.py", folder_munu+"/munu_{}.txt".format(args.era), "taunu_{}_{}_{}_{}.txt".format(args.ff_par,name,'incl',args.era,)], stdout=open("tauID_{}_{}.txt".format(args.ff_par,name), 'w'))
+        subprocess.call(["combineCards.py", folder_munu+"/munu_{}.txt".format(args.era), "taunu_{}.txt".format(name)], stdout=open("tauID_{}.txt".format(name), 'w'))
 
         # Creating workspace
-        subprocess.call(["combineTool.py", "-M", "T2W", "-o", "tauID_{}_{}.root".format(args.ff_par,name), "-i", "tauID_{}_{}.txt".format(args.ff_par,name)])
+        subprocess.call(["combineTool.py", "-M", "T2W", "-o", "tauID_{}.root".format(name), "-i", "tauID_{}.txt".format(name)])
 
         # Doing fit
-        subprocess.call(["combineTool.py", "-M", "FitDiagnostics", "--saveNormalizations", "--saveShapes", "--saveWithUncertainties", "--saveNLL", "--robustHesse", "1", "--rMin", "0", "--rMax", "3", "-m", "200", "-d", "tauID_{}_{}.root".format(args.ff_par,name), "--cminDefaultMinimizerTolerance", "0.1", "--cminDefaultMinimizerStrategy", "0", "-v", "2"])
+        subprocess.call(["combineTool.py", "-M", "FitDiagnostics", "--saveNormalizations", "--saveShapes", "--saveWithUncertainties", "--saveNLL", "--robustHesse", "1", "--rMin", "0", "--rMax", "3", "-m", "200", "-d", "tauID_{}.root".format(name), "--cminDefaultMinimizerTolerance", "0.1", "--cminDefaultMinimizerStrategy", "0", "-v", "2"])
 
         # Renaming output
         os.rename("fitDiagnostics.Test.root", "tauID_{}_fit.root".format(name))
    
-    elif pt_binned == True: 
-        check_file_existence("taunu_{}_{}_lowpt_{}.txt".format(args.ff_par,name,args.era))
-        check_file_existence("taunu_{}_{}_mediumpt_{}.txt".format(args.ff_par,name,args.era))
-        check_file_existence("taunu_{}_{}_highpt_{}.txt".format(args.ff_par,name,args.era))
+    elif pt_binned == True:
+        name = "{}_{}_{}_{}_{}".format(args.ff_par, args.ff, args.WPvsJet, args.WPvsMu, args.WPvsE)
+        check_file_existence("taunu_{}_lowpt_{}_{}.txt".format(name,args.era,args.tagger))
+        check_file_existence("taunu_{}_mediumpt_{}_{}.txt".format(name,args.era,args.tagger))
+        check_file_existence("taunu_{}_highpt_{}_{}.txt".format(name,args.era,args.tagger))
         # Combine W*->mu+v and W*->tau+v cards
-        subprocess.call(["combineCards.py", folder_munu+"/munu_{}.txt".format(args.era), "taunu_{}_{}_lowpt_{}.txt".format(args.ff_par,name, args.era), "taunu_{}_{}_mediumpt_{}.txt".format(args.ff_par, name, args.era), "taunu_{}_{}_highpt_{}.txt".format(args.ff_par, name, args.era)], stdout=open("tauID_{}_{}_ptbinned.txt".format(args.ff_par,name), 'w'))
+        subprocess.call(["combineCards.py", folder_munu+"/munu_{}.txt".format(args.era), "taunu_{}_lowpt_{}_{}.txt".format(name, args.era, args.tagger), "taunu_{}_mediumpt_{}_{}.txt".format(name, args.era, args.tagger), "taunu_{}_highpt_{}_{}.txt".format(name, args.era, args.tagger)], stdout=open("tauID_{}_{}_ptbinned.txt".format(name,args.tagger), 'w'))
 
         # Creating workspace
-        subprocess.call(["combineTool.py", "-M", "T2W", "-P", "HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel", "--PO", '"map=^.*/*_highpt_{}:r_highpt[1,0,2]"'.format(args.era), "--PO", '"map=^.*/*_mediumpt_{}:r_mediumpt[1,0,2]"'.format(args.era), "--PO", '"map=^.*/*_lowpt_{}:r_lowpt[1,0,2]"'.format(args.era), "-o", "tauID_{}_{}_ptbinned.root".format(args.ff_par,name), "-i", "tauID_{}_{}_ptbinned.txt".format(args.ff_par,name)])
+        subprocess.call(["combineTool.py", "-M", "T2W", "-P", "HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel", "--PO", '"map=^.*/*_highpt_{}:r_highpt[1,0,2]"'.format(args.era), "--PO", '"map=^.*/*_mediumpt_{}:r_mediumpt[1,0,2]"'.format(args.era), "--PO", '"map=^.*/*_lowpt_{}:r_lowpt[1,0,2]"'.format(args.era), "-o", "tauID_{}_{}_ptbinned.root".format(name, args.tagger), "-i", "tauID_{}_{}_ptbinned.txt".format(name, args.tagger)])
 
         # Doing fit
-        subprocess.call(["combineTool.py", "-M", "FitDiagnostics", "--saveNormalizations", "--saveShapes", "--saveWithUncertainties", "--saveNLL", "--redefineSignalPOIs", "r_lowpt,r_mediumpt,r_highpt", "--robustHesse", "1", "-m", "200", "-d", "tauID_{}_{}_ptbinned.root".format(args.ff_par,name), "--cminDefaultMinimizerTolerance", "0.1", "--cminDefaultMinimizerStrategy", "0", "-v", "2"])
+        subprocess.call(["combineTool.py", "-M", "FitDiagnostics", "--saveNormalizations", "--saveShapes", "--saveWithUncertainties", "--saveNLL", "--redefineSignalPOIs", "r_lowpt,r_mediumpt,r_highpt", "--robustHesse", "1", "-m", "200", "-d", "tauID_{}_{}_ptbinned.root".format(name, args.tagger), "--cminDefaultMinimizerTolerance", "0.1", "--cminDefaultMinimizerStrategy", "0", "-v", "2"])
 
         # Renaming output
-        os.rename("fitDiagnostics.Test.root", "tauID_{}_{}_ptbinned_fit.root".format(args.ff_par,name))
+        os.rename("fitDiagnostics.Test.root", "tauID_{}_{}_ptbinned_fit.root".format(name, args.tagger))
 
     # Remove intermediate files
     for f in os.listdir('.'):

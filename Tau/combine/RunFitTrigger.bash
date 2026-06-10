@@ -18,8 +18,7 @@ opt=${5} # pnet, deeptau or comb
 folder=/afs/cern.ch/work/r/rasp/HighPT/${era}/datacards
 pwd
 cd ${folder}
-
-#combineCards.py ${folder}/munu_${era}.txt ${folder}/taunu_${WP}_trig.txt ${folder}/taunu_${WP}_nottrig.txt > ${folder}/tauTrigger_${WP}.txt
+rm ${folder}/tauTrigger_${WP}_${opt}.txt
 combineCards.py ${folder}/taunu_${WP}_trig.txt ${folder}/taunu_${WP}_${opt}_notrig.txt > ${folder}/tauTrigger_${WP}_${opt}.txt
 
 datacards=tauTrigger_${WP}_${opt}
@@ -38,7 +37,7 @@ combineTool.py -M T2W -o "${datacards}.root" -i ${datacards}.txt -m 200
 combine -M FitDiagnostics --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --robustHesse 1 --rMin=0.5 --rMax=1.5 -m 200 -d ${datacards}.root --cminDefaultMinimizerTolerance 0.01 --cminDefaultMinimizerStrategy 0 -v 5 
 mv fitDiagnosticsTest.root tauTrigger_${WP}_${opt}_fit.root
 
-combine -M FitDiagnostics --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --robustFit 1 --rMin=0.5 --rMax=1.5 -m 200 -d ${datacards}.root --cminDefaultMinimizerTolerance 0.01 --cminDefaultMinimizerStrategy 1 -v 5 
-mv fitDiagnosticsTest.root tauTrigger_${WP}_${opt}_robustfit.root
+#combine -M FitDiagnostics --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --robustFit 1 --rMin=0.5 --rMax=1.5 -m 200 -d ${datacards}.root --cminDefaultMinimizerTolerance 0.01 --cminDefaultMinimizerStrategy 1 -v 5 
+#mv fitDiagnosticsTest.root tauTrigger_${WP}_${opt}_robustfit.root
 
 cd -
