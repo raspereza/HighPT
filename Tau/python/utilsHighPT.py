@@ -11,12 +11,14 @@ import os
 #########################
 # folder for picotuples #
 #########################
-picoFolder='/eos/user/r/rasp/output/HighPT'
+#picoFolder='/eos/user/r/rasp/output/HighPT'
+picoFolder='/eos/cms/store/group/phys_tau/rasp/HighPT'
 
 #######################
 #    base folder      #
 #######################
 baseFolder = '/afs/cern.ch/work/r/rasp/HighPT'
+figureFolder= '/eos/home-r/rasp/php-plots/plots/HighPt/'
 
 ###################
 # Cross sections  #
@@ -114,26 +116,142 @@ kfactor_wj=63425.1/55300 # LO->NNLO+NLO_EW k-factor computed for 13.6 TeV
 kfactor_ttbar=923.6/762.1 # NLO->NNLO k-factor computed for 13.6 TeV
 kfactor_ww=1.524 # LO->NNLO+NLO_EW computed for 13.6 TeV
 kfactor_zz=1.524 # LO->NNLO+NLO_EW computed for 13.6 TeV
-kfactor_wz=1.414 # LO->NNLO+NLO_EW computed for 13.6 TeV 
+kfactor_wz=1.414 # LO->NNLO+NLO_EW computed for 13.6 TeV
 
-sampleXSec_2022 = {
+kfactor_wj_amcatnlo=63425.1/68821. # kfactor for W+Jets (amcatnlo)
+kfactor_dy_amcatnlo=6282.6/6662 # kfactor for DY (amcatnlo)
+kfactor_dy_powheg=6282.6/6731.99 # kfactor for DY (powheg)
+
+sampleXSec_2025 = {
+    "DYto2Mu_Bin-MLL-50to120" : 2219*kfactor_dy_powheg,
+    "DYto2Mu_Bin-MLL-120to200" : 21.65*kfactor_dy_powheg,
+    "DYto2Mu_Bin-MLL-200to400" : 3.058*kfactor_dy_powheg,
+    "DYto2Mu_Bin-MLL-400to800" : 0.2691*kfactor_dy_powheg,
+
+    "DYto2Tau_Bin-MLL-50to120" : 2219*kfactor_dy_powheg,
+    "DYto2Tau_Bin-MLL-120to200" : 21.65*kfactor_dy_powheg,
+    "DYto2Tau_Bin-MLL-200to400" : 3.058*kfactor_dy_powheg,
+    "DYto2Tau_Bin-MLL-400to800" : 0.2691*kfactor_dy_powheg,
+    
+    "WtoLNu-2Jets_Bin-1J-PTLNu-100to200" : 342.3*kfactor_wj_amcatnlo,
+    "WtoLNu-2Jets_Bin-1J-PTLNu-200to400" : 21.84*kfactor_wj_amcatnlo,
+    "WtoLNu-2Jets_Bin-1J-PTLNu-400to600" : 0.6845*kfactor_wj_amcatnlo,
+    "WtoLNu-2Jets_Bin-1J-PTLNu-600" : 0.07753*kfactor_wj_amcatnlo,
+    
+    "WtoLNu-2Jets_Bin-2J-PTLNu-100to200" : 411.1*kfactor_wj_amcatnlo,
+    "WtoLNu-2Jets_Bin-2J-PTLNu-200to400" : 53.59*kfactor_wj_amcatnlo,
+    "WtoLNu-2Jets_Bin-2J-PTLNu-400to600" : 3.099*kfactor_wj_amcatnlo,
+    "WtoLNu-2Jets_Bin-2J-PTLNu-600" : 0.5259*kfactor_wj_amcatnlo,
+    
+    "Zto2Nu-2Jets_Bin-1J-PTNuNu-40to100" : 885.7*kfactor_dy_amcatnlo,
+    "Zto2Nu-2Jets_Bin-1J-PTNuNu-100to200" : 78.91*kfactor_dy_amcatnlo,
+    "Zto2Nu-2Jets_Bin-1J-PTNuNu-200to400" : 5.406*kfactor_dy_amcatnlo,
+    "Zto2Nu-2Jets_Bin-1J-PTNuNu-400to600" : 0.1693*kfactor_dy_amcatnlo,
+    "Zto2Nu-2Jets_Bin-1J-PTNuNu-600" : 0.01895*kfactor_dy_amcatnlo,
+    
+    "Zto2Nu-2Jets_Bin-2J-PTNuNu-40to100" : 328.6*kfactor_dy_amcatnlo,
+    "Zto2Nu-2Jets_Bin-2J-PTNuNu-100to200" : 100.2*kfactor_dy_amcatnlo,
+    "Zto2Nu-2Jets_Bin-2J-PTNuNu-200to400" : 13.76*kfactor_dy_amcatnlo,
+    "Zto2Nu-2Jets_Bin-2J-PTNuNu-400to600" : 0.775*kfactor_dy_amcatnlo,
+    "Zto2Nu-2Jets_Bin-2J-PTNuNu-600" : 0.1304*kfactor_dy_amcatnlo,
+    
+    "TTto2L2Nu" : 80.9*kfactor_ttbar,
+    "TTto4Q" : 346.4*kfactor_ttbar, 
+    "TTtoLNu2Q" : 334.8*kfactor_ttbar,
+
+    "WtoLNu_HT100to400" : 1626.0*kfactor_wj,
+    "WtoLNu_HT400to800" : 59.99*kfactor_wj,
+
+    "TWminustoLNu2Q" : 15.8,
+    "TWminusto2L2Nu" : 3.8, 
+    "TbarWplustoLNu2Q" : 15.9, 
+    "TbarWplusto2L2Nu" : 3.8,
+    
+    "WW" : 80.23*kfactor_ww,
+    "WZ" : 29.1*kfactor_wz,
+    "ZZ" : 12.75*kfactor_zz,
+
+    "WtoMuNu_M200" : 7.393*1.08,
+    "WtoTauNu_M200" : 7.910,
+    
+    "WstarMuNu" : 7.393*1.05,
+    "WstarTauNu" : 7.910*1.10,
+}
+
+sampleXSec_2024 = {
+    "DYto2Mu_Bin-MLL-50to120" : 2219*kfactor_dy_powheg,
+    "DYto2Mu_Bin-MLL-120to200" : 21.65*kfactor_dy_powheg,
+    "DYto2Mu_Bin-MLL-200to400" : 3.058*kfactor_dy_powheg,
+    "DYto2Mu_Bin-MLL-400to800" : 0.2691*kfactor_dy_powheg,
+
+    "DYto2Tau_Bin-MLL-50to120" : 2219*kfactor_dy_powheg,
+    "DYto2Tau_Bin-MLL-120to200" : 21.65*kfactor_dy_powheg,
+    "DYto2Tau_Bin-MLL-200to400" : 3.058*kfactor_dy_powheg,
+    "DYto2Tau_Bin-MLL-400to800" : 0.2691*kfactor_dy_powheg,
+    
+    "WtoLNu-2Jets_Bin-1J-PTLNu-100to200" : 342.3*kfactor_wj_amcatnlo,
+    "WtoLNu-2Jets_Bin-1J-PTLNu-200to400" : 21.84*kfactor_wj_amcatnlo,
+    "WtoLNu-2Jets_Bin-1J-PTLNu-400to600" : 0.6845*kfactor_wj_amcatnlo,
+    "WtoLNu-2Jets_Bin-1J-PTLNu-600" : 0.07753*kfactor_wj_amcatnlo,
+    
+    "WtoLNu-2Jets_Bin-2J-PTLNu-100to200" : 411.1*kfactor_wj_amcatnlo,
+    "WtoLNu-2Jets_Bin-2J-PTLNu-200to400" : 53.59*kfactor_wj_amcatnlo,
+    "WtoLNu-2Jets_Bin-2J-PTLNu-400to600" : 3.099*kfactor_wj_amcatnlo,
+    "WtoLNu-2Jets_Bin-2J-PTLNu-600" : 0.5259*kfactor_wj_amcatnlo,
+    
+    "Zto2Nu-2Jets_Bin-1J-PTNuNu-40to100" : 885.7*kfactor_dy_amcatnlo,
+    "Zto2Nu-2Jets_Bin-1J-PTNuNu-100to200" : 78.91*kfactor_dy_amcatnlo,
+    "Zto2Nu-2Jets_Bin-1J-PTNuNu-200to400" : 5.406*kfactor_dy_amcatnlo,
+    "Zto2Nu-2Jets_Bin-1J-PTNuNu-400to600" : 0.1693*kfactor_dy_amcatnlo,
+    "Zto2Nu-2Jets_Bin-1J-PTNuNu-600" : 0.01895*kfactor_dy_amcatnlo,
+    
+    "Zto2Nu-2Jets_Bin-2J-PTNuNu-40to100" : 328.6*kfactor_dy_amcatnlo,
+    "Zto2Nu-2Jets_Bin-2J-PTNuNu-100to200" : 100.2*kfactor_dy_amcatnlo,
+    "Zto2Nu-2Jets_Bin-2J-PTNuNu-200to400" : 13.76*kfactor_dy_amcatnlo,
+    "Zto2Nu-2Jets_Bin-2J-PTNuNu-400to600" : 0.775*kfactor_dy_amcatnlo,
+    "Zto2Nu-2Jets_Bin-2J-PTNuNu-600" : 0.1304*kfactor_dy_amcatnlo,
+    
+    "TTto2L2Nu" : 80.9*kfactor_ttbar,
+    "TTto4Q" : 346.4*kfactor_ttbar, 
+    "TTtoLNu2Q" : 334.8*kfactor_ttbar,
+
+    "WtoLNu_HT100to400" : 1626.0*kfactor_wj,
+    "WtoLNu_HT400to800" : 59.99*kfactor_wj,
+
+    "TWminustoLNu2Q" : 15.8,
+    "TWminusto2L2Nu" : 3.8, 
+    "TbarWplustoLNu2Q" : 15.9, 
+    "TbarWplusto2L2Nu" : 3.8,
+    
+    "WW" : 80.23*kfactor_ww,
+    "WZ" : 29.1*kfactor_wz,
+    "ZZ" : 12.75*kfactor_zz,
+
+    "WtoMuNu_M200" : 7.393*1.08,
+    "WtoTauNu_M200" : 7.910,
+    
+    "WstarMuNu" : 7.393*1.08,
+    "WstarTauNu" : 7.910,
+}
+
+sampleXSec_2023 = {
     "DYto2L-4Jets_MLL-50" : 5455.0*kfactor_dy,
     "DYto2L-4Jets_MLL-50_1J" : 978.3*kfactor_dy,
     "DYto2L-4Jets_MLL-50_2J" : 315.1*kfactor_dy,
     "DYto2L-4Jets_MLL-50_3J" : 93.7*kfactor_dy,
     "DYto2L-4Jets_MLL-50_4J" : 45.4*kfactor_dy,
-    "WJetsToLNu-4Jets" : 55300.*kfactor_wj,
-    "WJetsToLNu-4Jets_1J" : 9128.*kfactor_wj,
-    "WJetsToLNu-4Jets_2J" : 2922.*kfactor_wj,
-    "WJetsToLNu-4Jets_3J" : 861.3*kfactor_wj,
-    "WJetsToLNu-4Jets_4J" : 415.4*kfactor_wj,
-    "WtoLNu-4Jets_HT-100to400" : 1626.0*kfactor_wj,
-    "WtoLNu-4Jets_HT-400to800" : 59.99*kfactor_wj,
+    "WtoLNu-4Jets" : 55300.*kfactor_wj,
+    "WtoLNu-4Jets_1J" : 9128.*kfactor_wj,
+    "WtoLNu-4Jets_2J" : 2922.*kfactor_wj,
+    "WtoLNu-4Jets_3J" : 861.3*kfactor_wj,
+    "WtoLNu-4Jets_4J" : 415.4*kfactor_wj,
+    "WtoLNu_HT100to400" : 1626.0*kfactor_wj,
+    "WtoLNu_HT400to800" : 59.99*kfactor_wj,
     "Zto2Nu-4Jets_HT-100to200" : 273.7*kfactor_dy, 
     "Zto2Nu-4Jets_HT-200to400" : 75.96*kfactor_dy, 
     "Zto2Nu-4Jets_HT-400to800" : 13.19*kfactor_dy, 
     "Zto2Nu-4Jets_HT-800to1500" : 1.364*kfactor_dy,
-    "TTTo2L2Nu" : 80.9*kfactor_ttbar, 
+    "TTto2L2Nu" : 80.9*kfactor_ttbar, 
     "TTto4Q" : 346.4*kfactor_ttbar, 
     "TTtoLNu2Q" : 334.8*kfactor_ttbar,
     "TBbarQ_t-channel" : 123.8, 
@@ -149,7 +267,7 @@ sampleXSec_2022 = {
     "WtoNuTau" : 7.910,
 }
 
-sampleXSec_2023 = {
+sampleXSec_2022 = {
     "DYto2L-4Jets_MLL-50" : 5455.0*kfactor_dy,
     "DYto2L-4Jets_MLL-50_1J" : 978.3*kfactor_dy,
     "DYto2L-4Jets_MLL-50_2J" : 315.1*kfactor_dy,
@@ -190,7 +308,9 @@ eraRun = {
     "2022_preEE"     : "2022",
     "2022_postEE"    : "2022",
     "2023C"          : "2023",
-    "2023D"          : "2023"
+    "2023D"          : "2023",
+    "2024"           : "2024",
+    "2025"           : "2025",
 }
 
 periods = {
@@ -205,6 +325,8 @@ periods = {
     "2023C"  : ["2023C"],
     "2023D"  : ["2023D"],
     "2023"   : ["2023C","2023D"],
+    "2024"   : ["2024"],
+    "2025"   : ["2025"],
 }
 
 eraSamples = {
@@ -212,11 +334,12 @@ eraSamples = {
     "UL2016_preVFP" : sampleXSec_2016,
     "UL2017" : sampleXSec_2017,
     "UL2018" : sampleXSec_2018,
-    # "2022"   : sampleXSec_2022,
     "2022_preEE"  : sampleXSec_2022,
     "2022_postEE" : sampleXSec_2022,
     "2023C" : sampleXSec_2023,
     "2023D" : sampleXSec_2023,
+    "2024"  : sampleXSec_2024,
+    "2025"  : sampleXSec_2025,
 } 
 
 eraLumi = {
@@ -228,13 +351,17 @@ eraLumi = {
     "2022_preEE" : 8077,
     "2022_postEE" : 27007,
     "2023C" : 17650,
-    "2023D" : 9451
+    "2023D" : 9451,
+    "2024"  : 109080,
+    "2025"  : 110190,
 }
 
 ################
 # Data samples #
 ################
 
+singlemu_2025 = ['Muon0_Run2025B','Muon0_Run2025C','Muon0_Run2025D','Muon0_Run2025E','Muon0_Run2025F','Muon0_Run2025G','Muon1_Run2025B','Muon1_Run2025C','Muon1_Run2025D','Muon1_Run2025E','Muon1_Run2025F','Muon1_Run2025G']
+singlemu_2024 = ['Muon0_Run2024C','Muon0_Run2024D','Muon0_Run2024E','Muon0_Run2024F','Muon0_Run2024G','Muon0_Run2024H','Muon0_Run2024I','Muon1_Run2024C','Muon1_Run2024D','Muon1_Run2024E','Muon1_Run2024F','Muon1_Run2024G','Muon1_Run2024H','Muon1_Run2024I']
 singlemu_2023D = ['Muon_Run2023D']
 singlemu_2023C = ['Muon_Run2023C']
 singlemu_2022_postEE = ['Muon_Run2022E','Muon_Run2022F','Muon_Run2022G']
@@ -244,7 +371,8 @@ singlemu_2017 = ['SingleMuon_Run2017B','SingleMuon_Run2017C','SingleMuon_Run2017
 singlemu_2016_preVFP = ['SingleMuon_Run2016B','SingleMuon_Run2016C','SingleMuon_Run2016D','SingleMuon_Run2016E','SingleMuon_Run2016F']
 singlemu_2016_postVFP = ['SingleMuon_Run2016F','SingleMuon_Run2016G','SingleMuon_Run2016H']
 
-
+jetht_2025 = ['JetMET0_Run2025B','JetMET0_Run2025C','JetMET0_Run2025D','JetMET0_Run2025E','JetMET0_Run2025F','JetMET0_Run2025G','JetMET1_Run2025B','JetMET1_Run2025C','JetMET1_Run2025D','JetMET1_Run2025E','JetMET1_Run2025F','JetMET1_Run2025G']
+jetht_2024 = ['JetMET0_Run2024C','JetMET0_Run2024D','JetMET0_Run2024E','JetMET0_Run2024F','JetMET0_Run2024G','JetMET0_Run2024H','JetMET0_Run2024I','JetMET1_Run2024C','JetMET1_Run2024D','JetMET1_Run2024E','JetMET1_Run2024F','JetMET1_Run2024G','JetMET1_Run2024H','JetMET1_Run2024I']
 jetht_2023D = ['JetMet_Run2023D']
 jetht_2023C = ['JetMet_Run2023C']
 jetht_2022_postEE = ['JetMet_Run2022E','JetMet_Run2022F','JetMet_Run2022G']
@@ -254,7 +382,8 @@ jetht_2017 = ['JetHT_Run2017B','JetHT_Run2017C','JetHT_Run2017D','JetHT_Run2017E
 jetht_2016_preVFP = ['JetHT_Run2016B','JetHT_Run2016C','JetHT_Run2016D','JetHT_Run2016E','JetHT_Run2016F']
 jetht_2016_postVFP = ['JetHT_Run2016F','JetHT_Run2016G','JetHT_Run2016H']
 
-
+met_2025 = ['JetMET0_Run2025B','JetMET0_Run2025C','JetMET0_Run2025D','JetMET0_Run2025E','JetMET0_Run2025F','JetMET0_Run2025G','JetMET1_Run2025B','JetMET1_Run2025C','JetMET1_Run2025D','JetMET1_Run2025E','JetMET1_Run2025F','JetMET1_Run2025G']
+met_2024 = ['JetMET0_Run2024C','JetMET0_Run2024D','JetMET0_Run2024E','JetMET0_Run2024F','JetMET0_Run2024G','JetMET0_Run2024H','JetMET0_Run2024I','JetMET1_Run2024C','JetMET1_Run2024D','JetMET1_Run2024E','JetMET1_Run2024F','JetMET1_Run2024G','JetMET1_Run2024H','JetMET1_Run2024I']
 met_2023D = ['JetMet_Run2023D']
 met_2023C = ['JetMet_Run2023C']
 met_2022_postEE = ['JetMet_Run2022E','JetMet_Run2022F','JetMet_Run2022G']
@@ -272,7 +401,9 @@ singlemu = {
     "2022_preEE" : singlemu_2022_preEE,
     "2022_postEE" : singlemu_2022_postEE,
     "2023C" : singlemu_2023C,
-    "2023D" : singlemu_2023D
+    "2023D" : singlemu_2023D,
+    "2024" : singlemu_2024,
+    "2025" : singlemu_2025,
 }
 
 jetht = {
@@ -283,7 +414,9 @@ jetht = {
     "2022_preEE": jetht_2022_preEE,
     "2022_postEE": jetht_2022_postEE,
     "2023C" : jetht_2023C,
-    "2023D" : jetht_2023D
+    "2023D" : jetht_2023D,
+    "2024"  : jetht_2024,
+    "2025"  : jetht_2025,
 }
 
 met = {
@@ -294,7 +427,9 @@ met = {
     "2022_preEE"  : met_2022_preEE,
     "2022_postEE" : met_2022_postEE,
     "2023C" : met_2023C,
-    "2023D" : met_2023D
+    "2023D" : met_2023D,
+    "2024"  : met_2024,
+    "2025"  : met_2025,
 }
 
 MCLowHT = [
@@ -310,7 +445,6 @@ MCLowHT = [
     'WtoLNu-4Jets_3J',
     'WtoLNu-4Jets_4J',
 ]
-
 
 tauVsEleWPs = {
     'VVVLoose': "1",
@@ -349,20 +483,57 @@ tauVsMuIntWPs = {
 }
 
 tauWPs = {
+    'VLoose': "3",
     'Loose': "4",
     'Medium': "5",
     'Tight': "6",
     'VTight': "7",
-    'VVTight': "8"
+    'VVTight': "8",
+    'SuperTight': "8",
+    'KiloTight': "8",
+    'MegaTight': "8",
 }
 
 tauIntWPs = {
+    'VLoose': 3,
     'Loose': 4,
     'Medium': 5,
     'Tight': 6,
     'VTight': 7,
-    'VVTight': 8    
+    'VVTight': 8,
+    'SuperTight': 8,
+    'KiloTight': 8,
+    'MegaTight': 8,
 }
+
+PNetVSjetWPs = {
+    'VVVLoose': 0.0565,
+    'VVLoose': 0.1774,
+    'VLoose': 0.3810,
+    'Loose': 0.6857,
+    'Medium': 0.8347,
+    'Tight': 0.9059,
+    'VTight': 0.9494,
+    'VVTight': 0.9737,
+    'SuperTight': 0.9850,
+    'KiloTight': 0.9890,
+    'MegaTight': 0.9920,
+}
+
+UParTVSjetWPs = {
+    'VVVLoose': 0.0,
+    'VVLoose': 0.0,
+    'VLoose': 0.0,
+    'Loose': 0.1316,
+    'Medium': 0.2541,
+    'Tight': 0.3956,
+    'VTight': 0.5354,
+    'VVTight': 0.6649,
+    'SuperTight': 0.70,
+    'KiloTight': 0.80,
+    'MegaTight': 0.90,
+}
+
 
 #############################
 # Shape uncertainties       #
@@ -375,14 +546,15 @@ uncs = ['JES','Unclustered','taues_1pr','taues_1pr1pi0','taues_3pr','taues_3pr1p
 ### Settings for FF measurements #
 ##################################
 
-xbinsPt = { 
-    'pt_2' : [100, 125, 150, 175, 200, 2000],
-    'jpt_match_2' : [100, 125, 150, 200, 300, 2000]
+xbinsPt = {
+    'pt_2' : [100, 125, 150, 175, 200, 300, 400, 3000],
+    'jpt_match_2' : [100, 125, 150, 200, 300, 400, 3000],
 }
 
 xbinsPtTrig = { 
-    'pt_2' : [100, 200, 2000],
-    'jpt_match_2' : [100, 300, 2000]
+#    'pt_2' : [100, 150, 200, 300, 3000],
+    'pt_2' : [100,300,3000],
+    'jpt_match_2' : [100, 300, 3000]
 }
 
 variableLabel = {
@@ -392,8 +564,8 @@ variableLabel = {
 }
 
 ptUncThreshold = {
-    'pttau' : 200.0, # split pt region for FF stat. uncertainties (<200, >=200.)
-    'ptjet' : 300.0  # split jet pt region for FF stat. uncertainties (<200, >=200.)
+    'pttau' : 300.0, # split pt region for FF stat. uncertainties (<300, >=300.)
+    'ptjet' : 300.0  # split jet pt region for FF stat. uncertainties (<300, >=300.)
 }
 
 ptratioCuts = {
@@ -444,13 +616,19 @@ XTitle = {
     'm_2'   : "tau mass (GeV)",
 }
 
+
+#############
+# Utilities #
+#############
 def makeBaseName(var,wp,wpVsMu,wpVsE,era):
     basename = '%s_%sVsJet_%sVsMu_%sVsE_%s'%(var,wp,wpVsMu,wpVsE,era)
     return basename
 
-#######################################
-# Creating shape systematic templates #
-#######################################
+def createHisto(bins,name):
+    nbins = len(bins)-1 
+    hist = ROOT.TH1D(name,'',nbins,array('d',list(bins)))
+    return hist
+
 def ComputeSystematics(h_central, h_sys, name):
     h_up = h_central.Clone(name+"Up")
     h_down = h_central.Clone(name+"Down")
@@ -471,6 +649,18 @@ def createBins(nbins,xmin,xmax):
         xb = xmin + float(i)*binwidth
         bins.append(xb)
     return bins
+
+def differentialHisto(hist):
+    nbins = hist.GetNbinsX()
+    for iB in range(1,nbins+1):
+        width = hist.GetBinLowEdge(iB+1)-hist.GetBinLowEdge(iB)
+        if iB==nbins:
+            width *= 0.1
+        x = hist.GetBinContent(iB)/width
+        e = hist.GetBinError(iB)/width
+        hist.SetBinContent(iB,x)
+        hist.SetBinError(iB,e)
+    
 
 def zeroBinErrors(hist):
     nbins = hist.GetNbinsX()
@@ -519,6 +709,7 @@ def divideHistos(numHist,denHist,histName):
         eDen = denHist.GetBinError(i)
         ratio = 1
         eratio = 0
+        if xDen==0: xDen = 0.001 
         if xNum>1e-7:
             ratio = xNum/xDen
             rNum = eNum/xNum
