@@ -209,8 +209,7 @@ utils.figureFolder/WMuNu/wmunu_$VAR_$ERA.png
 ```
 
 If variable `mt_1` is specified
-datacards and root file with shapes for statistical inference of tau ID scale factors are produced and placed in the folder `utils.baseFolder/$ERA/datacards_munu/`:
-
+datacards and root file with shapes for statistical inference of tau ID scale factors are produced and save to the files:
 ```
 utils.baseFolder/$ERA/datacards_munu/munu_$ERA.txt
 utils.baseFolder/$ERA/datacards_munu/munu_$ERA.root
@@ -218,7 +217,9 @@ utils.baseFolder/$ERA/datacards_munu/munu_$ERA.root
 
 ## Selection of W*->tau+v sample
 
-Selection of events in the measurement W*->tau+v regions is done with script [src/HighPT/Tau/scripts/DatacardsWTauNu.py](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/DatacardsWTauNu.py). 
+Selection of events in the measurement W*->tau+v regions is done with script [src/HighPT/Tau/scripts/DatacardsWTauNu.py](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/DatacardsWTauNu.py).
+
+IMPORTANT : You have first to compute FFs for the corresponding set of WPs and tau tagger before running W*->tau+v selection.
 
 ```
 ./scripts/DatacardsWTauNu.py
@@ -254,77 +255,68 @@ Are these arguments correct? (yes/no):
 ```
 
 Below available options for the arguments of primary interest are listed:
-* Measurement: incl, lowpt, mediumpt, highpt
+
+* Measurement : incl, lowpt, mediumpt, highpt
   * incl: selection inclusively in tau pT: pT(tau) > 100 GeV; 
   * lowpt : selection is done for tau PT in the range [100,150] GeV, intended for pT binned measurement of SF;
   * mediumpt : selection is done for tau PT in the range [150,250] GeV, intended for pT binned measurement of SF;
   * highpt : selection is done for tau pT in the range [250,350] GeV, intended for pT binned measurement of SF;
 
+* Tagger : deeptau, pnet, pnet_hps
+  * deeptau : DeepTau2018V2p5
+  * pnet : ParticleNet
+  * pnet_hps : ParticleNet with HPS 
 
+* Fake factors : comb, wjets, dijets
+  * comb   : combination of FF(QCD) and FF(EW) is used in estimation of the jet->tau fake background. THIS OPTION IS RECOMMENDED.
+  * wjets  : jet->tau fake background model is constructed using solely FF(EW)
+  * dijets : jet->tau fake background model is constructed using solely FF(QCD)
 
-It is suggested to use combination of FF(QCD) and FF(EW) in estimation of the jet->tau fake background and parameterization of FF as a function of pT(tau):
-```
-* Fake factors: comb, 
-* Fake factors parametrization: pttau
-```
+* Fake factors parametrization : pttau, ptjet
+  * pttau : use FF parametrized as a function of pT(tau) in bins of pT(tau)/pT(AK4jet). RECOMMENDED!
+  * ptjet : use FF parametrized as a function of pT(AK4jet) in bins of 
 
+* Variable
+  * `mt_1`   : transverse mass of tau and MET (inference variable)
+  * `pt_1`   : transverse momentum of tau
+  * `eta_1`  : pseudorapidity of tau
+  * `phi_1`  : tau phi
+  * `met`    : MET
+  * `metphi` : MET phi
 
+Script produces control plot of the chosen variable which is saved to the file:
+* `utils.figureFolder/WTauNu/$era/$tagger/wtaunu_$ff_$var_$meas_$era_$WPvsJet_$WPVsMu_$WPvsE.png`
+where the meaning of keywords are:
+* $era : 2024, 2025
+* $tagger : pnet, deeptau, pnet_hps, upart
+* $ff indicates fake factors used : comb, dijets, wjets  
+* $var : variable chosen for plotting
+* $meas : measurement : incl, lowpt, mediumpt, hightpt
 
-Once arguments are adjusted script is 
+Also plot, presenting MC closure test of the jet->tau fake model, are created. Closure test compares selected sample of simulated Z->vv+jet and W->lv+jet events with the model based on FF. The background model is built by weighting simulated events in the application region with fake factors obtained from simulated W*->mu+v+jets sample. The MC closure plot is save to the file:
+* `utils.figureFolder/WTauNu//$tagger/closure_$ff_$var_$meas_$era_$WPvsJet_$WPVsMu_$WPvsE.png`
 
+When inference variable `mt_1` specified, the script produces datacards and RooT files with templates for statistical inference. They are save to the files:
 
+* `utils.baseFolder/$ERA/datacards_$ff_$WPvsJet_$WPvsMu_$WPvsE/taunu_$ffpar_$ff_$WPvsJet_$WPvsMu_$WPvsE_$meas_$era_$tagger.txt`
+* `utils.baseFolder/$ERA/datacards_$ff_$WPvsJet_$WPvsMu_$WPvsE/taunu_$ffpar_$ff_$WPvsJet_$WPvsMu_$WPvsE_$meas_$era_$tagger.root`
 
+The RooT file contains the following distributions: 
 * observed data,
 * simulated W*->tau+v events,
 * remaining simulated samples with genuine selected tau lepton,
 * simulated samples with electron or muon faking tau,
 * j->tau background model (obtained by applying fake factors in the application region)
-By default distributions of the transverse mass of tau and pTmis are produced.
 
-output/figures/wtaunu_$variable_$WP_$prong_$ERA.png
-```
-Also plots, presenting MC closure test of the jet->tau fake model, are created. Closure test compares selected sample of simulated events with jet faking tau, with the jet->tau background model. Simulated events are dominated by Z->vv+jet and W->lv+jet events. The background model is built by weighting simulated events in the application region with fake factors obtained from simulated W*->mu+v+jets sample. The background model is corrected for non-closure in bins of plotted variable. Size of correction is treated as the shape systematic uncertainty. The MC closure plot is saved in file:
-```
-output/figures/closure_$variable_$WP_$prong_$ERA.png
-``` 
-
-Datacards and RooT files with template shapes are only created for variable `mt_1`.
-They are saved in files:
-```
-output/datacards/taunu_$WP_$prong_$ERA.txt
-output/datacards/taunu_$WP_$prong_$ERA.root
-```  
+For the simulated W*->tau+v events also templates with systematic variations are stored
+* JES (jet energy scale) Up/Down
+* Unclustered (unclustered energy) Up/Down
+* tau momentum scale variations
 
 ## Fits with combine tool
-Fit to extract ID scale factor is run with the script [`HighPT/Tau/scripts/RunCombine.py`](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/RunCombine.py)
+Fit to extract ID scale factor is run with the script [`src/HighPT/Tau/RunFitHighPT.py`](https://github.com/raspereza/HighPT/blob/main/Tau/RunFitHighPT.py)
 ```
-./scripts/RunCombine.py --era $ERA --prong $prong --WP $WP
+./combine/RunFitHighPT.py
 ```
-Make sure that necessary datacards and RooT files for specified $era, $WP and $prong are created and present in the folder
-```
-output/datacards
-```
-The script calls bash macro  [`HighPT/Tau/scripts/RunCombineTau.bash`](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/RunCombineTau.bash), which combines datacards `munu_$ERA.txt` and `taunu_$WP_$prong_$ERA.txt` and runs the fit with the combine utility. The fit results are saved in the RooT file:
-```
-output/datacards/tauID_$WP_$prong_$ERA_fit.root
-```
-
-## Plotter
-
-Plotting of prefit and posfit distributions of `mt_1` is implemented in the script [`HighPT/Tau/scripts/PlotTau.py`](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/PlotTau.py)
-```
-./scripts/PlotTau.py --era $ERA --prong $prong --WP $WP --Type $type
-```
-where $type should be either `postfit` or `prefit`. The script take as an input RooT file with fit results `tauID_$WP_$prong_$ERA_fit.root` and outputs plot of `mt_1` distribution in file: 
-```
-output/figures/wtaunu_VVLoose_1prong_UL2018_postFit[preFit].png
-```
-The measured tau ID scale factor with uncertainty is reported as an output of the script, for example:
-
-```
-Measurement of id SF ---->
-Era = UL2017  2prong  WP = VVLooseVsJet
-id SF = 1.38 +/- 0.39
-
-```
+Make sure that necessary datacards and RooT files for specified era, working point and tagger are created
 
