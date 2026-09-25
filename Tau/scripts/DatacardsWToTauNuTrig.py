@@ -19,7 +19,12 @@ BkgSampleNames = {
 
     '2022' :  ['DYto2L-4Jets_MLL-50','TTTo2L2Nu','TTtoLNu2Q','TTto4Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','Zto2Nu-4Jets_HT-100to200','Zto2Nu-4Jets_HT-200to400','Zto2Nu-4Jets_HT-400to800','Zto2Nu-4Jets_HT-800to1500'],
 
-    '2023' : ['DYto2L-4Jets_MLL-50','TTto2L2Nu','TTtoLNu2Q','TTto4Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','Zto2Nu-4Jets_HT-100to200','Zto2Nu-4Jets_HT-200to400','Zto2Nu-4Jets_HT-400to800','Zto2Nu-4Jets_HT-800to1500']
+    '2023' : ['DYto2L-4Jets_MLL-50','TTto2L2Nu','TTtoLNu2Q','TTto4Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','Zto2Nu-4Jets_HT-100to200','Zto2Nu-4Jets_HT-200to400','Zto2Nu-4Jets_HT-400to800','Zto2Nu-4Jets_HT-800to1500'],
+
+    '2024' : ['DYto2Mu_Bin-MLL-50to120','DYto2Mu_Bin-MLL-120to200','DYto2Mu_Bin-MLL-200to400','DYto2Mu_Bin-MLL-400to800','DYto2Tau_Bin-MLL-50to120','DYto2Tau_Bin-MLL-120to200','DYto2Tau_Bin-MLL-200to400','DYto2Tau_Bin-MLL-400to800','TTto2L2Nu','TTtoLNu2Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','Zto2Nu-2Jets_Bin-1J-PTNuNu-40to100','Zto2Nu-2Jets_Bin-1J-PTNuNu-100to200','Zto2Nu-2Jets_Bin-1J-PTNuNu-200to400','Zto2Nu-2Jets_Bin-1J-PTNuNu-400to600','Zto2Nu-2Jets_Bin-1J-PTNuNu-600','Zto2Nu-2Jets_Bin-2J-PTNuNu-40to100','Zto2Nu-2Jets_Bin-2J-PTNuNu-100to200','Zto2Nu-2Jets_Bin-2J-PTNuNu-200to400','Zto2Nu-2Jets_Bin-2J-PTNuNu-400to600','Zto2Nu-2Jets_Bin-2J-PTNuNu-600'],
+    
+    '2025' : ['DYto2Mu_Bin-MLL-50to120','DYto2Mu_Bin-MLL-120to200','DYto2Mu_Bin-MLL-200to400','DYto2Mu_Bin-MLL-400to800','DYto2Tau_Bin-MLL-50to120','DYto2Tau_Bin-MLL-120to200','DYto2Tau_Bin-MLL-200to400','DYto2Tau_Bin-MLL-400to800','TTto2L2Nu','TTtoLNu2Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','Zto2Nu-2Jets_Bin-1J-PTNuNu-40to100','Zto2Nu-2Jets_Bin-1J-PTNuNu-100to200','Zto2Nu-2Jets_Bin-1J-PTNuNu-200to400','Zto2Nu-2Jets_Bin-1J-PTNuNu-400to600','Zto2Nu-2Jets_Bin-1J-PTNuNu-600','Zto2Nu-2Jets_Bin-2J-PTNuNu-40to100','Zto2Nu-2Jets_Bin-2J-PTNuNu-100to200','Zto2Nu-2Jets_Bin-2J-PTNuNu-200to400','Zto2Nu-2Jets_Bin-2J-PTNuNu-400to600','Zto2Nu-2Jets_Bin-2J-PTNuNu-600'],
+    
 }
 
 WBkgSampleNames = {
@@ -27,13 +32,20 @@ WBkgSampleNames = {
 
     '2022' : ['WJetsToLNu-4Jets_1J','WJetsToLNu-4Jets_2J','WJetsToLNu-4Jets_3J','WJetsToLNu-4Jets_4J','WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800'],
 
-    '2023' : ['WtoLNu-4Jets_1J','WtoLNu-4Jets_2J','WtoLNu-4Jets_3J','WtoLNu-4Jets_4J','WtoLNu_HT100to400','WtoLNu_HT400to800']
+    '2023' : ['WtoLNu-4Jets_1J','WtoLNu-4Jets_2J','WtoLNu-4Jets_3J','WtoLNu-4Jets_4J','WtoLNu_HT100to400','WtoLNu_HT400to800'],
+
+    '2024' : ['WtoLNu-2Jets_Bin-1J-PTLNu-40to100','WtoLNu-2Jets_Bin-1J-PTLNu-100to200','WtoLNu-2Jets_Bin-1J-PTLNu-200to400','WtoLNu-2Jets_Bin-1J-PTLNu-400to600','WtoLNu-2Jets_Bin-1J-PTLNu-600','WtoLNu-2Jets_Bin-2J-PTLNu-40to100','WtoLNu-2Jets_Bin-2J-PTLNu-100to200','WtoLNu-2Jets_Bin-2J-PTLNu-200to400','WtoLNu-2Jets_Bin-2J-PTLNu-400to600','WtoLNu-2Jets_Bin-2J-PTLNu-600']
+
+    '2025' : ['WtoLNu-2Jets_Bin-1J-PTLNu-40to100','WtoLNu-2Jets_Bin-1J-PTLNu-100to200','WtoLNu-2Jets_Bin-1J-PTLNu-200to400','WtoLNu-2Jets_Bin-1J-PTLNu-400to600','WtoLNu-2Jets_Bin-1J-PTLNu-600','WtoLNu-2Jets_Bin-2J-PTLNu-40to100','WtoLNu-2Jets_Bin-2J-PTLNu-100to200','WtoLNu-2Jets_Bin-2J-PTLNu-200to400','WtoLNu-2Jets_Bin-2J-PTLNu-400to600','WtoLNu-2Jets_Bin-2J-PTLNu-600']
+
 }
 
 SigSampleNames = { 
     'Run2' : ['WToTauNu_M-200'],
     '2022' : ['WtoNuTau'],
-    '2023' : ['WtoNuTau']
+    '2023' : ['WtoNuTau'],
+    '2024' : ['WstarTauNu'],
+    '2025' : ['WstarTauNu'],
 }
 
 def FitRatio(x,par):
@@ -110,6 +122,8 @@ def ComputeEWKFraction(h_data,h_mc,var):
         if ratio>1.0:
             ratio = 1.0
             eratio = 0.0
+        ratio = 1.0
+        eratio = 0.001
         h_fraction.SetBinContent(i,ratio)
         h_fraction.SetBinError(i,eratio)
         lowerEdge = h_fraction.GetBinLowEdge(i)
@@ -244,7 +258,7 @@ def PlotClosure(hists,**kwargs):
     canvas.cd()
     canvas.SetSelected(canvas)
     canvas.Update()
-    canvas.Print(utils.baseFolder+"/"+era+"/figures/WTauNu/closure_"+var+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE_"+suffix+".png")
+#    canvas.Print("/eos/home-r/rasp/php-plots/plots/HighPt/WTauNuTrig/closure_"+var+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE_"+suffix+".png")
 
     return hist_ratio
 
@@ -260,6 +274,7 @@ def PlotWToTauNu(hists,**kwargs):
     wpVsMu = kwargs.get('wpVsMu','Tight')
     wpVsE = kwargs.get('wpVsE','Tight')
     suffix = kwargs.get('suffix','')
+
 
     h_data = hists['hist_data'].Clone("data_plot")
     h_fake = hists['hist_fake'].Clone("fake_plot")
@@ -410,7 +425,7 @@ def PlotWToTauNu(hists,**kwargs):
     canvas.SetSelected(canvas)
     canvas.Update()
     print('')
-    canvas.Print(utils.baseFolder+"/"+era+"/figures/WTauNu/wtaunu_"+var+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+suffix+".png")
+    canvas.Print("/eos/home-r/rasp/php-plots/plots/HighPt/WTauNuTrig/wtaunu_"+var+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+suffix+".png")
 
 def CreateCardsWToTauNu(fileName,h_data,h_fake,h_tau,h_bkg,h_sig,uncs_fake,uncs_sig,suffix):
 
@@ -466,17 +481,18 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
+    parser.add_argument('-e','--era', dest='era', default='2024',choices=['UL2016','UL2017','UL2018','2022','2023','2024','2025'])
     parser.add_argument('-wp','--WP', dest='wp', default='Tight',choices=['Loose','Medium','Tight','VTight','VVTight'])
     parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight',choices=['VLoose','Tight'])
     parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='Tight',choices=['VVLoose','Tight'])
     parser.add_argument('-var','--variable',dest='variable',default='pt_1',choices=['mt_1','met','pt_1','eta_1','phi_1','jpt_match_1','mt_jet_1','metphi'])
     parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
+    parser.add_argument('-option','--option',dest='option', default='comb', choices=['comb','deeptau','pnet'])
 
     args = parser.parse_args()
  
     xbins_mt  = [200,300,400,500,600,800,1200]
-    xbins_pt  = [99,140,180,220,260,300,400,1000]
+    xbins_pt  = [99.99,120,140,160,180,200,250,2000]
     xbins_jpt = [100,140,180,220,260,300,400,500,1000]
     xbins_met = [100,150,200,250,300,400,500,700]
     xbins_mt_lowpt = [200,250,300,350,400,1000]
@@ -490,6 +506,7 @@ if __name__ == "__main__":
     ptMin = 100.
     ptMax = 2000.
 
+    option = args.option
     plotLegend = True
     if args.variable=='pt_1': xbins = xbins_pt
     if args.variable=='met': xbins = xbins_met
@@ -505,13 +522,14 @@ if __name__ == "__main__":
         xbins = xbins_metphi
         plotLegend = False
 
-    basefolder = utils.picoFolder+'/'+args.era
+    #    basefolder = utils.picoFolder+'/'+args.era
+    basefolder = utils.picoFolder
     var = args.variable    
 
     ff = args.ff
 
     # initializing instance of FakeFactorHighPT class    
-    fullpathFF = utils.baseFolder+'/'+args.era+'/FF/ff_'+args.wp+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+".root"
+    fullpathFF = utils.baseFolder+'/'+args.era+'/FF/ff_'+args.wp+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+"_"+option+".root"
     samples = []
     with_dijets = False
     if ff=='wjets':
@@ -538,7 +556,8 @@ if __name__ == "__main__":
                                     antiE=antiE,
                                     ptLowerCut=ptMin,
                                     ptUpperCut=ptMax,
-                                    hotJetVeto=hotJetVeto)    
+                                    hotJetVeto=hotJetVeto,
+                                    triggerOption=option)    
 
     # vector uncertainties
     uncert_names = utils.uncs
@@ -654,9 +673,21 @@ if __name__ == "__main__":
             totalCut = commonCut+"&&"+uncertCut+"&&genmatch_1==5"
 
             if trg=='trig':
-                totalCut += "&&(tautrigger1>0.5||tautrigger2>0.5)"
+                if option=='deeptau':
+                    totalCut += "&&(tautrigger1>0.5)"
+                elif option=='pnet':
+                    totalCut +=	"&&(tautrigger2>0.5||tautrigger3>0.5||tautrigger4>0.5)"
+                else:
+                    totalCut += "&&(tautrigger1>0.5||tautrigger2>0.5||tautrigger3>0.5||tautrigger4>0.5)"
+
             else:
-                totalCut += "&&!(tautrigger1>0.5||tautrigger2>0.5)"
+                if option=='deeptau':
+                    totalCut += "&&!(tautrigger1>0.5)"
+                elif option=='pnet':
+                    totalCut +=	"&&!(tautrigger2>0.5||tautrigger3>0.5||tautrigger4>0.5)"
+                else:
+                    totalCut += "&&!(tautrigger1>0.5||tautrigger2>0.5||tautrigger3>0.5||tautrigger4>0.5)"
+
 
             histo = analysis.RunSamples(sigSamples,var_unc,totalCut,xbins,name_hist+'_'+trg)
             print('Running for signal sample %s and %s'%(name_hist,trg))
@@ -680,6 +711,7 @@ if __name__ == "__main__":
     fake_uncs = fakeFactor.getUncertaintyList()
     nonclosure = {}
     for trg in ['trig','notrig']:
+        suffix = trg+'_'+option
         nonclosure[trg] = PlotClosure(hists_totbkg,
                                       basename='totbkg',
                                       wp=args.wp,
@@ -772,13 +804,10 @@ if __name__ == "__main__":
         print('Total    = %4.0f'%(total))
         print('Data     = %4.0f'%(hist_data[trg].GetSumOfWeights()))
 
-        
-    # Brute-force fixing bin ->
-    hist_data['notrig'].SetBinContent(7,3.)
-    hist_data['notrig'].SetBinError(7,ROOT.TMath.Sqrt(3.))
-    hist_data['trig'].SetBinContent(1,2.)
-    hist_data['trig'].SetBinError(1,ROOT.TMath.Sqrt(2.))
-
+    ############################################
+    ## Fix yields in the firts/last bins here ##
+    ############################################
+    
     # making control plot
     for trg in ['trig','notrig']:
         histsToPlot = {}
@@ -787,7 +816,7 @@ if __name__ == "__main__":
         histsToPlot['hist_bkg_tau'] = hist_bkg_tau[trg]
         histsToPlot['hist_bkg_lfakes'] = hist_bkg_lfakes[trg]
         histsToPlot['hist_sig'] = hist_sig[trg]
-        suffix = '_%s_%s'%(trg,args.era)
+        suffix = '_%s_%s_%s'%(trg,option,args.era)
         PlotWToTauNu(histsToPlot,
                      wp=args.wp,
                      era=args.era,
@@ -805,13 +834,13 @@ if __name__ == "__main__":
 
         # creating shape templates for fake model systematics
         hists_fake_sys = {}
-        hist_closure_up,hist_closure_down = utils.ComputeSystematics(hist_fake[trg],
-                                                                     hist_fake_raw[trg],
-                                                                     'fake_nonclosure_'+trg)
-        name_sys = 'nonclosure_%s_%s'%(trg,args.era)
-        names_fake_sys = [name_sys]
-        hists_fake_sys['%sUp'%(name_sys)] = hist_closure_up
-        hists_fake_sys['%sDown'%(name_sys)] = hist_closure_down
+        names_fake_sys = []
+        #        hist_closure_up,hist_closure_down = utils.ComputeSystematics(hist_fake[trg],
+        #                                                                     hist_fake_raw[trg],
+        #                                                                     'fake_nonclosure_'+trg)
+        #        name_sys = 'nonclosure_%s_%s'%(trg,args.era)
+        #        hists_fake_sys['%sUp'%(name_sys)] = hist_closure_up
+        #        hists_fake_sys['%sDown'%(name_sys)] = hist_closure_down
         # statistical uncertainties
         for sample in samples: # wjets, dijets
             for unc in fake_uncs:
@@ -850,7 +879,7 @@ if __name__ == "__main__":
             hists_sig_sys["%sDown"%(name_sys)] = hist_down
 
         # saving histograms to datacard file datacards
-        fileName = "taunu_"+args.wp+"_"+args.wpVsMu+"_"+args.wpVsE+"_"+trg
+        fileName = "taunu_"+args.wp+"_"+args.wpVsMu+"_"+args.wpVsE+"_"+option+"_"+trg
         outputFileName = utils.baseFolder+'/'+args.era+"/datacards/"+fileName
         print("")
         print("Saving histograms to RooT file %s.root"%(outputFileName))

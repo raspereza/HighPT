@@ -20,7 +20,12 @@ BkgSampleNames = {
 
     '2022' :  ['DYto2L-4Jets_MLL-50','TTTo2L2Nu','TTtoLNu2Q','TTto4Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','Zto2Nu-4Jets_HT-100to200','Zto2Nu-4Jets_HT-200to400','Zto2Nu-4Jets_HT-400to800','Zto2Nu-4Jets_HT-800to1500'],
 
-    '2023' : ['DYto2L-4Jets_MLL-50','TTto2L2Nu','TTtoLNu2Q','TTto4Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','Zto2Nu-4Jets_HT-100to200','Zto2Nu-4Jets_HT-200to400','Zto2Nu-4Jets_HT-400to800','Zto2Nu-4Jets_HT-800to1500']
+    '2023' : ['DYto2L-4Jets_MLL-50','TTto2L2Nu','TTtoLNu2Q','TTto4Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','Zto2Nu-4Jets_HT-100to200','Zto2Nu-4Jets_HT-200to400','Zto2Nu-4Jets_HT-400to800','Zto2Nu-4Jets_HT-800to1500'],
+
+    '2024' : ['DYto2Mu_Bin-MLL-50to120','DYto2Mu_Bin-MLL-120to200','DYto2Mu_Bin-MLL-200to400','DYto2Mu_Bin-MLL-400to800','DYto2Tau_Bin-MLL-50to120','DYto2Tau_Bin-MLL-120to200','DYto2Tau_Bin-MLL-200to400','DYto2Tau_Bin-MLL-400to800','TTto2L2Nu','TTtoLNu2Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','Zto2Nu-2Jets_Bin-1J-PTNuNu-40to100','Zto2Nu-2Jets_Bin-1J-PTNuNu-100to200','Zto2Nu-2Jets_Bin-1J-PTNuNu-200to400','Zto2Nu-2Jets_Bin-1J-PTNuNu-400to600','Zto2Nu-2Jets_Bin-1J-PTNuNu-600','Zto2Nu-2Jets_Bin-2J-PTNuNu-40to100','Zto2Nu-2Jets_Bin-2J-PTNuNu-100to200','Zto2Nu-2Jets_Bin-2J-PTNuNu-200to400','Zto2Nu-2Jets_Bin-2J-PTNuNu-400to600','Zto2Nu-2Jets_Bin-2J-PTNuNu-600'],
+    
+    '2025' : ['DYto2Mu_Bin-MLL-50to120','DYto2Mu_Bin-MLL-120to200','DYto2Mu_Bin-MLL-200to400','DYto2Mu_Bin-MLL-400to800','DYto2Tau_Bin-MLL-50to120','DYto2Tau_Bin-MLL-120to200','DYto2Tau_Bin-MLL-200to400','DYto2Tau_Bin-MLL-400to800','TTto2L2Nu','TTtoLNu2Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ','Zto2Nu-2Jets_Bin-1J-PTNuNu-40to100','Zto2Nu-2Jets_Bin-1J-PTNuNu-100to200','Zto2Nu-2Jets_Bin-1J-PTNuNu-200to400','Zto2Nu-2Jets_Bin-1J-PTNuNu-400to600','Zto2Nu-2Jets_Bin-1J-PTNuNu-600','Zto2Nu-2Jets_Bin-2J-PTNuNu-40to100','Zto2Nu-2Jets_Bin-2J-PTNuNu-100to200','Zto2Nu-2Jets_Bin-2J-PTNuNu-200to400','Zto2Nu-2Jets_Bin-2J-PTNuNu-400to600','Zto2Nu-2Jets_Bin-2J-PTNuNu-600'],
+    
 }
 
 WBkgSampleNames = {
@@ -28,13 +33,20 @@ WBkgSampleNames = {
 
     '2022' : ['WJetsToLNu-4Jets_1J','WJetsToLNu-4Jets_2J','WJetsToLNu-4Jets_3J','WJetsToLNu-4Jets_4J','WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800'],
 
-    '2023' : ['WtoLNu-4Jets_1J','WtoLNu-4Jets_2J','WtoLNu-4Jets_3J','WtoLNu-4Jets_4J','WtoLNu_HT100to400','WtoLNu_HT400to800']
+    '2023' : ['WtoLNu-4Jets_1J','WtoLNu-4Jets_2J','WtoLNu-4Jets_3J','WtoLNu-4Jets_4J','WtoLNu_HT100to400','WtoLNu_HT400to800'],
+
+    '2024' : ['WtoLNu-2Jets_Bin-1J-PTLNu-100to200','WtoLNu-2Jets_Bin-1J-PTLNu-200to400','WtoLNu-2Jets_Bin-1J-PTLNu-400to600','WtoLNu-2Jets_Bin-1J-PTLNu-600','WtoLNu-2Jets_Bin-2J-PTLNu-100to200','WtoLNu-2Jets_Bin-2J-PTLNu-200to400','WtoLNu-2Jets_Bin-2J-PTLNu-400to600','WtoLNu-2Jets_Bin-2J-PTLNu-600'],
+    
+    '2025' : ['WtoLNu-2Jets_Bin-1J-PTLNu-100to200','WtoLNu-2Jets_Bin-1J-PTLNu-200to400','WtoLNu-2Jets_Bin-1J-PTLNu-400to600','WtoLNu-2Jets_Bin-1J-PTLNu-600','WtoLNu-2Jets_Bin-2J-PTLNu-100to200','WtoLNu-2Jets_Bin-2J-PTLNu-200to400','WtoLNu-2Jets_Bin-2J-PTLNu-400to600','WtoLNu-2Jets_Bin-2J-PTLNu-600'],
+    
 }
 
 SigSampleNames = { 
     'Run2' : ['WToTauNu_M-200'],
     '2022' : ['WtoNuTau'],
-    '2023' : ['WtoNuTau']
+    '2023' : ['WtoNuTau'],
+    '2024' : ['WstarTauNu'],
+    '2025' : ['WstarTauNu'],
 }
 
 def FitRatio(x,par):
@@ -81,7 +93,7 @@ def ComputeFake(h_wjets,h_dijets,h_fraction,name):
         hist.SetBinError(i,e_fakes)
         lowerEdge = hist.GetBinLowEdge(i)
         upperEdge = hist.GetBinLowEdge(i+1)
-        print("[%3d,%4d] = %6.1f +/- %4.1f" %(lowerEdge,upperEdge,x_fakes,e_fakes))
+        print("[%4d,%4d] = %7.1f +/- %4.1f" %(lowerEdge,upperEdge,x_fakes,e_fakes))
 
     return hist
 
@@ -118,7 +130,7 @@ def ComputeEWKFraction(h_data,h_mc,var):
         if var in ['eta_1','phi_1','metphi']:
             print("[%5.2f,%5.2f] = %4.2f +/- %4.2f (%4.2f rel) -> Data = %6.0f : MC = %6.0f" %(lowerEdge,upperEdge,ratio,eratio,eratio/ratio,xdata,xmc))
         else:
-            print("[%3d,%4d] = %4.2f +/- %4.2f (%4.2f rel) -> Data = %6.0f : MC = %6.0f" %(lowerEdge,upperEdge,ratio,eratio,eratio/ratio,xdata,xmc))
+            print("[%4d,%4d] = %4.2f +/- %4.2f (%4.2f rel) -> Data = %6.0f : MC = %6.0f" %(lowerEdge,upperEdge,ratio,eratio,eratio/ratio,xdata,xmc))
 
     return h_fraction
 
@@ -128,13 +140,14 @@ def ComputeEWKFraction(h_data,h_mc,var):
 def PlotClosure(hists,**kwargs): 
 
     wp = kwargs.get('wp','Medium') 
-    era = kwargs.get('era','2023') 
+    era = kwargs.get('era','2025') 
     var = kwargs.get('var','mt_1')
     basename = kwargs.get('basename','bkgd')
     uncs = kwargs.get('uncs',[''])
-    wpVsMu = kwargs.get('wpVsMu') 
-    wpVsE = kwargs.get('wpVsE')
-    fake_factors = kwargs.get('fake_factors')
+    wpVsMu = kwargs.get('wpVsMu','Tight') 
+    wpVsE = kwargs.get('wpVsE','VVLoose')
+    fake_factors = kwargs.get('fake_factors','comb')
+    tagger = kwargs.get('tagger','pnet')
     suffix = kwargs.get('suffix','')
 
     print('')
@@ -145,7 +158,7 @@ def PlotClosure(hists,**kwargs):
     styles.InitData(h_data)
     h_tot = h_model.Clone('h_tot_model')
     # add systematic uncertainties
-    print("           =      Data      :    Model")
+    print("           =       Data      :    Model")
     nbins = h_tot.GetNbinsX()
     for i in range(1,nbins+1):
         error2 = h_tot.GetBinError(i)*h_tot.GetBinError(i)
@@ -163,7 +176,7 @@ def PlotClosure(hists,**kwargs):
         if var in['eta_1','phi_1','metphi']:
             print("[%5.2f,%5.2f] = %5.1f +/- %4.1f : %5.1f +/- %4.1f" %(lowerEdge,upperEdge,xdata,edata,xcen,error))
         else:
-            print("[%3d,%4d] = %5.1f +/- %4.1f : %5.1f +/- %4.1f" %(lowerEdge,upperEdge,xdata,edata,xcen,error))
+            print("[%4d,%4d] = %5.1f +/- %4.1f : %5.1f +/- %4.1f" %(lowerEdge,upperEdge,xdata,edata,xcen,error))
         h_tot.SetBinError(i,error)
                 
     styles.InitTotalHist(h_tot)
@@ -246,7 +259,11 @@ def PlotClosure(hists,**kwargs):
     canvas.cd()
     canvas.SetSelected(canvas)
     canvas.Update()
-    canvas.Print(utils.baseFolder+"/"+era+"/figures/WTauNu/closure_"+fake_factors+"_"+var+suffix+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+".png")
+    outdir = '%s/WTauNu/%s/%s'%(utils.figureFolder,era,tagger)
+    outfilename = outdir+"/closure_"+fake_factors+"_"+var+suffix+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+".png"
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+    canvas.Print(outfilename)
 
     return hist_ratio
 
@@ -256,12 +273,13 @@ def PlotClosure(hists,**kwargs):
 def PlotWToTauNu(hists,**kwargs):
 
     wp = kwargs.get('wp','Medium')
-    era = kwargs.get('era','2023')
+    era = kwargs.get('era','2025')
     var = kwargs.get('var','mt_1')
     plotLegend = kwargs.get('plotLegend',True)
     wpVsMu = kwargs.get('wpVsMu','Tight')
-    wpVsE = kwargs.get('wpVsE','Tight')
-    fake_factors = kwargs.get('fake_factors')
+    wpVsE = kwargs.get('wpVsE','VVLoose')
+    fake_factors = kwargs.get('fake_factors','comb')
+    tagger = kwargs.get('tagger','pnet')
     suffix = kwargs.get('suffix','')
 
     h_data = hists['hist_data'].Clone("data_plot")
@@ -282,7 +300,7 @@ def PlotWToTauNu(hists,**kwargs):
     e_tau_sys = 0.20
     print('')
     print('Plotting distribution of',var)
-    print('            - data :   mc')
+    print('            -    mc :  data')
 #    print('[ 200, 300] = 1993 : 1942')
     for i in range(1,nbins+1):
         x_sig = h_sig.GetBinContent(i)
@@ -306,9 +324,9 @@ def PlotWToTauNu(hists,**kwargs):
         lowerEdge = h_data.GetBinLowEdge(i)
         upperEdge = h_data.GetBinLowEdge(i+1)
         if var in ['eta_1','phi_1','metphi']:
-            print("[%5.2f,%5.2f] = %4.0f : %4.0f" %(lowerEdge,upperEdge,x_model,x_data))
+            print("[%5.2f,%5.2f] = %5.0f : %5.0f" %(lowerEdge,upperEdge,x_model,x_data))
         else:
-            print("[%4i,%4i] = %4.0f : %4.0f" %(lowerEdge,upperEdge,x_model,x_data))
+            print("[%4i,%4i] = %5.0f : %5.0f" %(lowerEdge,upperEdge,x_model,x_data))
 
     styles.InitData(h_data)
     styles.InitHist(h_bkg,"","",ROOT.TColor.GetColor("#6F2D35"),1001)
@@ -338,6 +356,7 @@ def PlotWToTauNu(hists,**kwargs):
 
     ymax = h_data.GetMaximum()
     if h_tot.GetMaximum()>ymax: ymax = h_tot.GetMaximum()
+#    h_data.GetYaxis().SetRangeUser(1.,500.*ymax)
     h_data.GetYaxis().SetRangeUser(0.,1.2*ymax)
     h_data.GetXaxis().SetLabelSize(0)
     h_data.GetYaxis().SetTitle("events / bin")
@@ -365,11 +384,14 @@ def PlotWToTauNu(hists,**kwargs):
     h_dummy.SetMarkerSize(0)
     h_dummy.SetMarkerColor(0)
 
-    leg = ROOT.TLegend(0.58,0.2,0.83,0.6)
+    #    leg = ROOT.TLegend(0.58,0.2,0.83,0.6)
+    leg = ROOT.TLegend(0.58,0.4,0.83,0.7)
     styles.SetLegendStyle(leg)
     leg.SetTextSize(0.042)
     leg.SetHeader('%s,%s,%s'%(wp,wpVsMu,wpVsE))
     leg.AddEntry(h_data,'data','lp')
+#    leg.AddEntry(h_sig,'genuine #tau','f')
+#    leg.AddEntry(h_fake,'j#rightarrow#tau misId','f')
     leg.AddEntry(h_sig,'W#rightarrow #tau#nu','f')
     leg.AddEntry(h_fake,'j#rightarrow#tau misId','f')
     leg.AddEntry(h_tau,'true #tau','f')
@@ -381,6 +403,7 @@ def PlotWToTauNu(hists,**kwargs):
     upper.Draw("SAME")
     upper.RedrawAxis()
     upper.Modified()
+#    upper.SetLogy(True)
     upper.Update()
     canvas.cd()
 
@@ -413,7 +436,11 @@ def PlotWToTauNu(hists,**kwargs):
     canvas.SetSelected(canvas)
     canvas.Update()
     print('')
-    canvas.Print(utils.baseFolder+"/"+era+"/figures/WTauNu/wtaunu_"+fake_factors+"_"+var+suffix+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+".png")
+    outdir = utils.figureFolder+"/WTauNu/"+era+"/"+tagger
+    outfilename = outdir+"/wtaunu_"+fake_factors+"_"+var+suffix+"_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+".png"
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+    canvas.Print(outfilename)
 
 def CreateCardsWToTauNu(era,ff_par,fileName,datacards_folder,uncs_fake,uncs_sig,suffix):
     
@@ -430,8 +457,10 @@ def CreateCardsWToTauNu(era,ff_par,fileName,datacards_folder,uncs_fake,uncs_sig,
     cb.cp().process(['tau_incl_'+era]).AddSyst(cb,'bkgNorm_taunu','lnN',ch.SystMap()(1.20))
     cb.cp().process(['lfakes']).AddSyst(cb,'lep_fakes','lnN',ch.SystMap()(1.5))
     
-    cb.cp().process(['wtaunu_incl_'+era]).AddSyst(cb,'JES_'+ era,'shape',ch.SystMap()(1.0))
-    cb.cp().process(['wtaunu_incl_'+era]).AddSyst(cb,'Unclustered_'+ era,'shape',ch.SystMap()(1.0))
+#    cb.cp().process(['wtaunu_incl_'+era]).AddSyst(cb,'JES_'+ era,'shape',ch.SystMap()(1.0))
+#    cb.cp().process(['wtaunu_incl_'+era]).AddSyst(cb,'Unclustered_'+ era,'shape',ch.SystMap()(1.0))
+    cb.cp().process(['wtaunu_incl_'+era]).AddSyst(cb,'JES_'+ era,'lnN',ch.SystMap()(1.02))
+    cb.cp().process(['wtaunu_incl_'+era]).AddSyst(cb,'Unclustered_'+ era,'lnN',ch.SystMap()(1.02))
     cb.cp().process(['fake']).AddSyst(cb,'nonclosure_'+ era,'shape',ch.SystMap()(1.0))
     for unc in uncs_sig:
         cb.cp().process(['wtaunu_incl_'+era]).AddSyst(cb, unc,'shape',ch.SystMap()(1.0))
@@ -512,6 +541,55 @@ def CreateCardsWToTauNu_lowpt(era,ff_par,fileName,datacards_folder,uncs_fake,unc
     print('Datacards for W*->taunu process for year %s created'%(era))
     print
     
+def CreateCardsWToTauNu_mediumpt(era,ff_par,fileName,datacards_folder,uncs_fake,uncs_sig,suffix):
+    
+    rootFileName = fileName + ".root"
+
+    cb = ch.CombineHarvester()
+    cats = [(1,'taunu'),]    
+    cb.AddObservations(['*'],['taunu'],[era],['tau_ID'],cats)
+    
+    for cat in cats:
+        cb.AddProcesses(['*'],['taunu'],[era],['tau_ID'],['tau_mediumpt_'+era, 'wtaunu_mediumpt_'+era],[cat],True)
+        cb.AddProcesses(['*'],['taunu'],[era],['tau_ID'],['fake','lfakes'],[cat],False)
+        
+    cb.cp().process(['wtaunu_mediumpt_'+era]).AddSyst(cb,'extrapW','lnN',ch.SystMap()(1.04))
+    cb.cp().process(['tau_mediumpt_'+era]).AddSyst(cb,'bkgNorm_taunu','lnN',ch.SystMap()(1.20))
+    cb.cp().process(['lfakes']).AddSyst(cb,'lep_fakes','lnN',ch.SystMap()(1.5))
+    
+    cb.cp().process(['wtaunu_mediumpt_'+era]).AddSyst(cb,'JES_'+ era,'shape',ch.SystMap()(1.0))
+    cb.cp().process(['wtaunu_mediumpt_'+era]).AddSyst(cb,'Unclustered_'+ era,'shape',ch.SystMap()(1.0))
+    cb.cp().process(['fake']).AddSyst(cb,'nonclosure_'+ era,'shape',ch.SystMap()(1.0))
+    for unc in uncs_sig:
+        cb.cp().process(['wtaunu_mediumpt_'+era]).AddSyst(cb, unc,'shape',ch.SystMap()(1.0))
+    for unc in uncs_fake:
+        cb.cp().process(['fake']).AddSyst(cb, unc,'shape',ch.SystMap()(1.0))
+    
+    cb.AddDatacardLineAtEnd("normW  rateParam  taunu wtaunu_mediumpt_"+era+" 1.0  [0.5,1.5]")
+    cb.AddDatacardLineAtEnd("* autoMCStats 0")
+    
+    cb.AddDatacardLineAtEnd(
+    "sysUnc group = normW extrapW bkgNorm_taunu lep_fakes JES_" + era + 
+    " Unclustered_" + era + " taues_1pr_" + era + " taues_1pr1pi0_" + era + 
+    " taues_3pr_" + era + " taues_3pr1pi0_" + era + " nonclosure_" + era + 
+    " wjets_ptratioLow_"+ff_par+"Low_" + era + " wjets_ptratioLow_"+ff_par+"High_" + era + 
+    " wjets_ptratioHigh_"+ff_par+"Low_" + era + " wjets_ptratioHigh_"+ff_par+"High_" + era + 
+    " dijets_ptratioLow_"+ff_par+"Low_" + era + " dijets_ptratioLow_"+ff_par+"High_" + era + 
+    " dijets_ptratioHigh_"+ff_par+"Low_" + era + " dijets_ptratioHigh_"+ff_par+"High_" + era)
+
+    cb.cp().signals().ExtractShapes( datacards_folder+"/"+rootFileName, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+    cb.cp().backgrounds().ExtractShapes( datacards_folder+"/"+rootFileName, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+    writer = ch.CardWriter(
+        datacards_folder +"/"+ fileName +".txt",
+        datacards_folder +"/"+ fileName +".root")
+    writer.SetWildcardMasses([])
+    writer.SetVerbosity(0);
+    writer.WriteCards('%s'%(datacards_folder),cb)
+    print
+    print
+    print('Datacards for W*->taunu process for year %s created'%(era))
+    print
+    
 def CreateCardsWToTauNu_highpt(era,ff_par,fileName,datacards_folder,uncs_fake,uncs_sig,suffix):
     
     rootFileName = fileName + ".root"
@@ -560,6 +638,8 @@ def CreateCardsWToTauNu_highpt(era,ff_par,fileName,datacards_folder,uncs_fake,un
     print
     print('Datacards for W*->taunu process for year %s created'%(era))
     print
+
+    
 ############
 ### MAIN ###
 ############
@@ -579,22 +659,24 @@ if __name__ == "__main__":
         print("Variable:", parsed_args.variable)
         print("Fake factors:", parsed_args.ff)
         print("Measurement:", parsed_args.meas)
-        print("Fake facotrs parametrization:", parsed_args.ff_par)
+        print("Fake factors parametrization:", parsed_args.ff_par)
+        print("Tau tagger:", parsed_args.tagger)
         
         confirmation = input("Are these arguments correct? (yes/no): ").strip().lower()
         return confirmation == "yes"
 
     def adjust_arguments():
         parser = ArgumentParser()
-        parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2017','UL2018','2022','2023'])
-        parser.add_argument('-wp','--WPvsJet', dest='wpVsJet', default='Medium',choices=['Loose','Medium','Tight','VTight','VVTight'])
+        parser.add_argument('-e','--era', dest='era', default='2024',choices=['UL2016','UL2017','UL2018','2022','2023','2024','2025'])
+        parser.add_argument('-wp','--WPvsJet', dest='wpVsJet', default='Medium',choices=['VLoose','Loose','Medium','Tight','VTight','VVTight','SuperTight','KiloTight','MegaTight'])
         parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight',choices=['VLoose','Tight'])
         parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='VVLoose',choices=['VVLoose','Tight'])
-        parser.add_argument('-var','--variable',dest='variable',default='mt_jet_1',choices=['mt_1','met','pt_1','eta_1','phi_1','jpt_match_1','mt_jet_1','metphi'])
+        parser.add_argument('-var','--variable',dest='variable',default='mt_1',choices=['mt_1','met','pt_1','eta_1','phi_1','jpt_match_1','mt_jet_1','metphi'])
         parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
-        parser.add_argument('-m','--meas',dest='meas',default='incl',choices=['incl','lowpt','highpt'])
-        parser.add_argument('-ff_par','--ff_par',dest='ff_par',default='ptjet',choices=['pttau','ptjet'])
-
+        parser.add_argument('-m','--meas',dest='meas',default='incl',choices=['incl','lowpt','mediumpt','highpt'])
+        parser.add_argument('-ff_par','--ff_par',dest='ff_par',default='pttau',choices=['pttau','ptjet'])
+        parser.add_argument('-tagger','--tagger',dest='tagger',default='pnet',choices=['deeptau','pnet','upart'])
+        
         args = parser.parse_args()
 
         print("Options to adjust arguments:")
@@ -605,15 +687,16 @@ if __name__ == "__main__":
         print("5. Change variable to plot")
         print("6. Change fake factors to use")
         print("7. Change measurement to perform")
-        print("8. Change the fake factor parametrization")                          
-        print("9. Confirm and proceed")
+        print("8. Change the fake factor parametrization")
+        print("9. Changer the tau tagger")
+        print("10. Confirm and proceed")
 
         while True:
-            choice = input("Enter your choice (1-9): ").strip()
+            choice = input("Enter your choice (1-10): ").strip()
             if choice == "1":
-                args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023): ").strip()
+                args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023, 2024, 2025): ").strip()
             elif choice == "2":
-                args.wpVsJet = input("Enter the WPvsJet (Loose, Medium, Tight, VTight, VVTight): ").strip()
+                args.wpVsJet = input("Enter the WPvsJet (VLoose, Loose, Medium, Tight, VTight, VVTight, SuperTight, KiloTight, MegaTight): ").strip()
             elif choice == "3":
                 args.wpVsMu = input("Enter the WPvsMu (VLoose, Tight): ").strip()
             elif choice == "4":
@@ -623,10 +706,12 @@ if __name__ == "__main__":
             elif choice == "6":
                 args.ff = input("Enter the fake factors to use (comb, wjets, dijets): ").strip()
             elif choice == "7":
-                args.meas = input("Enter the measurement to perform (incl, lowpt, highpt): ").strip()     
+                args.meas = input("Enter the measurement to perform (incl, lowpt, mediumpt, highpt): ").strip()     
             elif choice == "8":
                 args.ff_par = input("Enter the fake factor parametrizatin to use (pttau, ptjet): ").strip()                         
             elif choice == "9":
+                args.tagger = input("Enter the name of tau tagger to use (deeptau, pnet, upart): ").strip()                         
+            elif choice == "10":
                 break
             else:
                 print("Invalid choice. Please enter a number between 1 and 9.")
@@ -639,34 +724,35 @@ if __name__ == "__main__":
                 break
 
  
-    xbins_mt  = [200,300,400,500,600,800,1200]
-    xbins_pt  = [100,130,160,190,220,250,300,400,500,700]
+    xbins_mt  = [200,300,400,500,600,800,1200,1400,2000]
+    xbins_pt  = [100,130,160,190,220,250,300,400,500,700,1500]
     xbins_jpt = [100,140,180,220,260,300,400,500,700]
-    xbins_met = [100,150,200,250,300,400,500,700]
-    xbins_mt_lowpt = [200,250,300,350,400,1000]
-    xbins_mt_highpt = [200,400,500,600,700,900,1200]
+    xbins_met = [100,150,200,250,300,400,500,700,1500]
+    xbins_mt_lowpt = [200,250,275,300,325,350,1200]
+    xbins_mt_mediumpt = [200,300,350,400,450,500,1200]
+    xbins_mt_highpt = [200,600,700,850,1500]
 
     xbins_phi = utils.createBins(14,-3.14,3.14)
     xbins_metphi = utils.createBins(14,-3.14,3.14)
-    xbins_eta = utils.createBins(14,-2.3,2.3)
+    xbins_eta = utils.createBins(14,-2.5,2.5)
 
     xbins = xbins_mt
     ptMin = 100.
     ptMax = 2000.
     suffix = '_'+args.meas+'_'+args.era
-
-    # suffix = '_'+args.era
     if args.variable=='mt_1' or args.variable=='mt_jet_1':
         if args.meas=='lowpt': 
             xbins = xbins_mt_lowpt
             ptMin = 100.
-            ptMax = 200.
-            # suffix = '_'+args.meas+'_'+args.era
+            ptMax = 150.
+        elif args.meas=='mediumpt':
+            xbins = xbins_mt_mediumpt
+            ptMin = 150.
+            ptMax = 250.
         elif args.meas=='highpt':
             xbins = xbins_mt_highpt
-            ptMin = 200.
+            ptMin = 250.
             ptMax = 2000.
-            # suffix = '_'+args.meas+'_'+args.era
 
     plotLegend = True
     if args.variable=='pt_1': xbins = xbins_pt
@@ -683,13 +769,13 @@ if __name__ == "__main__":
         xbins = xbins_metphi
         plotLegend = False
 
-    basefolder = utils.picoFolder+'/'+args.era
+    basefolder = utils.picoFolder
     var = args.variable    
 
     ff = args.ff
 
     # initializing instance of FakeFactorHighPT class    
-    fullpathFF = utils.baseFolder+'/'+args.era+'/FF/ff_'+args.wpVsJet+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+".root"
+    fullpathFF = utils.baseFolder+'/'+args.era+'/FF/ff_'+args.wpVsJet+"VSjet_"+args.wpVsMu+"VSmu_"+args.wpVsE+"VSe_"+args.era+"_"+args.tagger+"_comb.root"
     samples = []
     with_dijets = False
     if ff=='wjets':
@@ -708,14 +794,13 @@ if __name__ == "__main__":
                                   with_dijets=with_dijets)
 
     # initializing instance of TauNuCuts class
-    antiMu = utils.tauVsMuIntWPs[args.wpVsMu]
-    antiE  = utils.tauVsEleIntWPs[args.wpVsE]
     hotJetVeto = False
     if args.era=='2023': hotJetVeto = True
-    wtaunuCuts = analysis.TauNuCuts(antiMu=antiMu,
-                                    antiE=antiE,
+    wtaunuCuts = analysis.TauNuCuts(antiMu=args.wpVsMu,
+                                    antiE=args.wpVsE,
                                     ptLowerCut=ptMin,
                                     ptUpperCut=ptMax,
+                                    taggerOption=args.tagger,
                                     hotJetVeto=hotJetVeto)    
 
     # vector uncertainties
@@ -780,8 +865,24 @@ if __name__ == "__main__":
             sigSamples[name].SetTauNuConfig(fakeFactor,args.wpVsJet,wtaunuCuts)
 
     # defining baseline cuts
-    commonCut = "metfilter>0.5&&mettrigger>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&njets==0&&idDeepTau2018v2p5VSmu_1>="+utils.tauVsMuWPs[args.wpVsMu]+"&&idDeepTau2018v2p5VSe_1>="+utils.tauVsEleWPs[args.wpVsE]+"&&genmatch_1==5&&idDeepTau2018v2p5VSjet_1>=" + utils.tauWPs[args.wpVsJet]
+    dmcut = '&&(dm_1==0||dm_1==1||dm_1==10||dm_1==11)'
+    antiLepDeepTau = 'idDeepTau2018v2p5VSmu_1>='+utils.tauVsMuWPs[args.wpVsMu]+'&&idDeepTau2018v2p5VSe_1>='+utils.tauVsEleWPs[args.wpVsE]+dmcut
+    antiJetDeepTau = '&&idDeepTau2018v2p5VSjet_1>='+utils.tauWPs[args.wpVsJet]
+    tauIDCut = antiJetDeepTau+'&&'+antiLepDeepTau 
+    if args.tagger=='pnet':
+        antiLepPNet = 'rawPNetVSmu_1>=%6.4f'%(utils.PNetVSmuWPs[args.wpVsMu])
+        antiLepPNet += '&&rawPNetVSe_1>=%6.4f'%(utils.PNetVSeWPs[args.wpVsE])
+        tauIDCut = '&&rawPNetVSjet_1>=%5.3f'%(utils.PNetVSjetWPs[args.wpVsJet])+'&&'+antiLepPNet
+        if args.tagger=='pnet_hps':
+            tauIDCut += dmcut
+    elif args.tagger=='upart':
+        antiLepUParT = 'rawUParTVSmu_1>=%6.4f'%(utils.UParTVSmuWPs[args.wpVsMu])
+        antiLepUParT += '&&rawUParTVSe_1>=%6.4f'%(utils.UParTVSeWPs[args.wpVsE])
+        tauIDCut = '&&rawUParTVSjet_1>=%5.3f'%(utils.UParTVSjetWPs[args.wpVsJet])+'&&'+antiLepUParT
 
+    commonCut = "metfilter>0.5&&mettrigger>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&njets==0&&genmatch_1==5"
+    commonCut += tauIDCut
+    
     vetoHotSpot = "!(eta_1>%5.3f&&eta_1<%5.3f&&phi_1>%5.3f&&phi_1<%5.3f)"%(wtaunuCuts.etaHotMin,wtaunuCuts.etaHotMax,wtaunuCuts.phiHotMin,wtaunuCuts.phiHotMax)
     
     if args.era=='2023':
@@ -794,6 +895,8 @@ if __name__ == "__main__":
     lst = ['']
     if var in ['mt_1','mt_jet_1']: 
         lst += uncert_names
+    if var in ['pt_1']:
+        lst += utils.unc_taues
     for name in lst:
 
         name_unc = ""
@@ -857,6 +960,7 @@ if __name__ == "__main__":
                              var=var,
                              wpVsMu=args.wpVsMu,
                              wpVsE=args.wpVsE,
+                             tagger=args.tagger,
                              fake_factors=args.ff,
                              uncs=fake_uncs,
                              suffix=suffix)
@@ -874,7 +978,7 @@ if __name__ == "__main__":
     for sample in samples:
         hist_data_sample = hists_data['data_all_data_'+sample]
         hist_totbkg_sample = hists_totbkg['totbkg_notFake_data_'+sample]
-        print('fake background %s : data = %4.0f   subtracted MC = %4.0f'%(sample,hist_data_sample.GetSumOfWeights(),hist_totbkg_sample.GetSumOfWeights()))
+        print('fake background %6s : data = %4.0f   subtracted MC = %4.0f'%(sample,hist_data_sample.GetSumOfWeights(),hist_totbkg_sample.GetSumOfWeights()))
         hist_data_sample.Add(hist_data_sample,hist_totbkg_sample,1.,-1.)
         hists_fake_sample_raw[sample] = hist_data_sample 
         hists_fake_sample[sample] = CorrectForNonClosure(hist_data_sample,nonclosure,'fake')
@@ -906,22 +1010,22 @@ if __name__ == "__main__":
     
     print('')
     print("Check composition of MC")
-    print('Total        = %4.0f'%(hist_bkg.GetSumOfWeights()))
-    print('Genuine taus = %4.0f'%(hist_bkg_tau.GetSumOfWeights()))
-    print('l->tau fakes = %4.0f'%(hist_bkg_lfakes.GetSumOfWeights()))
-    print('j->tau fakes = %4.0f'%(hist_bkg_fakes.GetSumOfWeights()))
-    print('Sum check    = %4.0f'%(tot_bkg))
+    print('Total        = %5.0f'%(hist_bkg.GetSumOfWeights()))
+    print('Genuine taus = %5.0f'%(hist_bkg_tau.GetSumOfWeights()))
+    print('l->tau fakes = %5.0f'%(hist_bkg_lfakes.GetSumOfWeights()))
+    print('j->tau fakes = %5.0f'%(hist_bkg_fakes.GetSumOfWeights()))
+    print('Sum check    = %5.0f'%(tot_bkg))
 
     hist_bkg_tau = hists_bkg['bkg_tau_SR']
     print('')
-    print('JetFakes = %4.0f'%(hist_fake.GetSumOfWeights()))
-    print('LepFakes = %4.0f'%(hist_bkg_lfakes.GetSumOfWeights()))
-    print('Taus     = %4.0f'%(hist_bkg_tau.GetSumOfWeights()))
-    print('W*->tauv = %4.0f'%(hist_sig.GetSumOfWeights()))
+    print('JetFakes = %5.0f'%(hist_fake.GetSumOfWeights()))
+    print('LepFakes = %5.0f'%(hist_bkg_lfakes.GetSumOfWeights()))
+    print('Taus     = %5.0f'%(hist_bkg_tau.GetSumOfWeights()))
+    print('W*->tauv = %5.0f'%(hist_sig.GetSumOfWeights()))
     total = hist_fake.GetSumOfWeights()+hist_bkg_lfakes.GetSumOfWeights()+hist_bkg_tau.GetSumOfWeights()+hist_sig.GetSumOfWeights()
     print('')
-    print('Total    = %4.0f'%(total))
-    print('Data     = %4.0f'%(hist_data.GetSumOfWeights()))
+    print('Total    = %5.0f'%(total))
+    print('Data     = %5.0f'%(hist_data.GetSumOfWeights()))
 
     # making control plot
     histsToPlot = {}
@@ -938,6 +1042,7 @@ if __name__ == "__main__":
                  wpVsMu=args.wpVsMu,
                  wpVsE=args.wpVsE,
                  fake_factors=args.ff,
+                 tagger=args.tagger,
                  suffix=suffix)
 
     if not var in['mt_1','mt_jet_1']:
@@ -979,7 +1084,9 @@ if __name__ == "__main__":
     # creating shape templates for signal systematics 
     hists_sig_sys = {}
     names_sig_sys = []
+    # for unc in utils.unc_taues:
     for unc in uncert_names:
+
         name_hist = 'wtaunu_'+unc
         name_sys = unc+'_'+args.era
         hist_sig_sys = hists_sig[name_hist]
@@ -990,7 +1097,7 @@ if __name__ == "__main__":
 
     # saving histograms to datacard file datacards
     FF = args.ff+"_"+args.wpVsJet+"_"+args.wpVsMu+"_"+args.wpVsE
-    fileName = "taunu_"+args.ff_par+"_"+FF+suffix
+    fileName = "taunu_"+args.ff_par+"_"+FF+suffix+"_"+args.tagger
     outputFileName = utils.baseFolder + "/" + args.era + "/datacards_"+ FF + "/" + fileName
   
     # Create the output directory if it doesn't exist
@@ -1020,26 +1127,34 @@ if __name__ == "__main__":
     datacards_folder = utils.baseFolder + "/" + args.era + "/datacards_"+ FF 
     if args.meas == 'incl':
         CreateCardsWToTauNu(args.era,
-                        args.ff_par,
-                        fileName,
-                        datacards_folder,
-                        names_fake_sys,
-                        names_sig_sys,
-                        suffix)
+                            args.ff_par,
+                            fileName,
+                            datacards_folder,
+                            names_fake_sys,
+                            names_sig_sys,
+                            suffix)
     elif args.meas == 'lowpt':
         CreateCardsWToTauNu_lowpt(args.era,
-                        args.ff_par,
-                        fileName,
-                        datacards_folder,
-                        names_fake_sys,
-                        names_sig_sys,
-                        suffix)
+                                  args.ff_par,
+                                  fileName,
+                                  datacards_folder,
+                                  names_fake_sys,
+                                  names_sig_sys,
+                                  suffix)
+    elif args.meas == 'mediumpt':
+        CreateCardsWToTauNu_mediumpt(args.era,
+                                     args.ff_par,
+                                     fileName,
+                                     datacards_folder,
+                                     names_fake_sys,
+                                     names_sig_sys,
+                                     suffix)
     elif args.meas == 'highpt':
         CreateCardsWToTauNu_highpt(args.era,
-                        args.ff_par,
-                        fileName,
-                        datacards_folder,
-                        names_fake_sys,
-                        names_sig_sys,
-                        suffix)
+                                   args.ff_par,
+                                   fileName,
+                                   datacards_folder,
+                                   names_fake_sys,
+                                   names_sig_sys,
+                                   suffix)
         

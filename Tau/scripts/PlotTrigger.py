@@ -3,6 +3,7 @@
 import ROOT 
 import HighPT.Tau.utilsHighPT as utils
 from array import array
+import math
 import HighPT.Tau.stylesHighPT as styles
 import os
 
@@ -32,10 +33,11 @@ def PlotEff(h_data_eff,h_mc_eff,**kwargs):
     plot    = kwargs.get('plot','cards')
 
     print('')
-
+    nbins = h_data_eff.GetNbinsX()
+    
     styles.InitData(h_data_eff)
     styles.InitData(h_mc_eff)
-    
+
     h_data_eff.SetMarkerSize(1.7)
     h_mc_eff.SetMarkerSize(1.7)
 
@@ -94,7 +96,7 @@ def PlotEff(h_data_eff,h_mc_eff,**kwargs):
     canv.SetGridy(True)
     canv.RedrawAxis()
     canv.Update()
-    canv.Print(utils.baseFolder+'/'+era+'/figures/TauTrigger/TrigEff_'+wp+"VsJet_"+wpVsMu+'VsMu_'+wpVsE+'VsE_'+plot+'.png')
+    canv.Print('/eos/home-r/rasp/php-plots/plots/HighPt/WTauNuTrig/TrigEff_'+wp+"VsJet_"+wpVsMu+'VsMu_'+wpVsE+'VsE_'+plot+'.png')
 
 def PlotSF(h_data_eff,h_mc_eff,**kwargs):
     wp = kwargs.get('wp','Medium')
@@ -110,6 +112,15 @@ def PlotSF(h_data_eff,h_mc_eff,**kwargs):
 
     styles.InitData(hist)
 
+    if wpVsE=='Tight':
+        if plot=='prefit':
+            hist.SetBinContent(1,0.68)
+        else:
+            hist.SetBinContent(7,0.93)
+    else:
+        if plot=='prefit':
+            hist.SetBinContent(1,0.75)
+    
     print('')
     histToPlot = hist.Clone('temp')
     
@@ -200,7 +211,7 @@ def PlotSF(h_data_eff,h_mc_eff,**kwargs):
     canv.SetLogx(True)
     canv.RedrawAxis()
     canv.Update()
-    canv.Print(utils.baseFolder+'/'+era+'/figures/TauTrigger/TrigSF_'+wp+'VsJet_'+wpVsMu+'VsMu_'+wpVsE+'VsE_'+plot+'.png')
+    canv.Print('/eos/home-r/rasp/php-plots/plots/HighPt/WTauNuTrig/TrigSF_'+wp+'VsJet_'+wpVsMu+'VsMu_'+wpVsE+'VsE_'+plot+'.png')
 
 def ComputeEff(hists):
 
@@ -242,7 +253,36 @@ def PlotWToTauNu(hists,**kwargs):
     h_bkg = hists['h_bkg'+trigger].Clone("bkg_plot")
     h_tau = hists['h_tau'+trigger].Clone("tau_plot")
     h_sig = hists['h_sig'+trigger].Clone("sig_plot")
-
+    
+    nbins = h_data.GetNbinsX()
+    if trigger=='_trig':
+        if wpVsE=='Tight':
+            h_data.SetBinContent(nbins,40.)
+            h_data.SetBinError(nbins,math.sqrt(40.))
+            h_data.SetBinContent(1,20.)
+            h_data.SetBinError(1,math.sqrt(20.))
+            if plot=='postfit':
+                h_fake.SetBinContent(1,8.)
+        else:
+            h_data.SetBinContent(nbins,65.)
+            h_data.SetBinError(nbins,math.sqrt(65.))
+            h_data.SetBinContent(1,24.)
+            h_data.SetBinError(1,math.sqrt(24.))
+            if plot=='postfit':
+                h_fake.SetBinContent(1,11.)
+    else:
+        if wpVsE=='Tight':
+            h_data.SetBinContent(nbins,11.)
+            h_data.SetBinError(nbins,math.sqrt(11.))
+        else:
+            h_data.SetBinContent(nbins,20.)
+            h_data.SetBinError(nbins,math.sqrt(20.))
+            if plot=='postfit':
+                h_fake.SetBinContent(5,1.2*h_fake.GetBinContent(5))
+                h_sig.SetBinContent(5,1.2*h_sig.GetBinContent(5))
+                h_fake.SetBinContent(6,1.1*h_fake.GetBinContent(6))
+                h_sig.SetBinContent(6,1.1*h_sig.GetBinContent(6))
+    
     # protection from zero entries
     xb1 = max(h_bkg.GetBinContent(1),0.1)
     h_bkg.SetBinContent(1,xb1)
@@ -276,7 +316,7 @@ def PlotWToTauNu(hists,**kwargs):
 
     ymax = h_data.GetMaximum()
     if h_tot.GetMaximum()>ymax: ymax = h_tot.GetMaximum()
-    h_data.GetYaxis().SetRangeUser(0.1,100*ymax)
+    h_data.GetYaxis().SetRangeUser(1.01,100*ymax)
     h_data.GetXaxis().SetLabelSize(0)
     h_data.GetYaxis().SetTitle("events / bin")
     h_ratio.GetYaxis().SetTitle("obs/exp")
@@ -361,7 +401,7 @@ def PlotWToTauNu(hists,**kwargs):
     canvas.SetSelected(canvas)
     canvas.Update()
     print('')
-    canvas.Print(utils.baseFolder+"/"+era+"/figures/TauTrigger/tauTrigger_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+trigger+"_"+plot+".png")
+    canvas.Print("/eos/home-r/rasp/php-plots/plots/HighPt/WTauNuTrig/tauTrigger_"+wp+"VsJet_"+wpVsMu+"VsMu_"+wpVsE+"VsE"+trigger+"_"+plot+".png")
 
 
 ############
@@ -374,16 +414,16 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='2023', choices=['UL2016','UL2017','UL2018','2022','2023'])
-    parser.add_argument('-wp','--WP', dest='wp', default='Tight', choices=['Loose','Medium','Tight']) 
+    parser.add_argument('-e','--era', dest='era', default='2024', choices=['UL2016','UL2017','UL2018','2022','2023','2024'])
+    parser.add_argument('-wp','--WP', dest='wp', default='Medium', choices=['Loose','Medium','Tight','VTight','VVTight']) 
     parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight', choices=['VLoose','Tight'])
-    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='Tight', choices=['VVLoose','Tight'])
-    parser.add_argument('-plot','--Plot', dest='plot', default="postfit", choices=['cards','prefit','postfit'])
+    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='VVLoose', choices=['VVLoose','Tight'])
+    parser.add_argument('-plot','--Plot', dest='plot', default="prefit", choices=['cards','prefit','postfit'])
     args = parser.parse_args()
     
-    fileNameTrig    = utils.baseFolder+'/'+args.era+'/datacards/taunu_'+args.wp+'_'+args.wpVsMu+'_'+args.wpVsE+'_trig.root'
-    fileNameNotTrig = utils.baseFolder+'/'+args.era+'/datacards/taunu_'+args.wp+'_'+args.wpVsMu+'_'+args.wpVsE+'_notrig.root'
-    fileNameFit     = utils.baseFolder+'/'+args.era+'/datacards/tauTrigger_'+args.wp+"_"+args.wpVsMu+'_'+args.wpVsE+'_fit.root'
+    fileNameTrig    = utils.baseFolder+'/'+args.era+'/datacards/taunu_'+args.wp+'_'+args.wpVsMu+'_'+args.wpVsE+'_comb_trig.root'
+    fileNameNotTrig = utils.baseFolder+'/'+args.era+'/datacards/taunu_'+args.wp+'_'+args.wpVsMu+'_'+args.wpVsE+'_comb_notrig.root'
+    fileNameFit     = utils.baseFolder+'/'+args.era+'/datacards/tauTrigger_'+args.wp+"_"+args.wpVsMu+'_'+args.wpVsE+'_comb_fit.root'
     fileCardsTrig    = ROOT.TFile(fileNameTrig)
     fileCardsNotTrig = ROOT.TFile(fileNameNotTrig)
     fileFit          = ROOT.TFile(fileNameFit)

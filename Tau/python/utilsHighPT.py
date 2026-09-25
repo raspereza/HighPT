@@ -17,8 +17,16 @@ picoFolder='/eos/cms/store/group/phys_tau/rasp/HighPT'
 #######################
 #    base folder      #
 #######################
+# modify these folders appropriately
+# they should point to your private area 
+# "baseFolder" will contain datacards for statistical inference and
+# RooT files with the Fake Factors are
+# "figureFolder" will contain figures in png format with the plotted
+# control distributions and fake factors. It is recommended to
+# associate figureFolder with the CERN box data storage for easy
+# and direct monitoring of figures 
 baseFolder = '/afs/cern.ch/work/r/rasp/HighPT'
-figureFolder= '/eos/home-r/rasp/php-plots/plots/HighPt/'
+figureFolder = '/eos/home-r/rasp/php-plots/plots/HighPt/'
 
 ###################
 # Cross sections  #
@@ -133,11 +141,13 @@ sampleXSec_2025 = {
     "DYto2Tau_Bin-MLL-200to400" : 3.058*kfactor_dy_powheg,
     "DYto2Tau_Bin-MLL-400to800" : 0.2691*kfactor_dy_powheg,
     
+    "WtoLNu-2Jets_Bin-1J-PTLNu-40to100" : 4211.*kfactor_wj_amcatnlo,
     "WtoLNu-2Jets_Bin-1J-PTLNu-100to200" : 342.3*kfactor_wj_amcatnlo,
     "WtoLNu-2Jets_Bin-1J-PTLNu-200to400" : 21.84*kfactor_wj_amcatnlo,
     "WtoLNu-2Jets_Bin-1J-PTLNu-400to600" : 0.6845*kfactor_wj_amcatnlo,
     "WtoLNu-2Jets_Bin-1J-PTLNu-600" : 0.07753*kfactor_wj_amcatnlo,
     
+    "WtoLNu-2Jets_Bin-2J-PTLNu-40to100" : 1581.*kfactor_wj_amcatnlo,
     "WtoLNu-2Jets_Bin-2J-PTLNu-100to200" : 411.1*kfactor_wj_amcatnlo,
     "WtoLNu-2Jets_Bin-2J-PTLNu-200to400" : 53.59*kfactor_wj_amcatnlo,
     "WtoLNu-2Jets_Bin-2J-PTLNu-400to600" : 3.099*kfactor_wj_amcatnlo,
@@ -170,12 +180,11 @@ sampleXSec_2025 = {
     "WW" : 80.23*kfactor_ww,
     "WZ" : 29.1*kfactor_wz,
     "ZZ" : 12.75*kfactor_zz,
-
-    "WtoMuNu_M200" : 7.393*1.08,
-    "WtoTauNu_M200" : 7.910,
     
     "WstarMuNu" : 7.393*1.05,
     "WstarTauNu" : 7.910*1.10,
+#    "WstarMuNu" : 7.698,
+#    "WstarTauNu" : 7.701,
 }
 
 sampleXSec_2024 = {
@@ -189,11 +198,13 @@ sampleXSec_2024 = {
     "DYto2Tau_Bin-MLL-200to400" : 3.058*kfactor_dy_powheg,
     "DYto2Tau_Bin-MLL-400to800" : 0.2691*kfactor_dy_powheg,
     
+    "WtoLNu-2Jets_Bin-1J-PTLNu-40to100" : 4211.*kfactor_wj_amcatnlo,
     "WtoLNu-2Jets_Bin-1J-PTLNu-100to200" : 342.3*kfactor_wj_amcatnlo,
     "WtoLNu-2Jets_Bin-1J-PTLNu-200to400" : 21.84*kfactor_wj_amcatnlo,
     "WtoLNu-2Jets_Bin-1J-PTLNu-400to600" : 0.6845*kfactor_wj_amcatnlo,
     "WtoLNu-2Jets_Bin-1J-PTLNu-600" : 0.07753*kfactor_wj_amcatnlo,
     
+    "WtoLNu-2Jets_Bin-2J-PTLNu-40to100" : 1581.*kfactor_wj_amcatnlo,
     "WtoLNu-2Jets_Bin-2J-PTLNu-100to200" : 411.1*kfactor_wj_amcatnlo,
     "WtoLNu-2Jets_Bin-2J-PTLNu-200to400" : 53.59*kfactor_wj_amcatnlo,
     "WtoLNu-2Jets_Bin-2J-PTLNu-400to600" : 3.099*kfactor_wj_amcatnlo,
@@ -227,11 +238,10 @@ sampleXSec_2024 = {
     "WZ" : 29.1*kfactor_wz,
     "ZZ" : 12.75*kfactor_zz,
 
-    "WtoMuNu_M200" : 7.393*1.08,
-    "WtoTauNu_M200" : 7.910,
-    
-    "WstarMuNu" : 7.393*1.08,
+    "WstarMuNu" : 7.393*1.05,
     "WstarTauNu" : 7.910,
+#    "WstarMuNu" : 7.698,
+#    "WstarTauNu" : 7.701,
 }
 
 sampleXSec_2023 = {
@@ -520,6 +530,16 @@ PNetVSjetWPs = {
     'MegaTight': 0.9920,
 }
 
+PNetVSeWPs = {
+    'VVLoose': 0.3547,
+    'Tight': 0.9897,
+}
+
+PNetVSmuWPs = {
+    'VLoose': 0.2399,
+    'Tight': 0.9451,
+}
+
 UParTVSjetWPs = {
     'VVVLoose': 0.0,
     'VVLoose': 0.0,
@@ -532,6 +552,54 @@ UParTVSjetWPs = {
     'SuperTight': 0.70,
     'KiloTight': 0.80,
     'MegaTight': 0.90,
+}
+
+UParTVSeWPs = {
+    'VVLoose': 0.2343,
+    'Tight': 0.9835,
+}
+
+UParTVSmu = {
+    'VLoose': 0.0025,
+    'Tight': 0.8359,
+}
+
+RelaxedDeepTau = {
+    'VLoose' : 'VLoose',
+    'Loose'  : 'Loose',
+    'Medium' : 'Medium',
+    'Tight'  : 'Tight',
+    'VTight' : 'VTight',
+    'VVTight': 'VTight',
+}
+
+RelaxedPNet = {
+    'VLoose' : 'VLoose',
+    'Loose'  : 'Loose',
+    'Medium' : 'Medium',
+    'Tight'  : 'Tight',
+    'VTight' : 'VTight',
+    'VVTight': 'VVTight',
+    'SuperTight': 'VVTight',
+    'KiloTight' : 'VVTight',
+    'MegaTight' : 'VVTight',
+}
+
+RelaxedUParT = {
+    'Loose'  : 'Loose',
+    'Medium' : 'Medium',
+    'Tight'  : 'Tight',
+    'VTight' : 'VTight',
+    'VVTight': 'VVTight',
+    'SuperTight': 'VVTight',
+    'KiloTight' : 'VVTight',
+    'MegaTight' : 'VVTight',
+}
+
+RelaxedTauID = {
+    'deeptau': RelaxedDeepTau,
+    'pnet'   : RelaxedPNet,
+    'upart'  : RelaxedUParT,
 }
 
 
@@ -547,12 +615,11 @@ uncs = ['JES','Unclustered','taues_1pr','taues_1pr1pi0','taues_3pr','taues_3pr1p
 ##################################
 
 xbinsPt = {
-    'pt_2' : [100, 125, 150, 175, 200, 300, 400, 3000],
-    'jpt_match_2' : [100, 125, 150, 200, 300, 400, 3000],
+    'pt_2' : [100, 125, 150, 175, 200, 300, 3000],
+    'jpt_match_2' : [100, 125, 150, 200, 300, 3000],
 }
 
 xbinsPtTrig = { 
-#    'pt_2' : [100, 150, 200, 300, 3000],
     'pt_2' : [100,300,3000],
     'jpt_match_2' : [100, 300, 3000]
 }

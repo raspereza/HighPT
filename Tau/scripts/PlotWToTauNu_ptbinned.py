@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# Author: Alexei Raspereza (December 2022)
+# Author: Alexei Raspereza (November 2023)
 # High pT tau ID efficiency measurements binned in pT:
 # plotting postfit and prefit distributions 
 # in the signal region (W*->tau+v) 

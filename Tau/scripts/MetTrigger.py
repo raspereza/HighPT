@@ -19,8 +19,9 @@ RunMCSampleNames = {
 #    "2022": ['WJetsToLNu-4Jets','WJetsToLNu-4Jets_1J','WJetsToLNu-4Jets_2J','WJetsToLNu-4Jets_3J','WJetsToLNu-4Jets_4J','WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800'],
     "2022" : ['WtoLNu-4Jets_HT-100to400','WtoLNu-4Jets_HT-400to800'],
 #    "2023": ['WtoLNu-4Jets','WtoLNu-4Jets_1J','WtoLNu-4Jets_2J','WtoLNu-4Jets_3J','WtoLNu-4Jets_4J','WtoLNu_HT100to400','WtoLNu_HT400to800']
-    "2023": ['WtoLNu_HT100to400','WtoLNu_HT400to800']
-    
+#    "2024": ['WtoLNu_HT100to400','WtoLNu_HT400to800'],
+    "2024": ['WtoLNu-2Jets_Bin-1J-PTLNu-100to200','WtoLNu-2Jets_Bin-1J-PTLNu-200to400','WtoLNu-2Jets_Bin-1J-PTLNu-400to600','WtoLNu-2Jets_Bin-1J-PTLNu-600','WtoLNu-2Jets_Bin-2J-PTLNu-100to200','WtoLNu-2Jets_Bin-2J-PTLNu-200to400','WtoLNu-2Jets_Bin-2J-PTLNu-400to600','WtoLNu-2Jets_Bin-2J-PTLNu-600'],
+    "2025": ['WtoLNu-2Jets_Bin-1J-PTLNu-100to200','WtoLNu-2Jets_Bin-1J-PTLNu-200to400','WtoLNu-2Jets_Bin-1J-PTLNu-400to600','WtoLNu-2Jets_Bin-1J-PTLNu-600','WtoLNu-2Jets_Bin-2J-PTLNu-100to200','WtoLNu-2Jets_Bin-2J-PTLNu-200to400','WtoLNu-2Jets_Bin-2J-PTLNu-400to600','WtoLNu-2Jets_Bin-2J-PTLNu-600'],
 }
 
 def DrawEfficiency(histdata,histmc,era,legend):
@@ -57,7 +58,8 @@ def DrawEfficiency(histdata,histmc,era,legend):
     styles.CMS_label(canv,era=era)
 
     canv.Update()
-    canv.Print(utils.baseFolder+'/'+era+'/figures/MetTrigger/mettrig_'+era+'_'+legend+'.png')
+    figureFolder = '/eos/home-r/rasp/php-plots/plots/HighPt/MetTrigger'
+    canv.Print(figureFolder+'/mettrig_'+era+'_'+legend+'_x.png')
     print 
 
 def main(args):
@@ -65,7 +67,7 @@ def main(args):
     print('')
 
     channel = "munu"
-    basefolder = utils.picoFolder+'/'+args.era
+    basefolder = utils.picoFolder
     xbinsLt200 = [100,120,140,160,180,200,220,240,280,1000]
     xbinsGt200 = [100,150,175,200,220,240,260,280,1000]
     basecut = 'met>50&&mt_1>50&&pt_1>30&&fabs(eta_1)<2.1&&metfilter>0.5'
@@ -163,7 +165,7 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='2023',choices=['UL2016','UL2016_preVFP','UL2016_postVFP','UL2017','UL2018','2022','2023'])
+    parser.add_argument('-e','--era', dest='era', default='2025',choices=['UL2016','UL2016_preVFP','UL2016_postVFP','UL2017','UL2018','2022','2023','2024','2025'])
     args = parser.parse_args() 
 
     main(args)

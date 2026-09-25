@@ -17,8 +17,8 @@ class TauNuCuts:
         self.ptLowerCut = kwargs.get('ptLowerCut',100.)
         self.ptUpperCut = kwargs.get('ptUpperCut',2000.)
         self.metdphiCut = kwargs.get('metdphiCut',2.8)
-        self.antiMu = kwargs.get('antiMu',4)
-        self.antiE  = kwargs.get('antiE',2)
+        self.antiMu = kwargs.get('antiMu','Tight')
+        self.antiE  = kwargs.get('antiE','VVLoose')
         self.etaHotMin = kwargs.get('etaHotMin',-1.380)
         self.etaHotMax = kwargs.get('etaHotMax',-1.196)
         self.phiHotMin = kwargs.get('phiHotMin',0.754)
@@ -49,12 +49,14 @@ def RunSamples(samples,var,cut,xbins,name,**kwargs):
     verbosity = kwargs.get('verbosity',False)
     if verbosity:
         print('')
-        print("Running",name,var,cut)
+        print("Running",name)
     nbins = len(xbins)-1
     #    print(xbins)
     #    exit
     hist = ROOT.TH1D(name,"",nbins,array('d',list(xbins)))
     for sampleName in samples:
+        if verbosity:
+            print("Processing ",sampleName)
         sample = samples[sampleName]
         histsample = sample.CreateHisto(var,weight,cut,xbins,name)
         hist.Add(hist,histsample,1.,1.)
@@ -158,7 +160,6 @@ class sampleHighPt:
 
     def SetTauNuConfig(self,fakeFactorHighPt,WP,tauNuCuts):
         self.fakeFactorHighPt = fakeFactorHighPt
-        self.WP_index = utils.tauIntWPs[WP]
         self.WPvsJet = WP
         self.tauNuCuts = tauNuCuts
 
@@ -195,8 +196,8 @@ class sampleHighPt:
                         name = '%s_%s_%s_%s'%(sellabel,label,trigLabel,uncLabel)
                         histname = self.sampleName+'_'+name
                         hists[name] = ROOT.TH1D(histname,"",nbins,array('d',list(xbins)))
-#        for hist in hists:
-#            print(hist)
+        #        for hist in hists:
+        #    print(hist)
         return hists
 
     def CreateHistosTauNu(self,var,bins,**kwargs):
@@ -219,10 +220,21 @@ class sampleHighPt:
 
         # initialization
         nbins = len(bins)-1
-        wp_index = self.WP_index
-        WPvsJet = self.WPvsJet
         cuts = self.tauNuCuts
+        tagger = cuts.taggerOption
+        WPvsJet = self.WPvsJet
+        WPvsJetRelaxed = utils.RelaxedTauID[tagger][WPvsJet]
         fakeFactor = self.fakeFactorHighPt
+        wp_index = utils.tauIntWPs[WPvsJet]
+        wp_relaxed = utils.tauIntWPs[WPvsJetRelaxed]
+        cutRelaxed = 0.2
+        cutTauID = 0.5
+        if tagger=='upart':
+            cutRelaxed = utils.UParTVSjetWPs[WPvsJetRelaxed]
+            cutID = utils.UParTVSjetWPs[WPvsJet]
+        elif tagger=='pnet':
+            cutRelaxed = utils.PNetVSjetWPs[WPvsJetRelaxed]
+            cutID = utils.PNetVSjetWPs[WPvsJet]
 
         # creating histograms 
         hists = self.DeclareHistos(nbins,bins)
@@ -244,7 +256,11 @@ class sampleHighPt:
         m_1         = np.zeros(1,dtype='f')
         HT          = np.zeros(1,dtype='f') 
         rawPNetVSjet_1  = np.zeros(1,dtype='f')
+        rawPNetVSmu_1   = np.zeros(1,dtype='f')
+        rawPNetVSe_1    = np.zeros(1,dtype='f')
         rawUParTVSjet_1 = np.zeros(1,dtype='f')
+        rawUParTVSmu_1  = np.zeros(1,dtype='f')
+        rawUParTVSe_1   = np.zeros(1,dtype='f')
         qConfPNet_1     = np.zeros(1,dtype='f')
         qConfUParT_1    = np.zeros(1,dtype='f')
        
@@ -299,7 +315,11 @@ class sampleHighPt:
                 
 
         tree.SetBranchAddress('rawPNetVSjet_1',rawPNetVSjet_1)
+        tree.SetBranchAddress('rawPNetVSe_1',rawPNetVSe_1)
+        tree.SetBranchAddress('rawPNetVSmu_1',rawPNetVSmu_1)
         tree.SetBranchAddress('rawUParTVSjet_1',rawUParTVSjet_1)
+        tree.SetBranchAddress('rawUParTVSe_1',rawUParTVSe_1)
+        tree.SetBranchAddress('rawUParTVSmu_1',rawUParTVSmu_1)
         tree.SetBranchAddress('qConfPNet_1',qConfPNet_1)
         tree.SetBranchAddress('qConfUParT_1',qConfUParT_1)
 
@@ -357,15 +377,32 @@ class sampleHighPt:
 
 
             dmcut = dm_1[0]==0 or dm_1[0]==1 or dm_1[0]==10 or dm_1[0]==11
-            notQPNet = abs(qConfPNet_1[0])<0.2
+            dmcut_not = dm_1[0]!=0 and dm_1[0]!=1 and dm_1[0]!=10 and dm_1[0]!=11
+            
             notQUParT = abs(qConfUParT_1[0])<0.2
             
+            antiElectronDeepTau = idDeepTau2018v2p5VSe_1[0]>=utils.tauVsEleIntWPs[cuts.antiE]
+            antiMuonDeepTau = idDeepTau2018v2p5VSmu_1[0]>=utils.tauVsMuIntWPs[cuts.antiMu]
+            antiLeptonDeepTau = antiElectronDeepTau and antiMuonDeepTau and dmcut
+            # tau discriminators against e and mu + qConf(PNet or UParT)
             if cuts.taggerOption=='deeptau':
-                if not dmcut: continue
-            if cuts.taggerOption=='pnet':
+                if not antiLeptonDeepTau: continue
+            if cuts.taggerOption=='pnet' or 'pnet_hps':
+                notQPNet = abs(qConfPNet_1[0])<0.2
                 if notQPNet: continue
+                antiMuonPNet = rawPNetVSmu_1[0]>=utils.PNetVSmuWPs[cuts.antiMu]
+                antiElectronPNet = rawPNetVSe_1[0]>=utils.PNetVSeWPs[cuts.antiE]
+                antiLeptonPNet = antiMuonPNet and antiElectronPNet and dmcut_not
+                antiLepton = antiLeptonDeepTau or antiLeptonPNet
+                if not antiLepton: continue
             if cuts.taggerOption=='upart':
+                notQUParT = abs(qConfUParT_1[0])<0.2
                 if notQUParT: continue
+                antiMuonUParT = rawUParTVSmu_1[0]>=utils.UParTVSmuWPs[cuts.antiMu]
+                antiElectronUParT = rawUParTVSe_1[0]>=utils.UParTVSeWPs[cuts.antiE]
+                antiLeptonUParT = antiMuonUParT and antiElectronUParT and dmcut_not
+                antiLepton = antiLeptonDeepTau or antiLeptonUParT
+                if not antiLepton: continue
 
             
             # kinematic cuts
@@ -380,13 +417,6 @@ class sampleHighPt:
             if mhtnomu[0]<cuts.mhtNoMuCut: continue
 
             
-            # tau discriminator against e and mu and jet
-            if idDeepTau2018v2p5VSe_1[0]<cuts.antiE: continue
-            if idDeepTau2018v2p5VSmu_1[0]<cuts.antiMu: continue
-            if cuts.taggerOption=='deeptau':
-                if idDeepTau2018v2p5VSjet_1[0]<1:
-                    continue
-                
             # remove hot region
             if cuts.hotJetVeto:
                 hotspot = eta_1[0]>cuts.etaHotMin and eta_1[0]<cuts.etaHotMax and phi_1[0]>cuts.phiHotMin and phi_1[0]<cuts.phiHotMax
@@ -435,13 +465,13 @@ class sampleHighPt:
 
             # signal region
             SignalRegion = idDeepTau2018v2p5VSjet_1[0]>=wp_index
-            SideBand = idDeepTau2018v2p5VSjet_1[0]<3 and idDeepTau2018v2p5VSjet_1[0]>0
-            if cuts.taggerOption=='pnet':
+            SideBand = idDeepTau2018v2p5VSjet_1[0]<wp_relaxed and idDeepTau2018v2p5VSjet_1[0]>0
+            if tagger=='pnet':
                 SignalRegion = rawPNetVSjet_1[0]>=utils.PNetVSjetWPs[WPvsJet] 
-                SideBand = rawPNetVSjet_1[0]<utils.PNetVSjetWPs['Loose'] and rawPNetVSjet_1[0]>utils.PNetVSjetWPs['VVVLoose']
-            elif cuts.taggerOption=='upart':
+                SideBand = rawPNetVSjet_1[0]<cutRelaxed and rawPNetVSjet_1[0]>utils.PNetVSjetWPs['VVVLoose']
+            elif tagger=='upart':
                 SignalRegion = rawUParTVSjet_1[0]>=utils.UParTVSjetWPs[WPvsJet]
-                SideBand = rawUParTVSjet_1[0]<utils.UParTVSjetWPs['Loose'] and rawPNetVSjet_1[0]>utils.PNetVSjetWPs['VVVLoose']
+                SideBand = rawUParTVSjet_1[0]<cutRelaxed and rawPNetVSjet_1[0]>utils.PNetVSjetWPs['VVVLoose']
 
             # signal region
             if SignalRegion:

@@ -1,12 +1,12 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # Author: Alexei Raspereza (December 2022)
 # High pT tau ID efficiency measurements 
 # Plotting macro: control region (W*->mu+v) 
 import ROOT
-import TauFW.Plotter.HighPT.utilsHighPT as utils
+import HighPT.Tau.utilsHighPT as utils
 from array import array
 import math
-import TauFW.Plotter.HighPT.stylesHighPT as styles
+import HighPT.Tau.stylesHighPT as styles
 import os
 
 ##########################
@@ -101,9 +101,9 @@ def Plot(h_data_input,h_tot_input,h_bkg_input,h_sig_input,era,var,postFit):
     print
     print('Creating control plot')
     if postFit:
-        canvas.Print(utils.figuresFolderWMuNu+"/wmunu_"+era+"_postFit.png")
+        canvas.Print(utils.baseFolder+"/"+era+"/figures/WMuNu/wmunu_"+era+"_postFit.png")
     else:
-        canvas.Print(utils.figuresFolderWMuNu+"/wmunu_"+era+"_preFit.png")
+        canvas.Print(utils.baseFolder+"/"+era+"/figures/WMuNu/wmunu_"+era+"_preFit.png")
 
 ############
 ### MAIN ###
@@ -115,16 +115,24 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e','--era', dest='era', default='UL2018', help="""Era : UL2017, UL2018""")
-    parser.add_argument('-wp','--WP', dest='wp', default='Medium', help=""" tau ID WP : Loose, Medium, Tight, VTight, VVTight""")
-    parser.add_argument('-var','--variable', dest='variable', default='mt_1', help=""" Variable to plot""")
-    parser.add_argument('-post','--PostFit',dest='postfit',default=False, help=""" Postfit (true), Prefit (false) """)
+    parser.add_argument('-e','--era', dest='era', default='2024', choices=['UL2016','UL2017','UL2018','2022','2023','2024'])
+    parser.add_argument('-wp','--WP', dest='wp', default='Medium',choices=['Loose','Medium','Tight'])
+    parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight',choices=['VLoose','Tight'])
+    parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='VVLoose',choices=['VVLoose','Tight'])
+    parser.add_argument('-var','--variable', dest='variable', default='mt_1')
+    parser.add_argument('-post','--postfit',dest='postfit',action='store_true')
+    parser.add_argument('-ff_par','--ff_par',dest='ff_par',default='pttau',choices=['pttau','ptjet'])
+    parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
+    parser.add_argument('-m','--meas',dest='meas',default='ptbinned',choices=['incl','ptbinned'])
+
     args = parser.parse_args()
-    basedir = utils.datacardsFolder
-    fullpathFit = basedir +"/tauID_"+args.wp+"_"+args.era+"_fit.root"
-    fileFit = ROOT.TFile(fullpathFit,"read")
-    fullpathCards = basedir + "/munu_"+args.era+".root" 
-    fileCards = ROOT.TFile(fullpathCards,"read")
+
+    fullpathFit = '%s/%s/datacards_%s_%s_%s_%s/'%(utils.baseFolder,args.era,args.ff,args.wp,args.wpVsMu,args.wpVsE)
+    filenameCards = '%s/%s/datacards_munu/munu_%s.root'%(utils.baseFolder,args.era,args.era)
+    suffixFit = 'ptbinned'
+    filenameFit = '%s/tauID_%s_%s_%s_%s_%s_%s_fit.root'%(fullpathFit,args.ff_par,args.ff,args.wp,args.wpVsMu,args.wpVsE,args.meas)
+    fileFit = ROOT.TFile(filenameFit,"read")
+    fileCards = ROOT.TFile(filenameCards,"read")
 
     folder='shapes_prefit'
     if args.postfit:

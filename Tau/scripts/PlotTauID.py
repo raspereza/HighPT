@@ -168,7 +168,7 @@ def PlotSF(sf_lowpt,sf_highpt,**kwargs):
     canv.SetGridy(True)
     canv.Modified()
     canv.Update()
-    canv.Print('/afs/cern.ch/user/r/rasp/public/highPT_comp/DeepTau_'+era+'_'+WPvsJet+'vsJet_'+WPvsMu+'vsMu_'+WPvsE+'vsE.png')
+    canv.Print('/eos/home-r/rasp/php-plots/plots/HighPt/DeepTau_'+era+'_'+WPvsJet+'vsJet_'+WPvsMu+'vsMu_'+WPvsE+'vsE.png')
 
 
 ############

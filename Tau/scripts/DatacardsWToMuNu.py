@@ -8,14 +8,13 @@ import HighPT.Tau.utilsHighPT as utils
 import HighPT.Tau.stylesHighPT as styles
 import HighPT.Tau.analysisHighPT as analysis
 from array import array
-from HighPT.Tau.FakeFactor import FakeFactorHighPt
 import os
-import CombineHarvester.CombineTools.ch as ch
+from CombineHarvester.CombineTools import ch
 
 #################################
 #     definition of cuts        #
 #################################
-basecut = 'pt_1>120&&fabs(eta_1)<2.1&&metfilter>0.5&&njets==0&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&idMedium_1>0.5&&njets==0&&iso_1<0.15'
+basecut = 'pt_1>120&&fabs(eta_1)<2.4&&metfilter>0.5&&njets==0&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&idMedium_1>0.5&&njets==0&&iso_1<0.15'
 
 metCut = "130"
 mtCut  = "200"
@@ -28,12 +27,17 @@ RunBkgSampleNames = {
     'Run2' : ['DYJetsToLL_M-50','TTTo2L2Nu','TTToSemiLeptonic','TTToHadronic','ST_t-channel_antitop_4f_InclusiveDecays','ST_t-channel_top_4f_InclusiveDecays','ST_tW_antitop_5f_NoFullyHadronicDecays','ST_tW_top_5f_NoFullyHadronicDecays','WW','WZ','ZZ'],
     '2022' : ['DYto2L-4Jets_MLL-50','TTTo2L2Nu','TTtoLNu2Q','TTto4Q','TBbarQ_t-channel','TbarBQ_t-channel','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ'],
     '2023' : ['DYto2L-4Jets_MLL-50','TTto2L2Nu','TTtoLNu2Q','TTto4Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ'],
+    '2024' : ['DYto2Mu_Bin-MLL-50to120','DYto2Mu_Bin-MLL-120to200','DYto2Mu_Bin-MLL-200to400','DYto2Mu_Bin-MLL-400to800','DYto2Tau_Bin-MLL-50to120','DYto2Tau_Bin-MLL-120to200','DYto2Tau_Bin-MLL-200to400','DYto2Tau_Bin-MLL-400to800','WtoLNu-2Jets_Bin-1J-PTLNu-100to200','WtoLNu-2Jets_Bin-1J-PTLNu-200to400','WtoLNu-2Jets_Bin-1J-PTLNu-400to600','WtoLNu-2Jets_Bin-1J-PTLNu-600','WtoLNu-2Jets_Bin-2J-PTLNu-100to200','WtoLNu-2Jets_Bin-2J-PTLNu-200to400','WtoLNu-2Jets_Bin-2J-PTLNu-400to600','WtoLNu-2Jets_Bin-2J-PTLNu-600','TTto2L2Nu','TTtoLNu2Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ'],
+    
+    '2025' : ['DYto2Mu_Bin-MLL-50to120','DYto2Mu_Bin-MLL-120to200','DYto2Mu_Bin-MLL-200to400','DYto2Mu_Bin-MLL-400to800','DYto2Tau_Bin-MLL-50to120','DYto2Tau_Bin-MLL-120to200','DYto2Tau_Bin-MLL-200to400','DYto2Tau_Bin-MLL-400to800','WtoLNu-2Jets_Bin-1J-PTLNu-100to200','WtoLNu-2Jets_Bin-1J-PTLNu-200to400','WtoLNu-2Jets_Bin-1J-PTLNu-400to600','WtoLNu-2Jets_Bin-1J-PTLNu-600','WtoLNu-2Jets_Bin-2J-PTLNu-100to200','WtoLNu-2Jets_Bin-2J-PTLNu-200to400','WtoLNu-2Jets_Bin-2J-PTLNu-400to600','WtoLNu-2Jets_Bin-2J-PTLNu-600','TTto2L2Nu','TTtoLNu2Q','TWminustoLNu2Q','TWminusto2L2Nu','TbarWplustoLNu2Q','TbarWplusto2L2Nu','WW','WZ','ZZ'],
 }
 
 RunSigSampleNames = { 
     "Run2" : ['WToMuNu_M-200'],
     "2022" : ['WtoMuNu'],
-    "2023" : ['WtoMuNu']
+    "2023" : ['WtoMuNu'],
+    "2024" : ['WstarMuNu'],
+    "2025" : ['WstarMuNu'],
 }
 
 XTitle = {
@@ -47,7 +51,7 @@ XTitle = {
 
 def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,**kwargs):
 
-    era = kwargs.get('era','2023')
+    era = kwargs.get('era','2025')
     var = kwargs.get('var','mt_1')
     plotLegend = kwargs.get('plotLegend',True)
 
@@ -64,9 +68,14 @@ def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,**kwargs):
     # log-normal systematic uncertainties (5% signal, 10% background)
     e_sig_sys = 0.05
     e_bkg_sys = 0.20
+    tot_sig = 0.0
+    tot_bkg = 0.0
+    tot_data = 0.0
     for i in range(1,nbins+1):
         x_sig = h_sig.GetBinContent(i)
         x_bkg = h_bkg.GetBinContent(i)
+        tot_sig += x_sig
+        tot_bkg += x_bkg 
         e_sig_stat = h_sig.GetBinError(i)
         e_sig = math.sqrt(e_sig_stat*e_sig_stat+e_sig_sys*e_sig_sys*x_sig*x_sig)
         h_sig.SetBinError(i,e_sig)
@@ -76,9 +85,16 @@ def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,**kwargs):
         xlower = int(h_data.GetBinLowEdge(i))
         xupper = int(h_data.GetBinLowEdge(i+1))
         x_data = h_data.GetBinContent(i)
+        tot_data += x_data
         print('[%4i,%4i] ->  data = %5.0f   W = %5.0f   bkg = %4.0f'%(xlower,xupper,x_data,x_sig,x_bkg))
-        
 
+    tot_mc = tot_sig + tot_bkg
+    print('')
+    print('bkgd     : %5.0f'%(tot_bkg))
+    print('W*->mu+v : %5.0f'%(tot_sig))
+    print('total    : %5.0f'%(tot_mc))
+    print('data     : %5.0f'%(tot_data))
+        
     print('')
     h_sig.Add(h_sig,h_bkg,1.,1.)
     h_tot = h_sig.Clone("total")
@@ -158,8 +174,12 @@ def PlotWToMuNu(h_data_input,h_bkg_input,h_sig_input,**kwargs):
     canvas.SetSelected(canvas)
     canvas.Update()
     print('')
-    print('Creating control plot')
-    canvas.Print(utils.baseFolder+"/"+era+"/figures/WMuNu/wmunu_"+var+"_"+era+".png")
+
+    outdir = utils.figureFolder+'/WMuNu'
+    outfilename = outdir+'/wmunu_'+var+'_'+era+'.png'
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+    canvas.Print(outfilename)
 
 def CreateCardsWToMuNu(file_name,datacards_folder,uncs,era):
     
@@ -202,7 +222,7 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('-e', '--era', dest='era', default='2023', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023'])
+    parser.add_argument('-e', '--era', dest='era', default='2024', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023', '2024', '2025'])
     parser.add_argument('-var', '--variable', dest='variable', nargs='+', default=['mt_1'], choices=['mt_1', 'pt_1', 'met', 'phi_1', 'eta_1', 'metphi'])
     args = parser.parse_args()
     period = args.era
@@ -217,7 +237,7 @@ if __name__ == "__main__":
 
     def adjust_arguments():
         parser = ArgumentParser()
-        parser.add_argument('-e', '--era', dest='era', default='2023', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023'])
+        parser.add_argument('-e', '--era', dest='era', default='2024', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023','2024','2025'])
         parser.add_argument('-var', '--variable', dest='variable', nargs='+', default=['mt_1'], choices=['mt_1', 'pt_1', 'met', 'phi_1', 'eta_1', 'metphi'])
         args = parser.parse_args()
 
@@ -229,7 +249,7 @@ if __name__ == "__main__":
         while True:
             choice = input("Enter your choice (1-3): ").strip()
             if choice == "1":
-                args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023): ").strip()
+                args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023, 2024, 2025): ").strip()
             elif choice == "2":
                 new_variables = input("Enter the variable(s) to plot separated by space (mt_1 pt_1 met phi_1 eta_1 metphi): ").strip().split()
                 args.variable = [v for v in new_variables if v in ['mt_1', 'pt_1', 'met', 'phi_1', 'eta_1', 'metphi']]
@@ -260,7 +280,7 @@ if __name__ == "__main__":
     }
 
 
-    basefolder = utils.picoFolder+'/'+args.era
+    basefolder = utils.picoFolder
     for var in args.variable:
         
         xbins = xbins_var[var]
@@ -308,13 +328,13 @@ if __name__ == "__main__":
 
         cut_data = basecut + "&&" + jmetcut
         cut = basecut + "&&" + jmetcut
-        hist_data = analysis.RunSamples(singlemuSamples,var,cut_data,xbins,"data_obs")
-        hist_bkg  = analysis.RunSamples(bkgSamples,var,cut,xbins,"bkgd")
-        hist_sig  = analysis.RunSamples(sigSamples,var,cut,xbins,"wmunu")
+        hist_data = analysis.RunSamples(singlemuSamples,var,cut_data,xbins,"data_obs",verbosity=True)
+        hist_bkg  = analysis.RunSamples(bkgSamples,var,cut,xbins,"bkgd",verbosity=True)
+        hist_sig  = analysis.RunSamples(sigSamples,var,cut,xbins,"wmunu",verbosity=True)
 
         # making control plot
         plotlLegend = True
-        if var=='phi_1' or var=='eta_1':
+        if var=='phi_1' or var=='eta_1' or var=='metphi':
             plotlLegend = False
             
         for var in args.variable:
