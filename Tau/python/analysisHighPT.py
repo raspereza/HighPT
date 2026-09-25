@@ -387,22 +387,18 @@ class sampleHighPt:
             # tau discriminators against e and mu + qConf(PNet or UParT)
             if cuts.taggerOption=='deeptau':
                 if not antiLeptonDeepTau: continue
-            if cuts.taggerOption=='pnet' or 'pnet_hps':
-                notQPNet = abs(qConfPNet_1[0])<0.2
-                if notQPNet: continue
+            if cuts.taggerOption in ['pnet','pnet_hps']:
                 antiMuonPNet = rawPNetVSmu_1[0]>=utils.PNetVSmuWPs[cuts.antiMu]
                 antiElectronPNet = rawPNetVSe_1[0]>=utils.PNetVSeWPs[cuts.antiE]
-                antiLeptonPNet = antiMuonPNet and antiElectronPNet and dmcut_not
-                antiLepton = antiLeptonDeepTau or antiLeptonPNet
-                if not antiLepton: continue
+                antiLeptonPNet = antiMuonPNet and antiElectronPNet
+                if not antiLeptonPNet: continue
+                if cuts.taggerOption=='pnet_hps':
+                    if not dmcut: continue
             if cuts.taggerOption=='upart':
-                notQUParT = abs(qConfUParT_1[0])<0.2
-                if notQUParT: continue
                 antiMuonUParT = rawUParTVSmu_1[0]>=utils.UParTVSmuWPs[cuts.antiMu]
                 antiElectronUParT = rawUParTVSe_1[0]>=utils.UParTVSeWPs[cuts.antiE]
-                antiLeptonUParT = antiMuonUParT and antiElectronUParT and dmcut_not
-                antiLepton = antiLeptonDeepTau or antiLeptonUParT
-                if not antiLepton: continue
+                antiLeptonUParT = antiMuonUParT and antiElectronUParT
+                if not antiLeptonUParT: continue
 
             
             # kinematic cuts
