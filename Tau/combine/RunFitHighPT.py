@@ -45,7 +45,7 @@ def adjust_arguments(args):
         if choice == "1":
             args.era = input("Enter the era (UL2016, UL2017, UL2018, 2022, 2023, 2024, 2025): ").strip()
         elif choice == "2":
-            args.WPvsJet = input("Enter the WPvsJet (VLoose, Loose, Medium, Tight, VTight, VVTight, SuperTight, KiloTight, MegaTight): ").strip()
+            args.WPvsJet = input("Enter the WPvsJet (VLoose, Loose, Medium, Tight, VTight, VVTight): ").strip()
         elif choice == "3":
             args.WPvsMu = input("Enter the WPvsMu (VLoose, Tight): ").strip()
         elif choice == "4":
@@ -64,7 +64,7 @@ def adjust_arguments(args):
     return args
 
 # Ask the user which set of scripts they want to use
-user_choice = input("Which measuremrnt do you want to run? Enter 1 for pt_incl or 2 for pt_binned: ")
+user_choice = input("Which measurement do you want to run? Enter 1 for pt_incl or 2 for pt_binned: ")
 
 pt_binned = True
 # Select the set of scripts based on the user's choice
@@ -87,7 +87,7 @@ if __name__ == "__main__":
         parser.add_argument('-wpVsE', '--WPvsE', dest='WPvsE', default='VVLoose', choices=['VVLoose', 'Tight'])
         parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
         parser.add_argument('-ff_par','--ff_par',dest='ff_par',default='pttau',choices=['pttau','ptjet'])
-        parser.add_argument('-tagger','--tagger',dest='tagger',default='deeptau',choices=['deeptau','pnet','upart'])
+        parser.add_argument('-tagger','--tagger',dest='tagger',default='pnet',choices=['deeptau','pnet','upart'])
     elif pt_binned == True:
         parser.add_argument('-e', '--era', dest='era', default='2024', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023','2024','2025'])
         parser.add_argument('-wpVsJet', '--WPvsJet', dest='WPvsJet', default='Medium', choices=['VLoose','Loose', 'Medium', 'Tight', 'VTight', 'VVTight','SuperTight','KiloTight','MegaTight'])
@@ -95,7 +95,7 @@ if __name__ == "__main__":
         parser.add_argument('-wpVsE', '--WPvsE', dest='WPvsE', default='VVLoose', choices=['VVLoose', 'Tight'])
         parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
         parser.add_argument('-ff_par','--ff_par',dest='ff_par',default='pttau',choices=['pttau','ptjet'])
-        parser.add_argument('-tagger','--tagger',dest='tagger',default='deeptau',choices=['deeptau','pnet','upart'])
+        parser.add_argument('-tagger','--tagger',dest='tagger',default='pnet',choices=['deeptau','pnet','upart'])
     
     args = parser.parse_args()
 
