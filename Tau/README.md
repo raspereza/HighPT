@@ -58,8 +58,8 @@ Selection in the measurement `W*->tau+v` region:
 * additionally tau is required to pass predefined selection criteria of DeepTau or PNet algorithms 
 * tau pT > 100 GeV, |eta| < 2.4 
 * missing ET > 130 GeV
-* transverse mass of muon and missing pT > 200 GeV
-* azimuthal angle between muon and pTmiss > 2.8 radian,
+* transverse mass of tau and missing pT > 200 GeV
+* azimuthal angle between tau and pTmiss > 2.8 radian,
 * additional leptons and jets are vetoed.
 The `W*->tau+v` selection criteria are defined in the script [src/HighPT/Tau/scripts/DatacardsWToTauNu.py](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/DatacardsWToTauNu.py) 
 Optionally, one could apply cuts on tau pT to define measurement bin. The instruction on running this scripts are given below.
@@ -311,10 +311,10 @@ The RooT file contains the following distributions:
 For the simulated W*->tau+v events also templates with systematic variations are stored
 * JES (jet energy scale) Up/Down
 * Unclustered (unclustered energy) Up/Down
-* tau momentum scale variations
+* tau momentum scale variations Up/Down
 
 ## Fits with combine tool
-Fit to extract ID scale factor is run with the script [`src/HighPT/Tau/RunFitHighPT.py`](https://github.com/raspereza/HighPT/blob/main/Tau/RunFitHighPT.py)
+Fit to extract ID scale factor is run with the script [`src/HighPT/Tau/combine/RunFitHighPT.py`](https://github.com/raspereza/HighPT/blob/main/Tau/combine/RunFitHighPT.py)
 ```
 ./combine/RunFitHighPT.py
 ```
