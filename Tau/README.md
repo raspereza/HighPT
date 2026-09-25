@@ -20,7 +20,7 @@ git clone https://github.com/raspereza/HighPT.git HighPT
 scramv1 b -j 4
 ```
 
-All scripts at every step of the measurement will be run from the directory [`$CMSSW_BASE/src/HighPT/Tau`](https://github.com/raspereza/HighPT/tree/main/Tau)
+All scripts at every step of the measurement will be run from the directory [`src/HighPT/Tau`](https://github.com/raspereza/HighPT/tree/main/Tau)
 
 ## Overview of measurement strategy
 
@@ -45,7 +45,7 @@ Selection the sideband `W*->mu+v` region:
 * transverse mass of muon and pTmiss > 200 GeV, 
 * azimuthal angle between muon and pTmiss > 2.8 radian,
 * additional leptons and jets are vetoed.
-The `W*->mu+v` selection criteria are defined in the script [$CMSSW_BASE/src/HighPT/Tau/scripts/DatacardsWToMuNu.py](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/DatacardsWToMuNu.py)
+The `W*->mu+v` selection criteria are defined in the script [src/HighPT/Tau/scripts/DatacardsWToMuNu.py](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/DatacardsWToMuNu.py)
 
 For the `W*->mu+v` region three templates are saved in datacards for statistical inference: 
 1. observed data, 
@@ -61,7 +61,7 @@ Selection in the measurement `W*->tau+v` region:
 * transverse mass of muon and missing pT > 200 GeV
 * azimuthal angle between muon and pTmiss > 2.8 radian,
 * additional leptons and jets are vetoed.
-The `W*->tau+v` selection criteria are defined in the script [$CMSSW_BASE/src/HighPT/Tau/scripts/DatacardsWToTauNu.py](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/DatacardsWToTauNu.py) 
+The `W*->tau+v` selection criteria are defined in the script [src/HighPT/Tau/scripts/DatacardsWToTauNu.py](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/DatacardsWToTauNu.py) 
 Optionally, one could apply cuts on tau pT to define measurement bin. The instruction on running this scripts are given below.
 
 For the `W*->tau+v` region five templates are saved in datacards for statistical inference:
@@ -86,7 +86,7 @@ The jet->tau fake background in the application region comprises mainly three ty
 3. `QCD multijets`.
 
 Given that the largest contributions to the jet->tau fake background come from single boson production
-processes and QCD multijet events, it is reasonable to measure fake factors separately for QCD and electroweak (EW) single-boson production. We denote these FFs as FF(QCD) and FF(EW). They are measured using as a standard candles `W(->mu+v)+jet` and `dijets` samples. FFs are computed using script [$CMSSW_BASE/src/src/HighPT/Tau/scripts/FakeFactorHighPt.py](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/FakeFactorHighPt.py). The FFs are parameterized in several ways. For the nominal analysis, FF(QCD) and FF(EW) are measured in as a function of pT(tau) in bins of ratio pT(au)/pT(AK4jet), where pT(AK4jet) is the transverse momentum of AK4 jet seeding tau. Other kinds of parameterizations were used in the past for auxiliary and exploratory studies. 
+and QCD multijet events, it is reasonable to measure fake factors separately for QCD and electroweak (EW) single-boson production. We denote these FFs as FF(QCD) and FF(EW). They are measured using as a standard candles `W(->mu+v)+jet` and `dijets` samples. FFs are computed using script [src/HighPT/Tau/scripts/FakeFactorHighPt.py](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/FakeFactorHighPt.py). The FFs are parameterized in several ways. For the nominal analysis, FF(QCD) and FF(EW) are measured in as a function of pT(tau) in bins of ratio pT(au)/pT(AK4jet), where pT(AK4jet) is the transverse momentum of AK4 jet seeding tau. Other kinds of parameterizations were used in the past for auxiliary and exploratory studies. 
 
 The FF(QCD) and FF(EW) are applied as weights to events in the AR to construct templates Fakes_QCD and Fakes_EW. The distribution of the combined jet->tau fake background for a given inspected/inference variable `x` is obtained by weighting templates Fakes_QCD and Fakes_EW with `x`-dependent fractions of QCD and non-QCD (EW) events.
 ```
@@ -102,10 +102,10 @@ The whole analysis on 2024 and 2025 datasets is performed using as inputs specia
 * /eos/cms/store/group/phys_tau/rasp/HighPT/$ERA/munu : pre-selected muon+MET events; they are used to monitor control plots and construct templates in the `W*->mu+v` measurement region.
 
 Apart from executable macros (which are described below), code includes also auxiliarly scripts:
-* [$CMSSW_BASE/src/HighPT/Tau/python/stylesHighPT.py](https://github.com/raspereza/HighPT/blob/main/Tau/python/stylesHighPT.py) defines of drawing ROOT styles,
-* [$CMSSW_BASE/src/HighPT/Tau/python/utilsHighPT.py](https://github.com/raspereza/HighPT/blob/main/Tau/python/utilsHighPT.py) defines configuration and helper classes : name of the root directory with pico tuples, data and MC samples used in the analysis, selectors, fake factor reader, helper methods to handle histograms, etc. 
+* [src/HighPT/Tau/python/stylesHighPT.py](https://github.com/raspereza/HighPT/blob/main/Tau/python/stylesHighPT.py) defines of drawing ROOT styles,
+* [src/HighPT/Tau/python/utilsHighPT.py](https://github.com/raspereza/HighPT/blob/main/Tau/python/utilsHighPT.py) defines configuration and helper classes : name of the root directory with pico tuples, data and MC samples used in the analysis, selectors, fake factor reader, helper methods to handle histograms, etc. 
 
-The name of the root directory with picotuples is specified in the configuration file [$CMSSW_BASE/src/HighPT/Tau/python/utilsHighPT.py](https://github.com/raspereza/HighPT/blob/main/Tau/python/utilsHighPT.py) via the variable
+The name of the root directory with picotuples is specified in the configuration file [src/HighPT/Tau/python/utilsHighPT.py](https://github.com/raspereza/HighPT/blob/main/Tau/python/utilsHighPT.py) via the variable
 * `picoFolder=/eos/cms/store/group/phys_tau/rasp/HighPT`.
 
 In the same python file the analyst should also specify the folder where output of the analysis routine will be stored via string variable `baseFolder` and the folder where figures in the png format will be saved via string variable `figureFolder`. 
@@ -133,11 +133,11 @@ Alternative FF parameterizations:
 * FF = FF(mass(tau),decayMode)
 are also introduced. They were used in early studies aimed at optimization of the measurement. Currently they are not employed in the nominal measurements of the high pT tau ID SFs.
 
-FF are determined using script [$CMSSW_BASE/src/HighPT/Tau/scripts/FakeFactorHighPt.py](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/FakeFactorHighPt.py)
+FF are determined using script [src/HighPT/Tau/scripts/FakeFactorHighPt.py](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/FakeFactorHighPt.py)
 ```
 ./scripts/FakeFactorHighPt.py 
 ```
-The script opens interactive menu to check and modify configuration settings:
+The script starts interactive menu offering to check and modify configuration settings:
 ```
 Options to adjust arguments:
 1. Change era
@@ -149,7 +149,7 @@ Options to adjust arguments:
 7. Confirm and proceed
 Enter your choice (1-7):
 ```
-Choose option 7 and check configuration:
+Choose option 7 to verify default configuration:
 ```
 Parsed arguments:
 Era: 2024
@@ -160,7 +160,10 @@ Tau Tagger: pnet
 Trigger option: comb
 Are these arguments correct? (yes/no)
 ```
-You can change configuration parameters interactively by typing `no` or proceed with measurement of fake factors by typing `yes`. Trigger option can be set to `comb` when measuring offline tau ID scale factors. Important note: whereas FF(QCD) are measured with data, FF(EW) are measured both in data and with simulated W+jets samples. The measurement with simulated sample is necessary to perform closure test of jet->tau fake background model and infer uncertainties in background estimation.  
+
+You can change configuration parameters interactively by typing `no` or proceed with measurement of fake factors by typing `yes`. Trigger option can be set to `comb` when measuring offline tau ID scale factors.
+
+IMPORTANT NOTE: whereas FF(QCD) are measured with data, FF(EW) are measured both in data and with simulated W+jets samples. The measurement with simulated sample is necessary to perform closure test of jet->tau fake background model and infer uncertainties in background estimation.  
 
 The measured FF will be stored as histograms in the RooT file.
 `utils.baseFolder/$ERA/FF/ff_$WPvsJet_$WPvsMu_$WPvsE_$tagger_$option.root`
@@ -176,7 +179,7 @@ The RooT file contains also another histograms encoding alternative FF parametri
 
 ## Selection of W*->mu+v sample 
 
-Selection of events in the W*->mu+v sideband region is performed with the script [HighPT/Tau/scripts/DatacardsWToMuNu.py](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/DatacardsWToMuNu.py). 
+Selection of events in the W*->mu+v sideband region is performed with the script [src/HighPT/Tau/scripts/DatacardsWToMuNu.py](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/DatacardsWToMuNu.py). 
 ```
 scripts/DatacardsWToMuNu.py 
 ```
@@ -192,17 +195,20 @@ Options to adjust arguments:
 2. Change variable(s) to plot
 3. Confirm and proceed
 ```
-The following variables can be plotted :
-* `mt_1` : transverse mass of muon and missing transverse momentum;
-* `pt_1` : transverse momentum of muon;
-* `met`  : missing transverse momentum;
-* ``
 
-Control plot is saved in the png file 
+The following variables can be plotted :
+* `mt_1`  : transverse mass of muon and missing transverse momentum;
+* `pt_1`  : transverse momentum of muon;
+* `met`   : missing transverse momentum;
+* `eta_1` : pseudorapidity of muon;
+* `phi_1` : azimuthal angle of muon;
+
+Control plots are saved in the png files:  
 ```
 utils.figureFolder/WMuNu/wmunu_$VAR_$ERA.png
 ```
-and can be monitored for agreement between data and simulation. If variable `mt_1` is specified
+
+If variable `mt_1` is specified
 datacards and root file with shapes for statistical inference of tau ID scale factors are produced and placed in the folder `utils.baseFolder/$ERA/datacards_munu/`:
 
 ```
@@ -212,17 +218,61 @@ utils.baseFolder/$ERA/datacards_munu/munu_$ERA.root
 
 ## Selection of W*->tau+v sample
 
-Selection of events in the measurement W*->tau+v region is done with script [HighPT/Tau/scripts/DatacardsTau.py](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/DatacardsTau.py). 
+Selection of events in the measurement W*->tau+v regions is done with script [src/HighPT/Tau/scripts/DatacardsWTauNu.py](https://github.com/raspereza/HighPT/blob/main/Tau/scripts/DatacardsWTauNu.py). 
 
 ```
-./scripts/DatacardsTau.py --era $ERA --prong $prong --WP $WP
+./scripts/DatacardsWTauNu.py
 ```
-where 
-* `$ERA = UL2016 UL2017 or UL2018`
-* `$prong = 1prong, 2prong or 3prong`
-* `$WP = VVLoose or VLoose`
+The scripts offers to configure the steering parameters by means of interactive menu 
+```
+Options to adjust arguments:
+1. Change era
+2. Change WPvsJet
+3. Change WPvsMu
+4. Change WPvsE
+5. Change variable to plot
+6. Change fake factors to use
+7. Change measurement to perform
+8. Change the fake factor parametrization
+9. Changer the tau tagger
+10. Confirm and proceed
+Enter your choice (1-10):
+```
+Enter 10 to see the default arguments
+```
+Parsed arguments:
+Era: 2024
+WPvsJet: Medium
+WPvsMu: Tight
+WPvsE: VVLoose
+Variable: mt_1
+Fake factors: comb
+Measurement: incl
+Fake factors parametrization: pttau
+Tau tagger: pnet
+Are these arguments correct? (yes/no):
+```
 
-The distributions of the transverse mass of tau pTmiss are constructed in the following samples: 
+Below available options for the arguments of primary interest are listed:
+* Measurement: incl, lowpt, mediumpt, highpt
+  * incl: selection inclusively in tau pT: pT(tau) > 100 GeV; 
+  * lowpt : selection is done for tau PT in the range [100,150] GeV, intended for pT binned measurement of SF;
+  * mediumpt : selection is done for tau PT in the range [150,250] GeV, intended for pT binned measurement of SF;
+  * highpt : selection is done for tau pT in the range [250,350] GeV, intended for pT binned measurement of SF;
+
+
+
+It is suggested to use combination of FF(QCD) and FF(EW) in estimation of the jet->tau fake background and parameterization of FF as a function of pT(tau):
+```
+* Fake factors: comb, 
+* Fake factors parametrization: pttau
+```
+
+
+
+Once arguments are adjusted script is 
+
+
 
 * observed data,
 * simulated W*->tau+v events,
@@ -230,21 +280,7 @@ The distributions of the transverse mass of tau pTmiss are constructed in the fo
 * simulated samples with electron or muon faking tau,
 * j->tau background model (obtained by applying fake factors in the application region)
 By default distributions of the transverse mass of tau and pTmis are produced.
-The scripts provides an option to plot other variables by using flag `--variable`
-```
-./scripts/DatacardsTau.py --era $ERA --prong $prong --WP $WP --variable $variable
-```
-Available variables for plotting
-* `mt_1` : transverse mass of tau and pTmiss
-* `mt_jet_1` : transverse mass of HPS jet and pTmiss
-* `pt_1` : transverse momentum of tau
-* `jpt_match_1` : transverse momentum of HPS jet
-* `eta_1` : eta of tau
-* `jeta_match_1` : eta of HPS jet
-* `met` : missing ET
 
-Plot with distributions are saved in the file:
-```
 output/figures/wtaunu_$variable_$WP_$prong_$ERA.png
 ```
 Also plots, presenting MC closure test of the jet->tau fake model, are created. Closure test compares selected sample of simulated events with jet faking tau, with the jet->tau background model. Simulated events are dominated by Z->vv+jet and W->lv+jet events. The background model is built by weighting simulated events in the application region with fake factors obtained from simulated W*->mu+v+jets sample. The background model is corrected for non-closure in bins of plotted variable. Size of correction is treated as the shape systematic uncertainty. The MC closure plot is saved in file:
