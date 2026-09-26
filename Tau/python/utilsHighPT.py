@@ -559,7 +559,7 @@ UParTVSeWPs = {
     'Tight': 0.9835,
 }
 
-UParTVSmu = {
+UParTVSmuWPs = {
     'VLoose': 0.0025,
     'Tight': 0.8359,
 }

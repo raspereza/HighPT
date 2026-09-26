@@ -14,8 +14,8 @@ from array import array
 #     definition of cuts        #
 #################################
 
-basecutEWK = 'mt_1>50&&iso_1<0.15&&pt_1>30&&fabs(eta_1)<2.4&&metfilter>0.5&&njets==0&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&dphi>2.4&&pt_2>100&&fabs(eta_2)<2.5'
-basecutQCD = 'jpt>100&&njets==1&&dphi>2.4&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&pt_2>90&&fabs(eta_2)<2.5'
+basecutEWK = 'mt_1>50&&iso_1<0.15&&pt_1>30&&fabs(eta_1)<2.4&&metfilter>0.5&&njets==0&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&dphi>2.8&&pt_2>100&&fabs(eta_2)<2.5'
+basecutQCD = 'jpt>100&&njets==1&&dphi>2.8&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&pt_2>100&&fabs(eta_2)<2.5'
 
 basecut = {
     "dijets": basecutQCD,
@@ -286,12 +286,12 @@ def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
     #    cutTrigger = "tautrigger1>-0.5"
     #    cutNotTrigger = "tautrigger1>-0.5"
     
-    cutDMs = '(dm_2==0||dm_2==1||dm_2==10||dm_2==11)'
+    cutDMs = '&&(dm_2==0||dm_2==1||dm_2==10||dm_2==11)'
     cutNotDMs = 'dm_2!=0&&dm_2!=1&&dm_2!=10&&dm_2!=11'
 
     cutAntiLepDeepTau = "idDeepTau2018v2p5VSmu_2>=" + utils.tauVsMuWPs[WPvsMu]
     cutAntiLepDeepTau += "&&idDeepTau2018v2p5VSe_2>="  + utils.tauVsEleWPs[WPvsE]
-    cutAntiLepDeepTau += "&&" + cutDMs
+    cutAntiLepDeepTau += cutDMs
 
     cutTauDen = ""
     cutTauNum = ""
@@ -306,19 +306,23 @@ def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
         cutTauNum = cutAntiLepDeepTau
         cutTauDen += "&&idDeepTau2018v2p5VSjet_2<%s&&idDeepTau2018v2p5VSjet_2>0"%(sWP)
         cutTauNum += "&&idDeepTau2018v2p5VSjet_2>=" + utils.tauWPs[WPvsJet]
-        cutTauDen += cutDMs
-        cutTauNum += cutDMs
-    elif tagger=='pnet_hps' or 'pnet':
+    elif tagger=='pnet':
         relaxedTauId = utils.RelaxedPNet[WPvsJet]
-        cutAntiLepPNet = "rawPNetVSmu_2>%6.4f"%(utils.PNetVSmuWPs[WPvsMu])
-        cutAntiLepPNet += "&&rawPNetVSe_2>%6.4f"%(utils.PNetVSeWPs[WPvsE])        
+#        cutAntiLepPNet = "rawPNetVSmu_2>%6.4f"%(utils.PNetVSmuWPs[WPvsMu])
+#        cutAntiLepPNet += "&&rawPNetVSe_2>%6.4f"%(utils.PNetVSeWPs[WPvsE])        
+        cutAntiLepPNet = "idDeepTau2018v2p5VSmu_2>=" + utils.tauVsMuWPs[WPvsMu]
+        cutAntiLepPNet += "&&idDeepTau2018v2p5VSe_2>="  + utils.tauVsEleWPs[WPvsE]
         cutTauDen = cutAntiLepPNet
-        cutTauNum = cutAntiLepPNet 
-        cutTauDen += "&&rawPNetVSjet_2<%5.3f&&rawPNetVSjet_2>%5.3f"%(utils.PNetVSjetWPs[relaxedTauId],utils.PNetVSjetWPs['VVVLoose'])
-        cutTauNum += "&&rawPNetVSjet_2>=%5.3f"%(utils.PNetVSjetWPs[WPvsJet])
-        if tagger=='pnet_hps':
-            cutTauDen += cutsDM
-            cutTauNum += cutsDM
+        cutTauNum = cutAntiLepPNet
+        cutTauDen += "&&rawPNetVSjet_2<%6.4f&&rawPNetVSjet_2>%6.4f"%(utils.PNetVSjetWPs[relaxedTauId],utils.PNetVSjetWPs['VVVLoose'])
+        cutTauNum += "&&rawPNetVSjet_2>=%6.4f"%(utils.PNetVSjetWPs[WPvsJet])
+        #        cutTauNum += qConfPNet
+        #        cutTauDen += qConfPNet
+        #        print('Num : %s'%(cutTauNum))
+        #        print('Den : %s'%(cutTauDen))
+        #        exit()
+        #        cutTauDen += cutDMs
+        #        cutTauNum += cutDMs
         #        cutTauDen += qConfPNet
         #        cutTauNum += qConfPNet
     else:
@@ -327,8 +331,8 @@ def main(outputfile,dataSamples,mcSamples,sigSamples,**kwargs):
         cutAntiLepUParT += "&&rawUParTVSe_2>%6.4f"%(utils.UParTVSeWPs[WPvsE])
         cutTauDen = cutAntiLepUParT
         cutTauNum = cutAntiLepUParT 
-        cutTauDen += "&&rawUParTVSjet_2<%5.3f&&rawPNetVSjet_2>%5.3f"%(utils.UParTVSjetWPs[relaxedTauId],utils.PNetVSjetWPs['VVVLoose'])
-        cutTauNum += "&&rawUParTVSjet_2>=%5.3f"%(utils.UParTVSjetWPs[WPvsJet])
+        cutTauDen += "&&rawUParTVSjet_2<%6.4f&&rawPNetVSjet_2>%6.4f"%(utils.UParTVSjetWPs[relaxedTauId],utils.PNetVSjetWPs['VVVLoose'])
+        cutTauNum += "&&rawUParTVSjet_2>=%6.4f"%(utils.UParTVSjetWPs[WPvsJet])
         #        cutTauDen += qConfUParT
         #        cutTauNum += qConfUParT
         
@@ -574,10 +578,10 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument('-e', '--era', dest='era', default='2024', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023','2024','2025'])
-    parser.add_argument('-WPvsJet', '--WPvsJet', dest='WPvsJet', default='Medium', choices=['VLoose','Loose', 'Medium', 'Tight', 'VTight', 'VVTight','SuperTight','KiloTight','MegaTight'])
+    parser.add_argument('-WPvsJet', '--WPvsJet', dest='WPvsJet', default='Medium', choices=['VLoose','Loose', 'Medium', 'Tight', 'VTight', 'VVTight'])
     parser.add_argument('-WPvsMu', '--WPvsMu', dest='WPvsMu', default='Tight', choices=['VLoose', 'Tight'])
-    parser.add_argument('-WPvsE', '--WPvsE', dest='WPvsE', default='VVLoose', choices=['VVLoose', 'Tight'])
-    parser.add_argument('-tagger', '--tagger', dest='tagger', default='pnet', choices=['deeptau','pnet','pnet_hps','upart'])
+    parser.add_argument('-WPvsE', '--WPvsE', dest='WPvsE', default='Tight', choices=['VVLoose', 'Tight'])
+    parser.add_argument('-tagger', '--tagger', dest='tagger', default='pnet', choices=['deeptau','pnet','upart'])
     parser.add_argument('-trg_option','--trg_option',dest='option', default='comb', choices=['comb','deeptau','pnet'])
     args = parser.parse_args() 
 
@@ -601,8 +605,8 @@ if __name__ == "__main__":
         parser.add_argument('-e', '--era', dest='era', default='2024', choices=['UL2016', 'UL2017', 'UL2018', '2022', '2023','2024','2025'])
         parser.add_argument('-WPvsJet', '--WPvsJet', dest='WPvsJet', default='Medium', choices=['VLoose','Loose', 'Medium', 'Tight', 'VTight', 'VVTight','SuperTight','KiloTight','MegaTight'])
         parser.add_argument('-WPvsMu', '--WPvsMu', dest='WPvsMu', default='Tight', choices=['VLoose', 'Tight'])
-        parser.add_argument('-WPvsE', '--WPvsE', dest='WPvsE', default='VVLoose', choices=['VVLoose', 'Tight'])        
-        parser.add_argument('-tagger', '--tagger', dest='tagger', default='pnet', choices=['deeptau','pnet','pnet_hps','upart'])
+        parser.add_argument('-WPvsE', '--WPvsE', dest='WPvsE', default='Tight', choices=['VVLoose', 'Tight'])        
+        parser.add_argument('-tagger', '--tagger', dest='tagger', default='pnet', choices=['deeptau','pnet','upart'])
         parser.add_argument('-trg_option', '--trg_option', dest='option', default='comb', choices=['comb', 'deeptau','pnet'])
         
         args = parser.parse_args()
@@ -629,7 +633,7 @@ if __name__ == "__main__":
             elif choice == "5":
                 args.option = input("Enter the trigger option (deeptau, pnet, comb): ").strip()
             elif choice == "6":
-                args.tagger = input("Enter the tagger option (deeptau, pnet, pnet_hps): ").strip()
+                args.tagger = input("Enter the tagger option (deeptau, pnet, upart): ").strip()
             elif choice == "7":
                 break
             else:

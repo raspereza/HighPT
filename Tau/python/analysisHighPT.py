@@ -13,7 +13,7 @@ class TauNuCuts:
         self.mhtNoMuCut = kwargs.get('mhtNoMuCut',120.)
         self.mtLowerCut = kwargs.get('mtLowerCut',200.)
         self.mtUpperCut = kwargs.get('mtUpperCut',2000.)
-        self.etaCut = kwargs.get('etaCut',2.3)
+        self.etaCut = kwargs.get('etaCut',2.5)
         self.ptLowerCut = kwargs.get('ptLowerCut',100.)
         self.ptUpperCut = kwargs.get('ptUpperCut',2000.)
         self.metdphiCut = kwargs.get('metdphiCut',2.8)
@@ -255,12 +255,15 @@ class sampleHighPt:
         mt_jet_1    = np.zeros(1,dtype='f')
         m_1         = np.zeros(1,dtype='f')
         HT          = np.zeros(1,dtype='f') 
+
         rawPNetVSjet_1  = np.zeros(1,dtype='f')
         rawPNetVSmu_1   = np.zeros(1,dtype='f')
         rawPNetVSe_1    = np.zeros(1,dtype='f')
+        
         rawUParTVSjet_1 = np.zeros(1,dtype='f')
         rawUParTVSmu_1  = np.zeros(1,dtype='f')
         rawUParTVSe_1   = np.zeros(1,dtype='f')
+
         qConfPNet_1     = np.zeros(1,dtype='f')
         qConfUParT_1    = np.zeros(1,dtype='f')
        
@@ -317,9 +320,11 @@ class sampleHighPt:
         tree.SetBranchAddress('rawPNetVSjet_1',rawPNetVSjet_1)
         tree.SetBranchAddress('rawPNetVSe_1',rawPNetVSe_1)
         tree.SetBranchAddress('rawPNetVSmu_1',rawPNetVSmu_1)
+
         tree.SetBranchAddress('rawUParTVSjet_1',rawUParTVSjet_1)
         tree.SetBranchAddress('rawUParTVSe_1',rawUParTVSe_1)
         tree.SetBranchAddress('rawUParTVSmu_1',rawUParTVSmu_1)
+        
         tree.SetBranchAddress('qConfPNet_1',qConfPNet_1)
         tree.SetBranchAddress('qConfUParT_1',qConfUParT_1)
 
@@ -375,11 +380,11 @@ class sampleHighPt:
                 if hotjet_veto[0]: 
                     continue
 
-
             dmcut = dm_1[0]==0 or dm_1[0]==1 or dm_1[0]==10 or dm_1[0]==11
             dmcut_not = dm_1[0]!=0 and dm_1[0]!=1 and dm_1[0]!=10 and dm_1[0]!=11
             
-            notQUParT = abs(qConfUParT_1[0])<0.2
+            QUParT = abs(qConfUParT_1[0])>0.2
+            QPNet = abs(qConfPNet_1[0])>0.2
             
             antiElectronDeepTau = idDeepTau2018v2p5VSe_1[0]>=utils.tauVsEleIntWPs[cuts.antiE]
             antiMuonDeepTau = idDeepTau2018v2p5VSmu_1[0]>=utils.tauVsMuIntWPs[cuts.antiMu]
@@ -388,19 +393,20 @@ class sampleHighPt:
             if cuts.taggerOption=='deeptau':
                 if not antiLeptonDeepTau: continue
             if cuts.taggerOption in ['pnet','pnet_hps']:
-                antiMuonPNet = rawPNetVSmu_1[0]>=utils.PNetVSmuWPs[cuts.antiMu]
-                antiElectronPNet = rawPNetVSe_1[0]>=utils.PNetVSeWPs[cuts.antiE]
+                #antiMuonPNet = rawPNetVSmu_1[0]>=utils.PNetVSmuWPs[cuts.antiMu]
+                #antiElectronPNet = rawPNetVSe_1[0]>=utils.PNetVSeWPs[cuts.antiE]
+                antiMuonPNet = idDeepTau2018v2p5VSe_1[0]>=utils.tauVsEleIntWPs[cuts.antiE]
+                antiElectronPNet = idDeepTau2018v2p5VSmu_1[0]>=utils.tauVsMuIntWPs[cuts.antiMu]
                 antiLeptonPNet = antiMuonPNet and antiElectronPNet
+                #print('PNet tagger : VsE>%5.3f  VsMu>%5.3f'%(utils.PNetVSeWPs[cuts.antiE],utils.PNetVSmuWPs[cuts.antiMu]))
                 if not antiLeptonPNet: continue
-                if cuts.taggerOption=='pnet_hps':
-                    if not dmcut: continue
+                #if not QPNet: continue
+                #if not dmcut: continue
             if cuts.taggerOption=='upart':
                 antiMuonUParT = rawUParTVSmu_1[0]>=utils.UParTVSmuWPs[cuts.antiMu]
                 antiElectronUParT = rawUParTVSe_1[0]>=utils.UParTVSeWPs[cuts.antiE]
                 antiLeptonUParT = antiMuonUParT and antiElectronUParT
                 if not antiLeptonUParT: continue
-
-            
             # kinematic cuts
             if pt_1[0]<cuts.ptLowerCut: continue
             if pt_1[0]>cuts.ptUpperCut: continue
@@ -465,6 +471,8 @@ class sampleHighPt:
             if tagger=='pnet':
                 SignalRegion = rawPNetVSjet_1[0]>=utils.PNetVSjetWPs[WPvsJet] 
                 SideBand = rawPNetVSjet_1[0]<cutRelaxed and rawPNetVSjet_1[0]>utils.PNetVSjetWPs['VVVLoose']
+                #print('PNet -> Signal region -> VsJet > %6.4f'%(utils.PNetVSjetWPs[WPvsJet]))
+                #print('PNet -> Sideband region -> %6.4f < VsJet < %6.4f :'%(utils.PNetVSjetWPs['VVVLoose'],cutRelaxed))
             elif tagger=='upart':
                 SignalRegion = rawUParTVSjet_1[0]>=utils.UParTVSjetWPs[WPvsJet]
                 SideBand = rawUParTVSjet_1[0]<cutRelaxed and rawPNetVSjet_1[0]>utils.PNetVSjetWPs['VVVLoose']

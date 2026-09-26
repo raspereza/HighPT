@@ -670,7 +670,7 @@ if __name__ == "__main__":
         parser.add_argument('-e','--era', dest='era', default='2024',choices=['UL2016','UL2017','UL2018','2022','2023','2024','2025'])
         parser.add_argument('-wp','--WPvsJet', dest='wpVsJet', default='Medium',choices=['VLoose','Loose','Medium','Tight','VTight','VVTight','SuperTight','KiloTight','MegaTight'])
         parser.add_argument('-wpVsMu','--WPvsMu', dest='wpVsMu', default='Tight',choices=['VLoose','Tight'])
-        parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='VVLoose',choices=['VVLoose','Tight'])
+        parser.add_argument('-wpVsE','--WPvsE', dest='wpVsE', default='Tight',choices=['VVLoose','Tight'])
         parser.add_argument('-var','--variable',dest='variable',default='mt_1',choices=['mt_1','met','pt_1','eta_1','phi_1','jpt_match_1','mt_jet_1','metphi'])
         parser.add_argument('-ff','--fake_factors',dest='ff',default='comb',choices=['comb','wjets','dijets'])
         parser.add_argument('-m','--meas',dest='meas',default='incl',choices=['incl','lowpt','mediumpt','highpt'])
@@ -870,15 +870,17 @@ if __name__ == "__main__":
     antiJetDeepTau = '&&idDeepTau2018v2p5VSjet_1>='+utils.tauWPs[args.wpVsJet]
     tauIDCut = antiJetDeepTau+'&&'+antiLepDeepTau 
     if args.tagger=='pnet':
-        antiLepPNet = 'rawPNetVSmu_1>=%6.4f'%(utils.PNetVSmuWPs[args.wpVsMu])
-        antiLepPNet += '&&rawPNetVSe_1>=%6.4f'%(utils.PNetVSeWPs[args.wpVsE])
-        tauIDCut = '&&rawPNetVSjet_1>=%5.3f'%(utils.PNetVSjetWPs[args.wpVsJet])+'&&'+antiLepPNet
-        if args.tagger=='pnet_hps':
-            tauIDCut += dmcut
+        #        antiLepPNet = 'rawPNetVSmu_1>=%6.4f'%(utils.PNetVSmuWPs[args.wpVsMu])
+        #        antiLepPNet += '&&rawPNetVSe_1>=%6.4f'%(utils.PNetVSeWPs[args.wpVsE])
+        antiLepPNet = 'idDeepTau2018v2p5VSmu_1>='+utils.tauVsMuWPs[args.wpVsMu]
+        antiLepPNet += '&&idDeepTau2018v2p5VSe_1>='+utils.tauVsEleWPs[args.wpVsE]
+        tauIDCut = '&&rawPNetVSjet_1>=%6.4f'%(utils.PNetVSjetWPs[args.wpVsJet])+'&&'+antiLepPNet
+        #tauIDCut += '&&fabs(qConfPNet_1)>0.2'
+        #        tauIDCut += dmcut
     elif args.tagger=='upart':
         antiLepUParT = 'rawUParTVSmu_1>=%6.4f'%(utils.UParTVSmuWPs[args.wpVsMu])
         antiLepUParT += '&&rawUParTVSe_1>=%6.4f'%(utils.UParTVSeWPs[args.wpVsE])
-        tauIDCut = '&&rawUParTVSjet_1>=%5.3f'%(utils.UParTVSjetWPs[args.wpVsJet])+'&&'+antiLepUParT
+        tauIDCut = '&&rawUParTVSjet_1>=%6.4f'%(utils.UParTVSjetWPs[args.wpVsJet])+'&&'+antiLepUParT
 
     commonCut = "metfilter>0.5&&mettrigger>0.5&&extraelec_veto<0.5&&extramuon_veto<0.5&&extratau_veto<0.5&&njets==0&&genmatch_1==5"
     commonCut += tauIDCut
@@ -1009,7 +1011,7 @@ if __name__ == "__main__":
     tot_bkg = hist_bkg_tau.GetSumOfWeights()+hist_bkg_lfakes.GetSumOfWeights()+hist_bkg_fakes.GetSumOfWeights()
     
     print('')
-    print("Check composition of MC")
+    print("Check composition of MC samples")
     print('Total        = %5.0f'%(hist_bkg.GetSumOfWeights()))
     print('Genuine taus = %5.0f'%(hist_bkg_tau.GetSumOfWeights()))
     print('l->tau fakes = %5.0f'%(hist_bkg_lfakes.GetSumOfWeights()))
