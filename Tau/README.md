@@ -13,9 +13,11 @@ cmsenv
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
 cd HiggsAnalysis/CombinedLimit
 git checkout v10.4.2
-cd ../..
+cd $CMSSW_BASE/src
 git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
+cd CombineHarvester
 git checkout v3.0.0-pre1
+cd $CMSSW_BASE/src
 git clone https://github.com/raspereza/HighPT.git HighPT
 scramv1 b -j 4
 ```
